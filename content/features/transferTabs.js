@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   window.CPLEnhancer = window.CPLEnhancer || {};
 
   const SKILL_PARAM_MAP = {
@@ -241,16 +241,19 @@
     } catch (_) {}
   }
 
-  function applyViaBackground(observe = false) {
+  function applyViaBackground(observe = false, search = "") {
     try {
       if (chrome?.runtime?.sendMessage) {
         chrome.runtime.sendMessage({
           type: "APPLY_FILTER",
           selector: APPLY_BTN_SELECTOR,
-          observe
+          observe,
+          search
         });
+        return true;
       }
     } catch (_) {}
+    return false;
   }
 
   function triggerApply(btn) {
@@ -476,8 +479,17 @@
 
     if (!shouldAutoApply(url)) return;
 
+    const lockKey = "cplEnhancer_autoApply_lock";
+    const last = Number(sessionStorage.getItem(lockKey) || "0");
+    if (Date.now() - last < 8000) return;
+    sessionStorage.setItem(lockKey, String(Date.now()));
+
+    const guardKey = `cplEnhancer_autoApply_once_${url.search}`;
+    if (sessionStorage.getItem(guardKey) === "1") return;
+    sessionStorage.setItem(guardKey, "1");
+
     // Start background observer in MAIN world (handles late-rendered button)
-    applyViaBackground(true);
+    if (applyViaBackground(true, url.search)) return;
 
     const guardKey = `cplEnhancer_autoApply_${url.search}`;
     const triesKey = `${guardKey}_tries`;
@@ -851,3 +863,4 @@
     run();
   };
 })();
+

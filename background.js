@@ -9,13 +9,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     const selector = message.selector;
     const observe = !!message.observe;
+    const search = message.search || "";
 
     chrome.scripting.executeScript({
       target: { tabId },
       world: "MAIN",
-      args: [selector, observe],
-      func: (sel, observeMode) => {
+      args: [selector, observe, search],
+      func: (sel, observeMode, searchStr) => {
         try {
+          if (searchStr && window.__cplEnhancerAppliedSearch === searchStr) return;
           const matchText = /apply filter|aplicar filtro|aplicar|filter|filtro/i;
           const findBtn = () => {
             let btn = sel ? document.querySelector(sel) : null;
@@ -37,9 +39,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return true;
           };
 
-          if (clickBtn(findBtn())) return;
+          if (clickBtn(findBtn())) {
+            if (searchStr) window.__cplEnhancerAppliedSearch = searchStr;
+            return;
+          }
 
           if (!observeMode) return;
+          if (searchStr) window.__cplEnhancerAppliedSearch = searchStr;
           if (window.__cplEnhancerApplyObserver) return;
           window.__cplEnhancerApplyObserver = true;
 
