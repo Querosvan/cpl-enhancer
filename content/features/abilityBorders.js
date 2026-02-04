@@ -176,7 +176,9 @@
     const text = (el.textContent || "").trim();
     if (text && text.length <= 24) out.push(text);
 
-    if (el.tagName === "IMG") {
+    const tag = (el.tagName || "").toLowerCase();
+
+    if (tag === "img") {
       const src = el.getAttribute("src") || "";
       if (src) {
         const file = src.split("/").pop().split("?")[0] || "";
@@ -187,7 +189,7 @@
       }
     }
 
-    if (el.tagName === "SVG") {
+    if (tag === "svg") {
       const useEl = el.querySelector && el.querySelector("use");
       const href =
         useEl?.getAttribute?.("href") || useEl?.getAttribute?.("xlink:href") || "";
@@ -209,7 +211,7 @@
   }
 
   function getSvgSignature(svg) {
-    if (!svg || svg.tagName !== "SVG") return "";
+    if (!svg || (svg.tagName || "").toLowerCase() !== "svg") return "";
     if (svg.dataset?.cplAbilitySig) return svg.dataset.cplAbilitySig;
     const parts = Array.from(svg.querySelectorAll("path")).map((path) =>
       (path.getAttribute("d") || "").slice(0, 40)
@@ -223,6 +225,7 @@
   function resolveAbilityType(el) {
     const candidates = [];
     const seen = new Set();
+    const tag = (el?.tagName || "").toLowerCase();
 
     const addCandidates = (node) => {
       if (!node) return;
@@ -241,7 +244,7 @@
       if (labeledParent && labeledParent !== el) addCandidates(labeledParent);
     }
 
-    if (el.tagName !== "IMG" && el.tagName !== "SVG") {
+    if (tag !== "img" && tag !== "svg") {
       const childIcon = el.querySelector?.("img, svg");
       if (childIcon && childIcon !== el) addCandidates(childIcon);
     }
@@ -258,7 +261,7 @@
   }
 
   function resolveAbilityTypeFromSignature(el) {
-    if (!el || el.tagName !== "SVG") return null;
+    if (!el || (el.tagName || "").toLowerCase() !== "svg") return null;
     const sig = getSvgSignature(el);
     if (!sig) return null;
     const abilityName = SVG_SIGNATURE_ABILITY.get(sig);
@@ -270,7 +273,8 @@
     if (!el || !type) return;
 
     let target = null;
-    if (el.tagName === "IMG" || el.tagName === "SVG") {
+    const tag = (el.tagName || "").toLowerCase();
+    if (tag === "img" || tag === "svg") {
       const iconBox = el.closest?.("div[style*='background-image']");
       target = iconBox || el;
     } else if (isLabeledElement(el)) {
@@ -301,12 +305,13 @@
 
     const nodes = scope.querySelectorAll(selector);
     nodes.forEach((el) => {
-      if ((el.tagName === "IMG" || el.tagName === "SVG") && el.closest) {
+      const tag = (el.tagName || "").toLowerCase();
+      if ((tag === "img" || tag === "svg") && el.closest) {
         const labeledParent = el.closest(ABILITY_ATTR_SELECTOR);
         if (labeledParent && labeledParent !== el) return;
       }
       let type = resolveAbilityType(el);
-      if (!type && el.tagName === "SVG") {
+      if (!type && tag === "svg") {
         type = resolveAbilityTypeFromSignature(el);
       }
       if (type) applyBorder(el, type);
