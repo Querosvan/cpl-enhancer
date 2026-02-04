@@ -76,6 +76,10 @@ body {
   padding: 14px;
 }
 
+.card + .card {
+  margin-top: 12px;
+}
+
 .row {
   display: flex;
   align-items: center;
@@ -119,6 +123,21 @@ body {
 .skillRow .range {
   color: var(--muted);
   font-size: 12px;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.field__input {
+  width: 140px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.25);
+  color: var(--text);
 }
 
 .actions {

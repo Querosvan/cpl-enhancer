@@ -22,6 +22,9 @@
           <button class="nav__item" data-section="transfer">
             Transfer List
           </button>
+          <button class="nav__item" data-section="tryouts">
+            Tryouts
+          </button>
         </nav>
 
         <div class="sidebar__footer">
@@ -76,6 +79,40 @@
 
           <div class="small muted">
             Note: A player can match both filters (already strong + high potential).
+          </div>
+        </section>
+
+        <!-- TRYOUTS -->
+        <section class="panel is-hidden" id="section-tryouts">
+          <h1>Tryouts</h1>
+          <p class="sub">
+            Configure how tryouts are highlighted when you open that section.
+          </p>
+
+          <div class="card">
+            <div class="row">
+              <div>
+                <div class="label">Enabled</div>
+                <div class="hint">Enable or disable tryouts enhancements.</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="tryoutsEnabled" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="field">
+              <div class="label">Minimum overall skill</div>
+              <div class="hint">Used to flag strong tryout players (0-100).</div>
+              <input class="field__input" type="number" id="tryoutsMinSkill" min="0" max="100" step="1" inputmode="numeric" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" id="resetDefaultsTryouts">Reset to defaults</button>
+            <button class="btn btn--primary" id="saveBtnTryouts">Save</button>
           </div>
         </section>
       </main>

@@ -15,8 +15,12 @@
   const DEFAULTS = {
     enabled: true,
     transferFilters: {
-      current: Object.fromEntries(SKILLS.map(s => [s, 70])),
-      limit: Object.fromEntries(SKILLS.map(s => [s, 85]))
+      current: Object.fromEntries(SKILLS.map(s => [s, 85])),
+      limit: Object.fromEntries(SKILLS.map(s => [s, 90]))
+    },
+    tryouts: {
+      enabled: true,
+      minSkill: 70
     }
   };
 
@@ -25,7 +29,8 @@
     return {
       ...DEFAULTS,
       ...data,
-      transferFilters: data.transferFilters ?? DEFAULTS.transferFilters
+      transferFilters: data.transferFilters ?? DEFAULTS.transferFilters,
+      tryouts: data.tryouts ?? DEFAULTS.tryouts
     };
   };
 })();
