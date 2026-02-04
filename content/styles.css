@@ -55,6 +55,10 @@
   color: #aa5aff !important; /* purple */
 }
 
+.cpl-enhancer-top-tab--reset {
+  color: #9aa0a6 !important; /* neutral */
+}
+
 /* Optional: show "active" underline if URL matches later */
 .cpl-enhancer-top-tab.is-active.cpl-enhancer-top-tab--now {
   border-bottom-color: #00c878 !important;

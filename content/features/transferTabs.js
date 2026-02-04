@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   window.CPLEnhancer = window.CPLEnhancer || {};
 
   const SKILL_PARAM_MAP = {
@@ -13,6 +13,10 @@
   };
 
   const SKILLS = Object.keys(SKILL_PARAM_MAP);
+  const APPLY_BTN_SELECTOR =
+    "#svelte > div.flex.flex-col.md\\:flex-row.overflow-hidden.lg\\:h-screen.h-screen.lg\\:min-h-screen.lg\\:max-h-screen.relative > " +
+    "div.flex.flex-col.flex-1.relative.h-full.min-w-0 > div > div > div > div:nth-child(3) > div > header > " +
+    "div.flex.max-md\\:flex-col.gap-5 > button";
 
   function isTransfersPage() {
     return location.pathname.includes("/cpl/office/transfers");
@@ -22,6 +26,20 @@
     const v = Number(n);
     if (Number.isNaN(v)) return 0;
     return Math.max(0, Math.min(100, Math.round(v)));
+  }
+
+  function clampAge(n) {
+    const v = Number(n);
+    if (Number.isNaN(v)) return 13;
+    return Math.max(13, Math.min(44, Math.round(v)));
+  }
+
+  function getAgeRangeForMode(settings, mode) {
+    const defaults = mode === "now" ? { min: 13, max: 44 } : { min: 13, max: 25 };
+    const src = mode === "now" ? settings?.transferFilters?.current : settings?.transferFilters?.limit;
+    const min = clampAge(src?.ageMin ?? defaults.min);
+    const max = clampAge(src?.ageMax ?? defaults.max);
+    return { min: Math.min(min, max), max: Math.max(min, max) };
   }
 
   function buildNowPresetFromSettings(settings) {
@@ -59,25 +77,64 @@
   // Filters (Header) helpers
   // =========================
 
+  function matchesAnyText(el, patterns) {
+    const text = (el?.textContent || "").trim().toLowerCase();
+    return patterns.some((p) => text.includes(p));
+  }
+
+  function isApplyButtonCandidate(btn) {
+    if (!btn) return false;
+    if (matchesAnyText(btn, ["apply filter", "apply", "aplicar filtro", "aplicar", "filter", "filtro"])) return true;
+    // Fallback: primary button with filter icon (SVG + polygon)
+    const hasPrimary = btn.classList.contains("button-primary");
+    const hasIcon = !!btn.querySelector("svg polygon");
+    return hasPrimary && hasIcon;
+  }
+
+  function findApplyButtonGlobal() {
+    const bySelector = document.querySelector(APPLY_BTN_SELECTOR);
+    if (bySelector) return bySelector;
+    const buttons = Array.from(document.querySelectorAll("button"));
+    return buttons.find((b) => isApplyButtonCandidate(b)) || null;
+  }
+
   function findFiltersHeader() {
-    // Header that contains the "Apply filter" button
+    // Header that contains the "Apply filter" button (localized-safe)
+    const btn = findApplyButtonGlobal();
+    if (btn) return btn.closest("header") || btn.parentElement || null;
+
     const headers = Array.from(document.querySelectorAll("header"));
-    return headers.find((h) => (h.textContent || "").toLowerCase().includes("apply filter")) || null;
+    return (
+      headers.find((h) => {
+        const btns = Array.from(h.querySelectorAll("button"));
+        return btns.some((b) => isApplyButtonCandidate(b));
+      }) || null
+    );
   }
 
   function findApplyButton(headerEl) {
-    // Prefer exact text match
+    if (!headerEl) return findApplyButtonGlobal();
+
     const btns = Array.from(headerEl.querySelectorAll("button"));
-    return btns.find((b) => (b.textContent || "").trim().toLowerCase() === "apply filter") || null;
+
+    const byCandidate = btns.find((b) => isApplyButtonCandidate(b));
+    if (byCandidate) return byCandidate;
+
+    // Fallback: type="submit"
+    const submit = btns.find((b) => (b.getAttribute("type") || "").toLowerCase() === "submit");
+    if (submit) return submit;
+
+    return findApplyButtonGlobal();
   }
 
-  function findGroupByLabel(headerEl, labelText) {
+  function findGroupByLabel(headerEl, labelCandidates) {
     // Groups are: <div class="flex items-center gap-3"><p>Skills</p> <div class="relative"><button>...</button> ...</div></div>
     const groups = Array.from(headerEl.querySelectorAll("div.flex.items-center.gap-3"));
     return (
-      groups.find(
-        (g) => (g.querySelector("p")?.textContent || "").trim().toLowerCase() === labelText.toLowerCase()
-      ) || null
+      groups.find((g) => {
+        const label = (g.querySelector("p")?.textContent || "").trim().toLowerCase();
+        return labelCandidates.some((c) => label.includes(c));
+      }) || null
     );
   }
 
@@ -107,6 +164,141 @@
       }
       resolve(null);
     });
+  }
+
+  function hasUrlFilterParams(url) {
+    for (const key of url.searchParams.keys()) {
+      if (key.endsWith("-skill") || key.endsWith("-limit-skill")) return true;
+    }
+    return false;
+  }
+
+  function clearSkillParams(url) {
+    const keys = Array.from(url.searchParams.keys());
+    for (const key of keys) {
+      if (key.endsWith("-skill") || key.endsWith("-limit-skill")) {
+        url.searchParams.delete(key);
+      }
+    }
+    url.searchParams.delete("age_range");
+    url.searchParams.delete("age-min");
+    url.searchParams.delete("age-max");
+  }
+
+  const appliedSearches = new Set();
+
+  function getPendingApplyToken(url) {
+    try {
+      const pendingSearch = sessionStorage.getItem("cplEnhancer_pendingSearch");
+      const pendingToken = sessionStorage.getItem("cplEnhancer_pendingToken");
+      if (pendingSearch && pendingToken && pendingSearch === url.search) return pendingToken;
+    } catch (_) {}
+    return null;
+  }
+
+  function shouldAutoApply(url) {
+    if (getPendingApplyToken(url)) return true;
+    return hasUrlFilterParams(url) && !appliedSearches.has(url.search);
+  }
+
+  function clearAutoApply() {}
+
+  function getTransferCardsSignature() {
+    const cards = Array.from(document.querySelectorAll("div.card"));
+    if (!cards.length) return "0";
+    const first = (cards[0].innerText || "").slice(0, 80);
+    return `${cards.length}:${first}`;
+  }
+
+  function clickApplyInPageContext({ observe = false } = {}) {
+    try {
+      const script = document.createElement("script");
+      script.textContent = `
+        (function () {
+          try {
+            if (window.__cplEnhancerApplyObserver && ${observe ? "true" : "false"}) return;
+            const matchText = /apply filter|aplicar filtro|aplicar|filter|filtro/i;
+            const selector = ${JSON.stringify(APPLY_BTN_SELECTOR)};
+            let btn = document.querySelector(selector);
+            if (!btn) {
+              btn = Array.from(document.querySelectorAll("button.button-primary"))
+              .find(b => matchText.test(b.textContent || ""));
+            }
+            if (!btn) {
+              btn = Array.from(document.querySelectorAll("button.button-primary"))
+                .find(b => b.querySelector("svg polygon"));
+            }
+            if (btn) btn.click();
+
+            if (${observe ? "true" : "false"}) {
+              window.__cplEnhancerApplyObserver = true;
+              const obs = new MutationObserver(() => {
+                const b = document.querySelector(selector) ||
+                  Array.from(document.querySelectorAll("button.button-primary")).find(x => matchText.test(x.textContent || "")) ||
+                  Array.from(document.querySelectorAll("button.button-primary")).find(x => x.querySelector("svg polygon"));
+                if (b) {
+                  b.click();
+                  obs.disconnect();
+                  window.__cplEnhancerApplyObserver = false;
+                }
+              });
+              obs.observe(document.documentElement, { childList: true, subtree: true });
+              setTimeout(() => {
+                obs.disconnect();
+                window.__cplEnhancerApplyObserver = false;
+              }, 45000);
+            }
+          } catch (_) {}
+        })();
+      `;
+      (document.head || document.documentElement).appendChild(script);
+      script.remove();
+    } catch (_) {}
+  }
+
+  function applyViaBackground(observe = false, search = "", token = "") {
+    try {
+      if (chrome?.runtime?.sendMessage) {
+        chrome.runtime.sendMessage({
+          type: "APPLY_FILTER",
+          selector: APPLY_BTN_SELECTOR,
+          observe,
+          search,
+          token
+        });
+        return true;
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  function triggerApply(btn) {
+    if (!btn) return false;
+
+    try {
+      const form = btn.closest("form");
+      if (form) {
+        if (typeof form.requestSubmit === "function") {
+          form.requestSubmit(btn);
+          return true;
+        }
+        // Fallback: submit event
+        const ev = new Event("submit", { bubbles: true, cancelable: true });
+        if (form.dispatchEvent(ev)) {
+          try {
+            form.submit();
+          } catch (_) {}
+          return true;
+        }
+      }
+    } catch (_) {}
+
+    clickElement(btn);
+    // Fallback in page context (some apps ignore isolated-world events)
+    clickApplyInPageContext();
+    // Fallback via background -> MAIN world executeScript (bypasses CSP inline)
+    applyViaBackground();
+    return true;
   }
 
   function isVisible(el) {
@@ -291,7 +483,47 @@
     return null;
   }
 
-  async function applyPreset({ mode, preset }) {
+  function maybeAutoApplyFilters() {
+    if (!isTransfersPage()) return;
+
+    let url;
+    try {
+      url = new URL(location.href);
+    } catch (_) {
+      return;
+    }
+
+    if (!shouldAutoApply(url)) return;
+
+    let token = getPendingApplyToken(url);
+    if (!token && !hasUrlFilterParams(url)) return;
+
+    if (!token) {
+      // No pending token (e.g. reload with params). Create a one-off token.
+      token = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    }
+
+    const doneKey = `cplEnhancer_autoApply_done_${token}`;
+    if (sessionStorage.getItem(doneKey) === "1") return;
+    sessionStorage.setItem(doneKey, "1");
+
+    // Clear pending immediately to avoid loops; background observer will handle late button.
+    sessionStorage.removeItem("cplEnhancer_pendingSearch");
+    sessionStorage.removeItem("cplEnhancer_pendingToken");
+
+    appliedSearches.add(url.search);
+
+    // Start background observer in MAIN world (handles late-rendered button)
+    applyViaBackground(true, url.search, token);
+  }
+
+  async function applyPreset({ mode, preset, ageRange }) {
+    if (!isTransfersPage()) return false;
+
+    // Prefer URL params (fast + reliable)
+    const urlApplied = applyPresetViaUrlParams(preset, mode, ageRange);
+    if (urlApplied) return true;
+
     const headerEl = findFiltersHeader();
     if (!headerEl) {
       console.warn("[CPL Enhancer] Filters header not found.");
@@ -311,8 +543,12 @@
       history.replaceState({}, "", url.toString());
     } catch (_) {}
 
-    const label = mode === "now" ? "Skills" : "Limits";
-    const groupEl = findGroupByLabel(headerEl, label);
+    const label = mode === "now" ? "skills" : "limits";
+    const labelCandidates =
+      mode === "now"
+        ? ["skills", "skill", "habilidades", "habilidad"]
+        : ["limits", "limit", "limite", "limites", "cap", "caps"];
+    const groupEl = findGroupByLabel(headerEl, labelCandidates);
 
     if (!groupEl) {
       console.warn(`[CPL Enhancer] Group "${label}" not found.`);
@@ -323,7 +559,7 @@
     const opened = await openDropdownAndGetUl(groupEl, preset);
     if (!opened) {
       // Fallback: if we previously learned URL param mapping, apply via query params.
-      const ok = applyPresetViaUrlParamsIfKnown(preset);
+      const ok = applyPresetViaUrlParamsIfKnown(preset, ageRange);
       if (!ok) {
         console.warn(
           `[CPL Enhancer] Could not open "${label}" dropdown (likely blocks synthetic events). ` +
@@ -352,6 +588,67 @@
   // =========================
   // URL-param fallback (learned)
   // =========================
+
+  function applyResetViaUrlParams() {
+    let url;
+    try {
+      url = new URL(location.href);
+    } catch (_) {
+      return false;
+    }
+
+    clearSkillParams(url);
+    url.searchParams.set("page", "1");
+
+    location.href = url.toString();
+    return true;
+  }
+
+  function applyPresetViaUrlParams(preset, mode, ageRange) {
+    let url;
+    try {
+      url = new URL(location.href);
+    } catch (_) {
+      return false;
+    }
+
+    clearSkillParams(url);
+    url.searchParams.set("page", "1");
+    if (ageRange) {
+      url.searchParams.set("age_range", `${ageRange.min}-${ageRange.max}`);
+    }
+
+    // Base param format on current CPLManager URLs:
+    // - current skills: aim-skill=85-100
+    // - limits/caps:   aim-limit-skill=85-100
+    const suffix = mode === "pot" ? "-limit-skill" : "-skill";
+
+    let applied = 0;
+    for (const [skillKey, range] of Object.entries(preset)) {
+      const key = String(skillKey || "").toLowerCase();
+      if (!key) continue;
+      url.searchParams.set(`${key}${suffix}`, `${range.min}-${range.max}`);
+      applied++;
+    }
+
+    if (!applied) return false;
+
+    // Mark pending apply so the next load can auto-apply once.
+    let token = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    try {
+      sessionStorage.setItem("cplEnhancer_pendingSearch", url.search);
+      sessionStorage.setItem("cplEnhancer_pendingToken", token);
+    } catch (_) {}
+
+    // Navigate to apply the new params.
+    if (url.search === location.search) {
+      // Same URL -> apply immediately (no navigation)
+      applyViaBackground(true, url.search, token);
+      return true;
+    }
+    location.href = url.toString();
+    return true;
+  }
 
   function getLearnedParamMap() {
     try {
@@ -422,7 +719,7 @@
     if (learnedCount > 0) setLearnedParamMap(map);
   }
 
-  function applyPresetViaUrlParamsIfKnown(preset) {
+  function applyPresetViaUrlParamsIfKnown(preset, ageRange) {
     const map = getLearnedParamMap();
     if (!map || !map.min || !map.max) return false;
 
@@ -433,7 +730,11 @@
       return false;
     }
 
+    clearSkillParams(url);
     url.searchParams.set("page", "1");
+    if (ageRange) {
+      url.searchParams.set("age_range", `${ageRange.min}-${ageRange.max}`);
+    }
 
     let applied = 0;
     for (const [skill, range] of Object.entries(preset)) {
@@ -451,7 +752,18 @@
 
     if (!applied) return false;
 
+    // Mark pending apply so the next load can auto-apply once.
+    let token = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    try {
+      sessionStorage.setItem("cplEnhancer_pendingSearch", url.search);
+      sessionStorage.setItem("cplEnhancer_pendingToken", token);
+    } catch (_) {}
+
     // Navigate to apply the new params.
+    if (url.search === location.search) {
+      applyViaBackground(true, url.search, token);
+      return true;
+    }
     location.href = url.toString();
     return true;
   }
@@ -473,6 +785,8 @@
 
     const nowPreset = buildNowPresetFromSettings(settings);
     const potPreset = buildPotPresetFromSettings(settings);
+    const nowAge = getAgeRangeForMode(settings, "now");
+    const potAge = getAgeRangeForMode(settings, "pot");
 
     const nowTab = document.createElement("a");
     nowTab.href = "#";
@@ -481,7 +795,7 @@
     nowTab.className = `${baseClass} cpl-enhancer-top-tab cpl-enhancer-top-tab--now`;
     nowTab.addEventListener("click", (e) => {
       e.preventDefault();
-      applyPreset({ mode: "now", preset: nowPreset });
+      applyPreset({ mode: "now", preset: nowPreset, ageRange: nowAge });
     });
 
     const potTab = document.createElement("a");
@@ -491,7 +805,17 @@
     potTab.className = `${baseClass} cpl-enhancer-top-tab cpl-enhancer-top-tab--pot`;
     potTab.addEventListener("click", (e) => {
       e.preventDefault();
-      applyPreset({ mode: "pot", preset: potPreset });
+      applyPreset({ mode: "pot", preset: potPreset, ageRange: potAge });
+    });
+
+    const resetTab = document.createElement("a");
+    resetTab.href = "#";
+    resetTab.textContent = "Reset";
+    resetTab.dataset.cplEnhancerTopTab = "reset";
+    resetTab.className = `${baseClass} cpl-enhancer-top-tab cpl-enhancer-top-tab--reset`;
+    resetTab.addEventListener("click", (e) => {
+      e.preventDefault();
+      applyResetViaUrlParams();
     });
 
     const anchors = Array.from(tabsContainer.querySelectorAll("a"));
@@ -500,9 +824,11 @@
     if (bids && bids.nextSibling) {
       tabsContainer.insertBefore(nowTab, bids.nextSibling);
       tabsContainer.insertBefore(potTab, nowTab.nextSibling);
+      tabsContainer.insertBefore(resetTab, potTab.nextSibling);
     } else {
       tabsContainer.appendChild(nowTab);
       tabsContainer.appendChild(potTab);
+      tabsContainer.appendChild(resetTab);
     }
   }
 
@@ -516,6 +842,7 @@
       setTimeout(() => {
         scheduled = false;
         ensureTabs(settings);
+        maybeAutoApplyFilters();
       }, 100);
     };
 
@@ -537,3 +864,4 @@
     run();
   };
 })();
+
