@@ -90,7 +90,7 @@
 
       if (goodNow && potential) {
         stateClass = "cpl-enhancer-highlight--both";
-        pillText = "POT";
+        pillText = "NOW+POT";
         pillClass = "cpl-enhancer-tag-pill--both";
       } else if (goodNow) {
         stateClass = "cpl-enhancer-highlight--now";

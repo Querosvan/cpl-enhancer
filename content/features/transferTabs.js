@@ -322,6 +322,38 @@
     return null;
   }
 
+  function hasUrlFilterParams(url) {
+    for (const key of url.searchParams.keys()) {
+      if (key.endsWith("-skill") || key.endsWith("-limit-skill")) return true;
+    }
+    return false;
+  }
+
+  async function maybeAutoApplyFilters() {
+    if (!isTransfersPage()) return;
+
+    let url;
+    try {
+      url = new URL(location.href);
+    } catch (_) {
+      return;
+    }
+
+    if (!hasUrlFilterParams(url)) return;
+
+    const guardKey = `cplEnhancer_autoApply_${url.search}`;
+    if (sessionStorage.getItem(guardKey) === "1") return;
+
+    const btn = await waitFor(() => {
+      const header = findFiltersHeader();
+      return header ? findApplyButton(header) : null;
+    }, { timeout: 2500, interval: 60 });
+
+    if (!btn) return;
+    sessionStorage.setItem(guardKey, "1");
+    clickElement(btn);
+  }
+
   async function applyPreset({ mode, preset }) {
     if (!isTransfersPage()) return false;
 
@@ -587,6 +619,7 @@
       setTimeout(() => {
         scheduled = false;
         ensureTabs(settings);
+        maybeAutoApplyFilters();
       }, 100);
     };
 
