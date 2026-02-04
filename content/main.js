@@ -40,3 +40,4 @@
   currentEnabled = !!settings.enabled;
   if (currentEnabled) startFeatures(settings);
 })();
+

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- FONTS -->
+
+    <title>SkillWhat - CPL</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<!-- ================= OVERLAY GLOBAL ================= -->
+<div id="modal-overlay" class="modal-overlay hidden"></div>
+
+<!-- ================= MISSING SKILLS POPUP ================= -->
+<div id="missing-skill-popup" class="missing-popup hidden">
+  <button id="missing-skill-confirm">OK</button>
+
+  <div class="missing-content">
+    <h3>Missing Limits</h3>
+    <div id="missing-skill-fields"></div>
+  </div>
+</div>
+
+<!-- ================= CARD ================= -->
+<div class="card">
+<svg id="gear-minimap"
+     class="gear-minimap"
+     width="50"
+     height="50"
+     viewBox="0 0 70 70">
+</svg>
+    <!-- PLAYER HEADER -->
+    <div class="player-header">
+        <span class="player-name">Spidevil</span>
+        <span class="player-dot">-</span>
+        <span class="player-age">15yo (day 1)</span>
+        
+    </div>
+
+    <!-- CLOCK / GAME DAY -->
+    <div class="game-info-box">
+        <span id="real-clock">00:00:00</span>
+        <span id="game-day">S1 - 1/35</span>
+    </div>
+
+
+    <!-- TOP BUTTONS -->
+    <div class="action-buttons">
+        <button class="action-btn rubber-btn"></button>
+<div class="action-col">
+        <button class="action-btn heart-grey-btn"></button>
+        <div id="heart-boost-label" class="boost-label">+0%</div>
+    </div>
+
+    <div class="action-col">
+        <button class="action-btn morale-btn"></button>
+        <div id="morale-boost-label" class="boost-label">+0%</div>
+    </div>
+        <button class="action-btn max-btn"></button>
+        <button class="action-btn gear-btn"></button>
+        <button class="action-btn games-btn"></button>
+        <button id="game-img-btn" class="game-img-btn"></button>
+        <button id="career-plus-btn" class="career-plus-btn"></button>
+
+        
+        
+        
+    </div>
+
+    <!-- ================= SKILLS ================= -->
+    <div class="card-inner">
+        <div class="card-top">
+            <div class="primary-title">Primary skills</div>
+
+            <div class="total-skill-box">
+                <span class="label">TOTAL SKILL</span>
+                <span id="total-skill-current" class="value">0</span>
+                <span id="total-skill-max" class="max">/0</span>
+            </div>
+        </div>
+
+        <div id="skills-list" class="skills-list"></div>
+
+        <!-- GLOBAL EDIT COLUMN -->
+        <div class="skill-edit-column">
+            <button id="mode-btn" class="mode-toggle">S</button>
+            <div id="edit-buttons-container"></div>
+        </div>
+
+    </div>
+    
+</div>
+
+<!-- ================= LEFT PANEL ================= -->
+<div class="left-panel">
+
+    <div id="info-wrapper">
+        <button id="info-btn" class="info-btn"></button>
+
+        <div id="info-tooltip" class="info-tooltip hidden">
+            <img src="image1.png">
+        </div>
+    </div>
+
+    <textarea id="skill-input" class="input-box" placeholder="past here"></textarea>
+    <button id="clear-load-btn" class="clear-load-btn"></button>
+    <button id="load-button" class="load-btn">LOAD</button>
+</div>
+
+<img
+  src="exportB.png"
+  class="export-icon"
+  id="export-card-btn"
+/>
+<!-- ================= SKILL TOOLTIP ================= -->
+<div id="skill-tooltip" class="skill-tooltip hidden">
+    <div class="tooltip-title-row">
+        <span id="tooltip-skill-name">Skill</span>
+        <span>Modifiers</span>
+    </div>
+
+    <div class="tooltip-columns">
+        <div class="tooltip-left">
+            <div>Base: <span id="tooltip-base"></span></div>
+            <div>Boost: <span id="tooltip-boost"></span></div>
+            <div>Limit: <span id="tooltip-limit"></span></div>
+            <div>Total: <span id="tooltip-total"></span></div>
+        </div>
+
+        <div class="tooltip-right">
+            <div>Heart: <span id="tooltip-heart"></span></div>
+            <div>Morale: <span id="tooltip-morale"></span></div>
+            <div>Gear: <span id="tooltip-gear"></span></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= GEAR POPUP ================= -->
+<div id="gear-popup" class="gear-popup hidden">
+    <div class="gear-popup-inner">
+
+        <button id="gear-drag">MOVE</button>
+        <button id="gear-lock-btn">🔓</button>
+
+        <div class="gear-row"><div id="gear-mousepad" class="gear-grid"></div></div>
+        <div class="gear-row"><div id="gear-mouse" class="gear-grid"></div></div>
+        <div class="gear-row"><div id="gear-keyboard" class="gear-grid"></div></div>
+        <div class="gear-row"><div id="gear-headset" class="gear-grid"></div></div>
+
+    </div>
+</div>
+
+<!-- ================= GAME POPUP ================= -->
+<div id="game-popup" class="game-popup hidden">
+        <div class="game-popup-inner">
+
+            <button id="game-drag" class="gear-move-btn">MOVE</button>
+            <button id="game-lock-btn" class="gear-lock-top">🔓</button>
+
+            <div class="game-content">
+
+                <div class="game-row">
+                    <span class="game-label">GAMES:</span>
+                    <input id="game-input" class="game-input" type="number" min="0" max="1000" placeholder="0">
+                    <button id="game-ok" class="game-ok">OK</button>
+                </div>
+            </div>
+
+            <div class="game-stats-grid">
+
+                <div class="left-side">
+                    <div><span>💀</span> RETIRE AT: <strong id="retire-at">S30</strong></div>
+                    <div><span>🎮</span> GAMES PLAYED: <strong id="games-played">0</strong></div>
+                    <div><span>🤝</span> LOYAL: <strong id="loyal-status">NO</strong></div>
+                    
+                </div>
+                <div class="heart-row">
+  <span class="heart-icon heart-small3">❤️</span>
+  <span class="heart-label">50 games → </span>
+  <span class="season-tiny"></span>
+</div>
+                <div class="heart-row">
+                    <span class="heart-icon heart-small2">❤️</span>
+                    <span>100 games → </span>
+                    <span class="season-small"></span>
+                </div>
+
+                <div class="heart-row">
+                    <span class="heart-icon">❤️</span>
+                    <span>200 games → </span>
+                    <span class="season-big">S</span>
+                </div>
+
+                <div class="heart-row">
+                    <span class="heart-icon">💛</span>
+                    <span>400 games → </span>
+                    <span class="season-gold"></span>
+                </div>
+
+                <div class="heart-row">
+                    <span class="heart-icon">💙</span>
+                    <span>800 games → </span>
+                    <span class="season-plat"></span>
+                </div>
+            </div>
+
+            <div class="max-heart-final">
+                MAX HEART POSSIBLE: <span class="blue-heart">💙</span> (S?)
+            </div>
+
+        </div>
+    </div>
+
+
+
+<!-- ================= VERSION ================= -->
+<div class="version-box">
+    <div id="app-version"></div>
+    <ul id="app-updates"></ul>
+</div>
+<script src="html-to-image.min.js"></script>
+<div id="boost-tooltip" class="boost-tooltip"></div>
+<script src="main.js"></script>
+</body>
+</html>
+
