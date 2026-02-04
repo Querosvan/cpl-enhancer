@@ -20,6 +20,7 @@ const GEAR_ICON_BY_SKILL = {
 };
 
 let missingPopupOpen = false;
+let originalGamesBeforeLoyal = null;
 
 const boostTooltip = document.getElementById("boost-tooltip");
 
@@ -932,6 +933,7 @@ function loadFromText(loadTextRaw) {
   if (gameImgBtn)   gameImgBtn.classList.remove("active");
   if (loyalStatusEl) loyalStatusEl.textContent = "NO";
 
+  ensureLoyalCareerBindings();
   updateGamesButtonState();
 
   const loadText = typeof loadTextRaw === "string" ? loadTextRaw.trim() : "";
@@ -1186,6 +1188,66 @@ function updateGamesButtonState() {
     gamesBtn.classList.add("games-active");
   } else {
     gamesBtn.classList.remove("games-active");
+  }
+}
+
+function ensureLoyalCareerBindings() {
+  const careerBtn = document.getElementById("career-plus-btn");
+  if (careerBtn && !careerBtn.dataset.cplBound) {
+    careerBtn.dataset.cplBound = "1";
+    careerBtn.addEventListener("click", () => {
+      // toggle ON / OFF
+      extendedCareer = !extendedCareer;
+
+      // estado visual
+      careerBtn.classList.toggle("active", extendedCareer);
+
+      // recalcular tudo o que depende da idade
+      updateRetireDisplayIfNeeded();
+
+      const gamesPlayed =
+        parseInt(document.getElementById("games-played")?.textContent, 10) || 0;
+
+      updateHeartsBasedOnGames(gamesPlayed);
+      computeMaxCareerHeart();
+    });
+  }
+
+  const gameImgBtn = document.getElementById("game-img-btn");
+  const loyalStatusEl = document.getElementById("loyal-status");
+
+  if (!gameImgBtn) return;
+  if (!gameImgBtn.dataset.cplBound) {
+    gameImgBtn.dataset.cplBound = "1";
+    gameImgBtn.classList.remove("active");
+    if (loyalStatusEl) loyalStatusEl.textContent = "NO";
+
+    gameImgBtn.addEventListener("click", () => {
+      const isOn = gameImgBtn.classList.toggle("active");
+      const loyalStatusEl = document.getElementById("loyal-status");
+      const gamesPlayedEl = document.getElementById("games-played");
+
+      if (loyalStatusEl) loyalStatusEl.textContent = isOn ? "YES" : "NO";
+
+      let games = parseInt(gamesPlayedEl.textContent, 10) || 0;
+
+      if (isOn) {
+        originalGamesBeforeLoyal = games;
+        const reduced = Math.floor(games * 0.75);
+        gamesPlayedEl.textContent = reduced;
+
+        updateHeartRequirementLabels(true);
+        updateHeartsBasedOnGames(reduced);
+      } else if (originalGamesBeforeLoyal !== null) {
+        gamesPlayedEl.textContent = originalGamesBeforeLoyal;
+
+        updateHeartRequirementLabels(false);
+        updateHeartsBasedOnGames(originalGamesBeforeLoyal);
+      }
+
+      computeMaxCareerHeart();
+      updateGamesButtonState();
+    });
   }
 }
 function openMissingSkillPopup(list) {
@@ -1612,68 +1674,7 @@ if (ageAtSeason >= maxAge) return "\u274C";
 
 /* --- DOM READY: setup loyal + games input listeners --- */
 document.addEventListener('DOMContentLoaded', () => {
-  const careerBtn = document.getElementById("career-plus-btn");
-
-if (careerBtn) {
-  careerBtn.addEventListener("click", () => {
-    // toggle ON / OFF
-    extendedCareer = !extendedCareer;
-
-    // estado visual
-    careerBtn.classList.toggle("active", extendedCareer);
-
-    // Ã°Å¸â€Â¥ recalcular tudo o que depende da idade
-    updateRetireDisplayIfNeeded();
-
-    const gamesPlayed =
-      parseInt(document.getElementById("games-played")?.textContent, 10) || 0;
-
-    updateHeartsBasedOnGames(gamesPlayed);
-    computeMaxCareerHeart();
-  });
-}
-
-  const gameImgBtn = document.getElementById('game-img-btn');
-  const loyalStatusEl = document.getElementById('loyal-status');
-
-  if (!gameImgBtn) console.warn('game-img-btn not found in DOM');
-  else {
-    gameImgBtn.classList.remove('active');
-    if (loyalStatusEl) loyalStatusEl.textContent = 'NO';
-
-    let originalGamesBeforeLoyal = null;
-
-gameImgBtn.addEventListener('click', () => {
-  const isOn = gameImgBtn.classList.toggle('active');
-  const loyalStatusEl = document.getElementById("loyal-status");
-  const gamesPlayedEl = document.getElementById("games-played");
-
-  if (loyalStatusEl) loyalStatusEl.textContent = isOn ? 'YES' : 'NO';
-
-  let games = parseInt(gamesPlayedEl.textContent, 10) || 0;
-
-  if (isOn) {
-    originalGamesBeforeLoyal = games;
-    const reduced = Math.floor(games * 0.75);
-    gamesPlayedEl.textContent = reduced;
-
-    updateHeartRequirementLabels(true);   // Ã°Å¸â€Â¥ AQUI
-    updateHeartsBasedOnGames(reduced);
-  } else {
-    if (originalGamesBeforeLoyal !== null) {
-      gamesPlayedEl.textContent = originalGamesBeforeLoyal;
-
-      updateHeartRequirementLabels(false); // Ã°Å¸â€Â¥ AQUI
-      updateHeartsBasedOnGames(originalGamesBeforeLoyal);
-    }
-  }
-
-  computeMaxCareerHeart();
-  updateGamesButtonState();
-});
-
-
-  }
+  ensureLoyalCareerBindings();
 
   const gameInput = document.getElementById("game-input");
   const gameOkBtn = document.getElementById("game-ok");

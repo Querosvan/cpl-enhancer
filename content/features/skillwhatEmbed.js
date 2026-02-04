@@ -42,7 +42,8 @@
     const closeBtn = document.createElement("button");
     closeBtn.className = "cpl-skillwhat-modal__close";
     closeBtn.type = "button";
-    closeBtn.textContent = "Close";
+    closeBtn.setAttribute("aria-label", "Close");
+    closeBtn.textContent = "×";
     closeBtn.addEventListener("click", () => closeModal());
 
     const iframe = document.createElement("iframe");
