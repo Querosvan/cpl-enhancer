@@ -835,6 +835,8 @@ position: relative;   /* 🔥 obrigatório */
     cursor: pointer;
     transition: 0.2s ease;
     filter: brightness(0.5); /* estado normal */
+    z-index: 5;
+    pointer-events: auto;
 }
 
 /* Estado ativo */
@@ -861,6 +863,8 @@ position: relative;   /* 🔥 obrigatório */
   transition: 0.2s ease;
 
   filter: brightness(0.5); /* OFF */
+  z-index: 5;
+  pointer-events: auto;
 }
 
 .career-plus-btn.active {
