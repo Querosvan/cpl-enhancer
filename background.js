@@ -10,14 +10,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const selector = message.selector;
     const observe = !!message.observe;
     const search = message.search || "";
+    const token = message.token || "";
 
     chrome.scripting.executeScript({
       target: { tabId },
       world: "MAIN",
-      args: [selector, observe, search],
-      func: (sel, observeMode, searchStr) => {
+      args: [selector, observe, search, token],
+      func: (sel, observeMode, searchStr, tokenStr) => {
         try {
-          if (searchStr && window.__cplEnhancerAppliedSearch === searchStr) return;
+          if (tokenStr && window.__cplEnhancerAppliedToken === tokenStr) return;
           const matchText = /apply filter|aplicar filtro|aplicar|filter|filtro/i;
           const findBtn = () => {
             let btn = sel ? document.querySelector(sel) : null;
@@ -40,12 +41,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           };
 
           if (clickBtn(findBtn())) {
-            if (searchStr) window.__cplEnhancerAppliedSearch = searchStr;
+            if (tokenStr) window.__cplEnhancerAppliedToken = tokenStr;
             return;
           }
 
           if (!observeMode) return;
-          if (searchStr) window.__cplEnhancerAppliedSearch = searchStr;
+          if (tokenStr) window.__cplEnhancerAppliedToken = tokenStr;
           if (window.__cplEnhancerApplyObserver) return;
           window.__cplEnhancerApplyObserver = true;
 

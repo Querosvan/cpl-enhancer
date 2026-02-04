@@ -241,14 +241,15 @@
     } catch (_) {}
   }
 
-  function applyViaBackground(observe = false, search = "") {
+  function applyViaBackground(observe = false, search = "", token = "") {
     try {
       if (chrome?.runtime?.sendMessage) {
         chrome.runtime.sendMessage({
           type: "APPLY_FILTER",
           selector: APPLY_BTN_SELECTOR,
           observe,
-          search
+          search,
+          token
         });
         return true;
       }
@@ -479,70 +480,20 @@
 
     if (!shouldAutoApply(url)) return;
 
-    const lockKey = "cplEnhancer_autoApply_lock";
-    const last = Number(sessionStorage.getItem(lockKey) || "0");
-    if (Date.now() - last < 8000) return;
-    sessionStorage.setItem(lockKey, String(Date.now()));
+    const doneKey = `cplEnhancer_autoApply_done_${url.search}`;
+    if (sessionStorage.getItem(doneKey) === "1") return;
+    sessionStorage.setItem(doneKey, "1");
 
-    const guardKey = `cplEnhancer_autoApply_once_${url.search}`;
-    if (sessionStorage.getItem(guardKey) === "1") return;
-    sessionStorage.setItem(guardKey, "1");
+    const pendingSearch = sessionStorage.getItem("cplEnhancer_pendingSearch");
+    const pendingToken = sessionStorage.getItem("cplEnhancer_pendingToken");
+    const token = pendingSearch === url.search && pendingToken ? pendingToken : `${Date.now()}`;
+    if (pendingSearch === url.search) {
+      sessionStorage.removeItem("cplEnhancer_pendingSearch");
+      sessionStorage.removeItem("cplEnhancer_pendingToken");
+    }
 
     // Start background observer in MAIN world (handles late-rendered button)
-    if (applyViaBackground(true, url.search)) return;
-
-    const guardKeyApply = `cplEnhancer_autoApply_${url.search}`;
-    const triesKey = `${guardKeyApply}_tries`;
-    if (sessionStorage.getItem(guardKeyApply) === "1") return;
-
-    // Start a page-context observer so late-rendered buttons get clicked too.
-    clickApplyInPageContext({ observe: true });
-
-    const maxTries = 120;
-    let finished = false;
-
-    const tryApply = () => {
-      if (finished) return;
-      const tries = Number(sessionStorage.getItem(triesKey) || "0");
-      if (tries >= maxTries) {
-        finished = true;
-        return;
-      }
-      sessionStorage.setItem(triesKey, String(tries + 1));
-
-      const header = findFiltersHeader();
-      const btn = header ? findApplyButton(header) : findApplyButtonGlobal();
-
-      if (btn && isVisible(btn) && !btn.disabled && btn.getAttribute("aria-disabled") !== "true") {
-        const beforeSig = getTransferCardsSignature();
-        triggerApply(btn);
-
-        setTimeout(() => {
-          const afterSig = getTransferCardsSignature();
-          if (afterSig !== beforeSig) {
-            sessionStorage.setItem(guardKeyApply, "1");
-            sessionStorage.removeItem(triesKey);
-            clearAutoApply();
-            finished = true;
-            return;
-          }
-          setTimeout(tryApply, 400);
-        }, 800);
-        return;
-      }
-
-      setTimeout(tryApply, 400);
-    };
-
-    const observer = new MutationObserver(() => tryApply());
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-
-    tryApply();
-
-    setTimeout(() => {
-      finished = true;
-      observer.disconnect();
-    }, 45000);
+    applyViaBackground(true, url.search, token);
   }
 
   async function applyPreset({ mode, preset }) {
@@ -658,6 +609,12 @@
 
     if (!applied) return false;
 
+    // Mark pending apply so the next load can auto-apply once.
+    try {
+      sessionStorage.setItem("cplEnhancer_pendingSearch", url.search);
+      sessionStorage.setItem("cplEnhancer_pendingToken", String(Date.now()));
+    } catch (_) {}
+
     // Navigate to apply the new params.
     markAutoApply(url.search);
     location.href = url.toString();
@@ -762,6 +719,12 @@
     }
 
     if (!applied) return false;
+
+    // Mark pending apply so the next load can auto-apply once.
+    try {
+      sessionStorage.setItem("cplEnhancer_pendingSearch", url.search);
+      sessionStorage.setItem("cplEnhancer_pendingToken", String(Date.now()));
+    } catch (_) {}
 
     // Navigate to apply the new params.
     markAutoApply(url.search);
