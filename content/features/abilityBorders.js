@@ -25,6 +25,25 @@
     { name: "Tryhard", type: "mixed", variants: ["Try hard", "Try-hard"] }
   ];
 
+  const ABILITY_ATTRS = [
+    "title",
+    "alt",
+    "aria-label",
+    "data-tooltip",
+    "data-title",
+    "data-original-title",
+    "data-bs-original-title",
+    "data-bs-title",
+    "data-tooltip-title",
+    "data-tooltip-text",
+    "data-tooltip-content",
+    "data-tippy-content",
+    "data-content",
+    "data-ability"
+  ];
+
+  const ABILITY_ATTR_SELECTOR = ABILITY_ATTRS.map((attr) => `[${attr}]`).join(",");
+
   function normalize(text) {
     return String(text || "")
       .toLowerCase()
@@ -56,24 +75,17 @@
   }
 
   function getCandidateStrings(el) {
-    const attrs = [
-      "title",
-      "alt",
-      "aria-label",
-      "data-tooltip",
-      "data-title",
-      "data-original-title",
-      "data-bs-original-title",
-      "data-tooltip-title",
-      "data-tippy-content",
-      "data-tooltip-content",
-      "data-content"
-    ];
-
     const out = [];
-    for (const attr of attrs) {
+    for (const attr of ABILITY_ATTRS) {
       const val = el.getAttribute && el.getAttribute(attr);
       if (val) out.push(val);
+    }
+
+    const describedBy = el.getAttribute && el.getAttribute("aria-describedby");
+    if (describedBy) {
+      const tooltip = document.getElementById(describedBy);
+      const text = (tooltip?.textContent || "").trim();
+      if (text) out.push(text);
     }
 
     const text = (el.textContent || "").trim();
@@ -90,14 +102,54 @@
       }
     }
 
+    if (el.tagName === "SVG") {
+      const useEl = el.querySelector && el.querySelector("use");
+      const href =
+        useEl?.getAttribute?.("href") || useEl?.getAttribute?.("xlink:href") || "";
+      if (href) {
+        const ref = href.split("#").pop() || "";
+        if (ref) out.push(ref);
+
+        const file = href.split("/").pop().split("?")[0] || "";
+        if (file) out.push(file.replace(/\.[a-z0-9]+$/i, ""));
+      }
+    }
+
     return out;
   }
 
+  function isLabeledElement(el) {
+    if (!el || !el.getAttribute) return false;
+    return ABILITY_ATTRS.some((attr) => el.hasAttribute(attr));
+  }
+
   function resolveAbilityType(el) {
-    const candidates = getCandidateStrings(el);
-    for (const raw of candidates) {
-      const key = normalize(raw);
-      if (!key) continue;
+    const candidates = [];
+    const seen = new Set();
+
+    const addCandidates = (node) => {
+      if (!node) return;
+      for (const raw of getCandidateStrings(node)) {
+        const key = normalize(raw);
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        candidates.push(key);
+      }
+    };
+
+    addCandidates(el);
+
+    if (el.closest) {
+      const labeledParent = el.closest(ABILITY_ATTR_SELECTOR);
+      if (labeledParent && labeledParent !== el) addCandidates(labeledParent);
+    }
+
+    if (el.tagName !== "IMG" && el.tagName !== "SVG") {
+      const childIcon = el.querySelector?.("img, svg");
+      if (childIcon && childIcon !== el) addCandidates(childIcon);
+    }
+
+    for (const key of candidates) {
       const direct = ABILITY_MAP.get(key);
       if (direct) return direct;
 
@@ -111,10 +163,14 @@
   function applyBorder(el, type) {
     if (!el || !type) return;
 
-    const target =
-      el.tagName === "IMG" || el.tagName === "SVG"
-        ? el
-        : el.querySelector?.("img, svg") || el;
+    let target = null;
+    if (el.tagName === "IMG" || el.tagName === "SVG") {
+      target = el;
+    } else if (isLabeledElement(el)) {
+      target = el;
+    } else {
+      target = el.querySelector?.("img, svg") || el;
+    }
 
     if (!target) return;
 
@@ -134,49 +190,14 @@
     const scope = root || document;
     if (!scope.querySelectorAll) return;
 
-    const selector = [
-      "img[alt]",
-      "img[title]",
-      "img[aria-label]",
-      "img[data-tooltip]",
-      "img[data-title]",
-      "img[data-original-title]",
-      "img[data-bs-original-title]",
-      "img[src*='ability' i]",
-      "img[src*='special' i]",
-      "img[src*='heart' i]",
-      "span[title]",
-      "span[aria-label]",
-      "span[data-tooltip]",
-      "span[data-title]",
-      "span[data-original-title]",
-      "span[data-bs-original-title]",
-      "i[title]",
-      "i[aria-label]",
-      "i[data-tooltip]",
-      "i[data-title]",
-      "a[title]",
-      "a[aria-label]",
-      "a[data-tooltip]",
-      "a[data-title]",
-      "a[data-original-title]",
-      "a[data-bs-original-title]",
-      "button[title]",
-      "button[aria-label]",
-      "button[data-tooltip]",
-      "button[data-title]",
-      "div[title]",
-      "div[aria-label]",
-      "div[data-tooltip]",
-      "div[data-title]",
-      "svg[title]",
-      "svg[aria-label]",
-      "svg[data-tooltip]",
-      "svg[data-title]"
-    ].join(",");
+    const selector = ["img", "svg", ABILITY_ATTR_SELECTOR].join(",");
 
     const nodes = scope.querySelectorAll(selector);
     nodes.forEach((el) => {
+      if ((el.tagName === "IMG" || el.tagName === "SVG") && el.closest) {
+        const labeledParent = el.closest(ABILITY_ATTR_SELECTOR);
+        if (labeledParent && labeledParent !== el) return;
+      }
       const type = resolveAbilityType(el);
       if (type) applyBorder(el, type);
     });
