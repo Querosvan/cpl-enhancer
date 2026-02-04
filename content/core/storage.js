@@ -15,9 +15,10 @@
   const DEFAULTS = {
     enabled: true,
     transferFilters: {
-      current: Object.fromEntries(SKILLS.map(s => [s, 70])),
-      limit: Object.fromEntries(SKILLS.map(s => [s, 85]))
-    }
+      current: Object.fromEntries(SKILLS.map(s => [s, 85])),
+      limit: Object.fromEntries(SKILLS.map(s => [s, 90]))
+    },
+    tryoutsFilters: Object.fromEntries(SKILLS.map(s => [s, 90]))
   };
 
   window.CPLEnhancer.getSettings = async function getSettings() {
@@ -25,7 +26,8 @@
     return {
       ...DEFAULTS,
       ...data,
-      transferFilters: data.transferFilters ?? DEFAULTS.transferFilters
+      transferFilters: data.transferFilters ?? DEFAULTS.transferFilters,
+      tryoutsFilters: data.tryoutsFilters ?? DEFAULTS.tryoutsFilters
     };
   };
 })();
