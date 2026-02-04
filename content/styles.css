@@ -174,3 +174,150 @@
     background: linear-gradient(to bottom, rgba(255, 176, 0, 0.95), rgba(255, 176, 0, 0.25));
   }
   
+
+/* =========================
+   CPL Enhancer - Ability borders
+   ========================= */
+.cpl-ability-border {
+  --cpl-ability-border-color: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px var(--cpl-ability-border-color);
+}
+
+.cpl-ability-border--positive {
+  --cpl-ability-border-color: rgba(76, 217, 100, 0.9);
+}
+
+.cpl-ability-border--negative {
+  --cpl-ability-border-color: rgba(244, 67, 54, 0.9);
+}
+
+.cpl-ability-border--mixed {
+  --cpl-ability-border-color: rgba(250, 204, 21, 0.95);
+}
+
+/* =========================
+   CPL Enhancer - SkillWhat modal
+   ========================= */
+.cpl-skillwhat-launcher {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 15, 15, 0.92);
+  color: #f2f2f2;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.cpl-skillwhat-launcher__icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  image-rendering: auto;
+}
+
+.cpl-skillwhat-launcher:hover {
+  background: rgba(25, 25, 25, 0.96);
+}
+
+.cpl-skillwhat-launcher--inline {
+  position: relative;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.cpl-skillwhat-total-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.cpl-skillwhat-launcher--floating {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9999;
+  padding: 10px 14px;
+  font-size: 13px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.cpl-skillwhat-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.cpl-skillwhat-modal.is-open {
+  display: flex;
+}
+
+.cpl-skillwhat-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 8, 8, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.cpl-skillwhat-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(1100px, 94vw);
+  height: min(720px, 88vh);
+  border-radius: 18px;
+  background: #0b0b0c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.cpl-skillwhat-modal__iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+
+.cpl-skillwhat-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.6);
+  color: #f2f2f2;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  cursor: pointer;
+}
+
+.cpl-skillwhat-modal__close:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 900px) {
+  .cpl-skillwhat-launcher--floating {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .cpl-skillwhat-modal__panel {
+    width: 95vw;
+    height: 92vh;
+    border-radius: 14px;
+  }
+}
