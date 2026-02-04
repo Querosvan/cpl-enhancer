@@ -273,8 +273,8 @@
 .cpl-skillwhat-modal__panel {
   position: relative;
   z-index: 1;
-  width: min(980px, 92vw);
-  height: min(600px, 86vh);
+  width: min(960px, 96vw);
+  height: min(520px, 86vh);
   padding: 12px;
   border-radius: 10px;
   background: #2b2b2b;

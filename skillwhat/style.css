@@ -10,6 +10,12 @@
 }
 
 /* Fundo da página */
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 body {
     margin: 0;
     background: #000;
@@ -1405,10 +1411,15 @@ player-header,
 
 
 .export-icon {
- scale: 4%;
+ position: absolute;
+ right: 18px;
+ bottom: 18px;
+ width: 26px;
+ height: 26px;
  cursor: pointer;
-
- transform: translateX(17350px) translateY(-3930px);
+ transform: none;
+ scale: 1;
+ z-index: 20;
 }
 
 /* ===== GEAR MINIMAP (4x4) — FIXED & STABLE ===== */
