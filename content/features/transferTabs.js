@@ -491,9 +491,9 @@
     // Start background observer in MAIN world (handles late-rendered button)
     if (applyViaBackground(true, url.search)) return;
 
-    const guardKey = `cplEnhancer_autoApply_${url.search}`;
-    const triesKey = `${guardKey}_tries`;
-    if (sessionStorage.getItem(guardKey) === "1") return;
+    const guardKeyApply = `cplEnhancer_autoApply_${url.search}`;
+    const triesKey = `${guardKeyApply}_tries`;
+    if (sessionStorage.getItem(guardKeyApply) === "1") return;
 
     // Start a page-context observer so late-rendered buttons get clicked too.
     clickApplyInPageContext({ observe: true });
@@ -520,7 +520,7 @@
         setTimeout(() => {
           const afterSig = getTransferCardsSignature();
           if (afterSig !== beforeSig) {
-            sessionStorage.setItem(guardKey, "1");
+            sessionStorage.setItem(guardKeyApply, "1");
             sessionStorage.removeItem(triesKey);
             clearAutoApply();
             finished = true;
