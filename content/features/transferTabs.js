@@ -168,11 +168,7 @@
     }
   }
 
-  function markAutoApply(search) {
-    try {
-      sessionStorage.setItem("cplEnhancer_autoApply", search || "");
-    } catch (_) {}
-  }
+  const appliedSearches = new Set();
 
   function getPendingApplyToken(url) {
     try {
@@ -184,14 +180,11 @@
   }
 
   function shouldAutoApply(url) {
-    return !!getPendingApplyToken(url);
+    if (getPendingApplyToken(url)) return true;
+    return hasUrlFilterParams(url) && !appliedSearches.has(url.search);
   }
 
-  function clearAutoApply() {
-    try {
-      sessionStorage.removeItem("cplEnhancer_autoApply");
-    } catch (_) {}
-  }
+  function clearAutoApply() {}
 
   function getTransferCardsSignature() {
     const cards = Array.from(document.querySelectorAll("div.card"));
@@ -485,8 +478,13 @@
 
     if (!shouldAutoApply(url)) return;
 
-    const token = getPendingApplyToken(url);
-    if (!token) return;
+    let token = getPendingApplyToken(url);
+    if (!token && !hasUrlFilterParams(url)) return;
+
+    if (!token) {
+      // No pending token (e.g. reload with params). Create a one-off token.
+      token = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    }
 
     const doneKey = `cplEnhancer_autoApply_done_${token}`;
     if (sessionStorage.getItem(doneKey) === "1") return;
@@ -495,6 +493,8 @@
     // Clear pending immediately to avoid loops; background observer will handle late button.
     sessionStorage.removeItem("cplEnhancer_pendingSearch");
     sessionStorage.removeItem("cplEnhancer_pendingToken");
+
+    appliedSearches.add(url.search);
 
     // Start background observer in MAIN world (handles late-rendered button)
     applyViaBackground(true, url.search, token);
@@ -614,12 +614,18 @@
     if (!applied) return false;
 
     // Mark pending apply so the next load can auto-apply once.
+    let token = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
     try {
       sessionStorage.setItem("cplEnhancer_pendingSearch", url.search);
-      sessionStorage.setItem("cplEnhancer_pendingToken", `${Date.now()}_${Math.random().toString(36).slice(2)}`);
+      sessionStorage.setItem("cplEnhancer_pendingToken", token);
     } catch (_) {}
 
     // Navigate to apply the new params.
+    if (url.search === location.search) {
+      // Same URL -> apply immediately (no navigation)
+      applyViaBackground(true, url.search, token);
+      return true;
+    }
     location.href = url.toString();
     return true;
   }
@@ -724,12 +730,17 @@
     if (!applied) return false;
 
     // Mark pending apply so the next load can auto-apply once.
+    let token = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
     try {
       sessionStorage.setItem("cplEnhancer_pendingSearch", url.search);
-      sessionStorage.setItem("cplEnhancer_pendingToken", `${Date.now()}_${Math.random().toString(36).slice(2)}`);
+      sessionStorage.setItem("cplEnhancer_pendingToken", token);
     } catch (_) {}
 
     // Navigate to apply the new params.
+    if (url.search === location.search) {
+      applyViaBackground(true, url.search, token);
+      return true;
+    }
     location.href = url.toString();
     return true;
   }
