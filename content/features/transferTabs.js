@@ -189,6 +189,31 @@
     return `${cards.length}:${first}`;
   }
 
+  function triggerApply(btn) {
+    if (!btn) return false;
+
+    try {
+      const form = btn.closest("form");
+      if (form) {
+        if (typeof form.requestSubmit === "function") {
+          form.requestSubmit(btn);
+          return true;
+        }
+        // Fallback: submit event
+        const ev = new Event("submit", { bubbles: true, cancelable: true });
+        if (form.dispatchEvent(ev)) {
+          try {
+            form.submit();
+          } catch (_) {}
+          return true;
+        }
+      }
+    } catch (_) {}
+
+    clickElement(btn);
+    return true;
+  }
+
   function isVisible(el) {
     if (!el) return false;
     const r = el.getBoundingClientRect();
@@ -387,19 +412,24 @@
     const triesKey = `${guardKey}_tries`;
     if (sessionStorage.getItem(guardKey) === "1") return;
 
-    const maxTries = 48;
+    const maxTries = 120;
+    let finished = false;
 
-    const tryClick = () => {
+    const tryApply = () => {
+      if (finished) return;
       const tries = Number(sessionStorage.getItem(triesKey) || "0");
-      if (tries >= maxTries) return;
+      if (tries >= maxTries) {
+        finished = true;
+        return;
+      }
       sessionStorage.setItem(triesKey, String(tries + 1));
 
       const header = findFiltersHeader();
-      const btn = header ? findApplyButton(header) : null;
+      const btn = header ? findApplyButton(header) : findApplyButtonGlobal();
 
       if (btn && isVisible(btn) && !btn.disabled && btn.getAttribute("aria-disabled") !== "true") {
         const beforeSig = getTransferCardsSignature();
-        clickElement(btn);
+        triggerApply(btn);
 
         setTimeout(() => {
           const afterSig = getTransferCardsSignature();
@@ -407,17 +437,26 @@
             sessionStorage.setItem(guardKey, "1");
             sessionStorage.removeItem(triesKey);
             clearAutoApply();
+            finished = true;
             return;
           }
-          setTimeout(tryClick, 300);
-        }, 600);
+          setTimeout(tryApply, 400);
+        }, 800);
         return;
       }
 
-      setTimeout(tryClick, 350);
+      setTimeout(tryApply, 400);
     };
 
-    tryClick();
+    const observer = new MutationObserver(() => tryApply());
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+
+    tryApply();
+
+    setTimeout(() => {
+      finished = true;
+      observer.disconnect();
+    }, 45000);
   }
 
   async function applyPreset({ mode, preset }) {
@@ -503,7 +542,6 @@
     clearSkillParams(url);
     url.searchParams.set("page", "1");
 
-    markAutoApply(url.search);
     location.href = url.toString();
     return true;
   }
