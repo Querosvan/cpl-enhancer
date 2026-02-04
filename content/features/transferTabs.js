@@ -122,6 +122,20 @@
     return groupEl.querySelector("div.relative") || groupEl;
   }
 
+  function getClickableTargetsFromGroup(groupEl) {
+    const targets = [];
+    if (!groupEl) return targets;
+
+    const buttons = Array.from(groupEl.querySelectorAll("button"));
+    const roleButtons = Array.from(groupEl.querySelectorAll('[role="button"]'));
+    const tabbables = Array.from(groupEl.querySelectorAll("[tabindex]"));
+
+    for (const el of [...buttons, ...roleButtons, ...tabbables]) {
+      if (!targets.includes(el)) targets.push(el);
+    }
+    return targets;
+  }
+
   function sleep(ms) {
     return new Promise((r) => setTimeout(r, ms));
   }
@@ -253,6 +267,7 @@
     if (!dropdownBtn) return null;
 
     const container = getDropdownContainerFromGroup(groupEl) || dropdownBtn;
+    const clickTargets = getClickableTargetsFromGroup(groupEl);
 
     // Helper: find the best candidate UL near the button.
     const btnRect = dropdownBtn.getBoundingClientRect();
@@ -285,6 +300,7 @@
     // Open dropdown (try container first, then button)
     clickElement(container);
     clickElement(dropdownBtn);
+    for (const t of clickTargets) clickElement(t);
 
     const found = await waitFor(() => {
       const allUls = Array.from(document.querySelectorAll("ul"));
@@ -297,6 +313,8 @@
     // Keyboard fallback (some dropdowns open on Enter/Space)
     try {
       dropdownBtn.focus();
+      dropdownBtn.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", code: "ArrowDown", bubbles: true }));
+      dropdownBtn.dispatchEvent(new KeyboardEvent("keyup", { key: "ArrowDown", code: "ArrowDown", bubbles: true }));
       dropdownBtn.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", code: "Enter", bubbles: true }));
       dropdownBtn.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", code: "Enter", bubbles: true }));
     } catch (_) {}
@@ -320,6 +338,35 @@
     if (found3) return { ul: found3, dropdownBtn };
 
     return null;
+  }
+
+  function waitForUserOpenAndApply(groupEl, preset, applyBtn) {
+    if (!groupEl || !applyBtn) return;
+    if (groupEl.dataset.cplEnhancerPending === "1") return;
+    groupEl.dataset.cplEnhancerPending = "1";
+
+    const timeoutMs = 6000;
+    const start = Date.now();
+
+    const observer = new MutationObserver(() => {
+      if (Date.now() - start > timeoutMs) {
+        observer.disconnect();
+        delete groupEl.dataset.cplEnhancerPending;
+        return;
+      }
+
+      const uls = Array.from(document.querySelectorAll("ul"));
+      const ul = uls.find((u) => isVisible(u) && isSkillsMenuUl(u, preset));
+      if (!ul) return;
+
+      fillSkillsUl(ul, preset);
+      clickElement(applyBtn);
+
+      observer.disconnect();
+      delete groupEl.dataset.cplEnhancerPending;
+    });
+
+    observer.observe(document.documentElement, { childList: true, subtree: true });
   }
 
   async function applyPreset({ mode, preset }) {
@@ -361,8 +408,9 @@
       if (!ok) {
         console.warn(
           `[CPL Enhancer] Could not open "${label}" dropdown (likely blocks synthetic events). ` +
-            `Open it once manually and click Now/Pot so I can learn the URL params, then it will work closed.`
+            `Open it manually once and the enhancer will apply and click filter.`
         );
+        waitForUserOpenAndApply(groupEl, preset, applyBtn);
       }
       return ok;
     }
