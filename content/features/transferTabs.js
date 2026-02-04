@@ -241,12 +241,13 @@
     } catch (_) {}
   }
 
-  function applyViaBackground() {
+  function applyViaBackground(observe = false) {
     try {
       if (chrome?.runtime?.sendMessage) {
         chrome.runtime.sendMessage({
           type: "APPLY_FILTER",
-          selector: APPLY_BTN_SELECTOR
+          selector: APPLY_BTN_SELECTOR,
+          observe
         });
       }
     } catch (_) {}
@@ -474,6 +475,9 @@
     }
 
     if (!shouldAutoApply(url)) return;
+
+    // Start background observer in MAIN world (handles late-rendered button)
+    applyViaBackground(true);
 
     const guardKey = `cplEnhancer_autoApply_${url.search}`;
     const triesKey = `${guardKey}_tries`;
