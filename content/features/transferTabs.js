@@ -140,6 +140,42 @@
     });
   }
 
+  function hasUrlFilterParams(url) {
+    for (const key of url.searchParams.keys()) {
+      if (key.endsWith("-skill") || key.endsWith("-limit-skill")) return true;
+    }
+    return false;
+  }
+
+  function clearSkillParams(url) {
+    const keys = Array.from(url.searchParams.keys());
+    for (const key of keys) {
+      if (key.endsWith("-skill") || key.endsWith("-limit-skill")) {
+        url.searchParams.delete(key);
+      }
+    }
+  }
+
+  function markAutoApply(search) {
+    try {
+      sessionStorage.setItem("cplEnhancer_autoApply", search || "");
+    } catch (_) {}
+  }
+
+  function shouldAutoApply(url) {
+    try {
+      const wanted = sessionStorage.getItem("cplEnhancer_autoApply");
+      if (wanted && wanted === url.search) return true;
+    } catch (_) {}
+    return hasUrlFilterParams(url);
+  }
+
+  function clearAutoApply() {
+    try {
+      sessionStorage.removeItem("cplEnhancer_autoApply");
+    } catch (_) {}
+  }
+
   function isVisible(el) {
     if (!el) return false;
     const r = el.getBoundingClientRect();
@@ -322,14 +358,7 @@
     return null;
   }
 
-  function hasUrlFilterParams(url) {
-    for (const key of url.searchParams.keys()) {
-      if (key.endsWith("-skill") || key.endsWith("-limit-skill")) return true;
-    }
-    return false;
-  }
-
-  async function maybeAutoApplyFilters() {
+  function maybeAutoApplyFilters() {
     if (!isTransfersPage()) return;
 
     let url;
@@ -339,19 +368,30 @@
       return;
     }
 
-    if (!hasUrlFilterParams(url)) return;
+    if (!shouldAutoApply(url)) return;
 
     const guardKey = `cplEnhancer_autoApply_${url.search}`;
     if (sessionStorage.getItem(guardKey) === "1") return;
 
-    const btn = await waitFor(() => {
+    let attempts = 0;
+    const tryClick = () => {
+      attempts += 1;
       const header = findFiltersHeader();
-      return header ? findApplyButton(header) : null;
-    }, { timeout: 2500, interval: 60 });
+      const btn = header ? findApplyButton(header) : null;
 
-    if (!btn) return;
-    sessionStorage.setItem(guardKey, "1");
-    clickElement(btn);
+      if (btn && isVisible(btn)) {
+        sessionStorage.setItem(guardKey, "1");
+        clearAutoApply();
+        clickElement(btn);
+        return;
+      }
+
+      if (attempts < 20) {
+        setTimeout(tryClick, 250);
+      }
+    };
+
+    tryClick();
   }
 
   async function applyPreset({ mode, preset }) {
@@ -426,6 +466,22 @@
   // URL-param fallback (learned)
   // =========================
 
+  function applyResetViaUrlParams() {
+    let url;
+    try {
+      url = new URL(location.href);
+    } catch (_) {
+      return false;
+    }
+
+    clearSkillParams(url);
+    url.searchParams.set("page", "1");
+
+    markAutoApply(url.search);
+    location.href = url.toString();
+    return true;
+  }
+
   function applyPresetViaUrlParams(preset, mode) {
     let url;
     try {
@@ -434,6 +490,7 @@
       return false;
     }
 
+    clearSkillParams(url);
     url.searchParams.set("page", "1");
 
     // Base param format on current CPLManager URLs:
@@ -452,6 +509,7 @@
     if (!applied) return false;
 
     // Navigate to apply the new params.
+    markAutoApply(url.search);
     location.href = url.toString();
     return true;
   }
@@ -536,6 +594,7 @@
       return false;
     }
 
+    clearSkillParams(url);
     url.searchParams.set("page", "1");
 
     let applied = 0;
@@ -555,6 +614,7 @@
     if (!applied) return false;
 
     // Navigate to apply the new params.
+    markAutoApply(url.search);
     location.href = url.toString();
     return true;
   }
@@ -597,15 +657,27 @@
       applyPreset({ mode: "pot", preset: potPreset });
     });
 
+    const resetTab = document.createElement("a");
+    resetTab.href = "#";
+    resetTab.textContent = "Reset";
+    resetTab.dataset.cplEnhancerTopTab = "reset";
+    resetTab.className = `${baseClass} cpl-enhancer-top-tab cpl-enhancer-top-tab--reset`;
+    resetTab.addEventListener("click", (e) => {
+      e.preventDefault();
+      applyResetViaUrlParams();
+    });
+
     const anchors = Array.from(tabsContainer.querySelectorAll("a"));
     const bids = anchors.find((a) => (a.textContent || "").trim().toLowerCase() === "bids");
 
     if (bids && bids.nextSibling) {
       tabsContainer.insertBefore(nowTab, bids.nextSibling);
       tabsContainer.insertBefore(potTab, nowTab.nextSibling);
+      tabsContainer.insertBefore(resetTab, potTab.nextSibling);
     } else {
       tabsContainer.appendChild(nowTab);
       tabsContainer.appendChild(potTab);
+      tabsContainer.appendChild(resetTab);
     }
   }
 
