@@ -13,6 +13,10 @@
   };
 
   const SKILLS = Object.keys(SKILL_PARAM_MAP);
+  const APPLY_BTN_SELECTOR =
+    "#svelte > div.flex.flex-col.md\\:flex-row.overflow-hidden.lg\\:h-screen.h-screen.lg\\:min-h-screen.lg\\:max-h-screen.relative > " +
+    "div.flex.flex-col.flex-1.relative.h-full.min-w-0 > div > div > div > div:nth-child(3) > div > header > " +
+    "div.flex.max-md\\:flex-col.gap-5 > button";
 
   function isTransfersPage() {
     return location.pathname.includes("/cpl/office/transfers");
@@ -74,6 +78,8 @@
   }
 
   function findApplyButtonGlobal() {
+    const bySelector = document.querySelector(APPLY_BTN_SELECTOR);
+    if (bySelector) return bySelector;
     const buttons = Array.from(document.querySelectorAll("button"));
     return buttons.find((b) => isApplyButtonCandidate(b)) || null;
   }
@@ -189,20 +195,44 @@
     return `${cards.length}:${first}`;
   }
 
-  function clickApplyInPageContext() {
+  function clickApplyInPageContext({ observe = false } = {}) {
     try {
       const script = document.createElement("script");
       script.textContent = `
         (function () {
           try {
+            if (window.__cplEnhancerApplyObserver && ${observe ? "true" : "false"}) return;
             const matchText = /apply filter|aplicar filtro|aplicar|filter|filtro/i;
-            let btn = Array.from(document.querySelectorAll("button.button-primary"))
+            const selector = ${JSON.stringify(APPLY_BTN_SELECTOR)};
+            let btn = document.querySelector(selector);
+            if (!btn) {
+              btn = Array.from(document.querySelectorAll("button.button-primary"))
               .find(b => matchText.test(b.textContent || ""));
+            }
             if (!btn) {
               btn = Array.from(document.querySelectorAll("button.button-primary"))
                 .find(b => b.querySelector("svg polygon"));
             }
             if (btn) btn.click();
+
+            if (${observe ? "true" : "false"}) {
+              window.__cplEnhancerApplyObserver = true;
+              const obs = new MutationObserver(() => {
+                const b = document.querySelector(selector) ||
+                  Array.from(document.querySelectorAll("button.button-primary")).find(x => matchText.test(x.textContent || "")) ||
+                  Array.from(document.querySelectorAll("button.button-primary")).find(x => x.querySelector("svg polygon"));
+                if (b) {
+                  b.click();
+                  obs.disconnect();
+                  window.__cplEnhancerApplyObserver = false;
+                }
+              });
+              obs.observe(document.documentElement, { childList: true, subtree: true });
+              setTimeout(() => {
+                obs.disconnect();
+                window.__cplEnhancerApplyObserver = false;
+              }, 45000);
+            }
           } catch (_) {}
         })();
       `;
@@ -435,6 +465,9 @@
     const guardKey = `cplEnhancer_autoApply_${url.search}`;
     const triesKey = `${guardKey}_tries`;
     if (sessionStorage.getItem(guardKey) === "1") return;
+
+    // Start a page-context observer so late-rendered buttons get clicked too.
+    clickApplyInPageContext({ observe: true });
 
     const maxTries = 120;
     let finished = false;
