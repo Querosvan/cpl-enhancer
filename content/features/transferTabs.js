@@ -174,12 +174,17 @@
     } catch (_) {}
   }
 
-  function shouldAutoApply(url) {
+  function getPendingApplyToken(url) {
     try {
-      const wanted = sessionStorage.getItem("cplEnhancer_autoApply");
-      if (wanted && wanted === url.search) return true;
+      const pendingSearch = sessionStorage.getItem("cplEnhancer_pendingSearch");
+      const pendingToken = sessionStorage.getItem("cplEnhancer_pendingToken");
+      if (pendingSearch && pendingToken && pendingSearch === url.search) return pendingToken;
     } catch (_) {}
-    return hasUrlFilterParams(url);
+    return null;
+  }
+
+  function shouldAutoApply(url) {
+    return !!getPendingApplyToken(url);
   }
 
   function clearAutoApply() {
@@ -480,18 +485,16 @@
 
     if (!shouldAutoApply(url)) return;
 
-    const pendingSearch = sessionStorage.getItem("cplEnhancer_pendingSearch");
-    const pendingToken = sessionStorage.getItem("cplEnhancer_pendingToken");
-    const token = pendingSearch === url.search && pendingToken ? pendingToken : `${Date.now()}`;
+    const token = getPendingApplyToken(url);
+    if (!token) return;
 
     const doneKey = `cplEnhancer_autoApply_done_${token}`;
     if (sessionStorage.getItem(doneKey) === "1") return;
     sessionStorage.setItem(doneKey, "1");
 
-    if (pendingSearch === url.search) {
-      sessionStorage.removeItem("cplEnhancer_pendingSearch");
-      sessionStorage.removeItem("cplEnhancer_pendingToken");
-    }
+    // Clear pending immediately to avoid loops; background observer will handle late button.
+    sessionStorage.removeItem("cplEnhancer_pendingSearch");
+    sessionStorage.removeItem("cplEnhancer_pendingToken");
 
     // Start background observer in MAIN world (handles late-rendered button)
     applyViaBackground(true, url.search, token);
@@ -617,7 +620,6 @@
     } catch (_) {}
 
     // Navigate to apply the new params.
-    markAutoApply(url.search);
     location.href = url.toString();
     return true;
   }
@@ -728,7 +730,6 @@
     } catch (_) {}
 
     // Navigate to apply the new params.
-    markAutoApply(url.search);
     location.href = url.toString();
     return true;
   }
