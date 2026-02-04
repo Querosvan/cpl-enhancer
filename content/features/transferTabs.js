@@ -64,45 +64,47 @@
     return patterns.some((p) => text.includes(p));
   }
 
+  function isApplyButtonCandidate(btn) {
+    if (!btn) return false;
+    if (matchesAnyText(btn, ["apply filter", "apply", "aplicar filtro", "aplicar", "filter", "filtro"])) return true;
+    // Fallback: primary button with filter icon (SVG + polygon)
+    const hasPrimary = btn.classList.contains("button-primary");
+    const hasIcon = !!btn.querySelector("svg polygon");
+    return hasPrimary && hasIcon;
+  }
+
+  function findApplyButtonGlobal() {
+    const buttons = Array.from(document.querySelectorAll("button"));
+    return buttons.find((b) => isApplyButtonCandidate(b)) || null;
+  }
+
   function findFiltersHeader() {
     // Header that contains the "Apply filter" button (localized-safe)
-    const applyPatterns = ["apply filter", "apply", "aplicar filtro", "aplicar", "filter", "filtro"];
-    const buttons = Array.from(document.querySelectorAll("button"));
-    const btn = buttons.find((b) => matchesAnyText(b, applyPatterns)) || buttons.find((b) => b.querySelector("svg"));
+    const btn = findApplyButtonGlobal();
     if (btn) return btn.closest("header") || btn.parentElement || null;
 
     const headers = Array.from(document.querySelectorAll("header"));
     return (
       headers.find((h) => {
         const btns = Array.from(h.querySelectorAll("button"));
-        return btns.some((b) => matchesAnyText(b, applyPatterns));
+        return btns.some((b) => isApplyButtonCandidate(b));
       }) || null
     );
   }
 
   function findApplyButton(headerEl) {
-    if (!headerEl) return null;
+    if (!headerEl) return findApplyButtonGlobal();
 
     const btns = Array.from(headerEl.querySelectorAll("button"));
-    const textPatterns = ["apply filter", "apply", "aplicar filtro", "aplicar", "filter", "filtro"];
 
-    // Prefer exact/contains text match
-    const byText = btns.find((b) => matchesAnyText(b, textPatterns));
-    if (byText) return byText;
+    const byCandidate = btns.find((b) => isApplyButtonCandidate(b));
+    if (byCandidate) return byCandidate;
 
     // Fallback: type="submit"
     const submit = btns.find((b) => (b.getAttribute("type") || "").toLowerCase() === "submit");
     if (submit) return submit;
 
-    // Fallback: button with filter icon (SVG)
-    const withIcon = btns.find((b) => b.querySelector("svg"));
-    if (withIcon) return withIcon;
-
-    // Fallback: class or data attribute hints
-    return (
-      btns.find((b) => /apply|filter|aplicar|filtro/i.test(b.className || "")) ||
-      btns.find((b) => Array.from(b.attributes || []).some((a) => /apply|filter/i.test(a.name)))
-    );
+    return findApplyButtonGlobal();
   }
 
   function findGroupByLabel(headerEl, labelCandidates) {
@@ -385,7 +387,7 @@
     const triesKey = `${guardKey}_tries`;
     if (sessionStorage.getItem(guardKey) === "1") return;
 
-    const maxTries = 12;
+    const maxTries = 48;
 
     const tryClick = () => {
       const tries = Number(sessionStorage.getItem(triesKey) || "0");
@@ -412,7 +414,7 @@
         return;
       }
 
-      setTimeout(tryClick, 300);
+      setTimeout(tryClick, 350);
     };
 
     tryClick();
