@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CPL Enhancer — Options</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand__title">CPL Enhancer</div>
+          <div class="brand__sub">Settings</div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav__item is-active" data-section="general">
+            General
+          </button>
+          <button class="nav__item" data-section="transfer">
+            Transfer List
+          </button>
+        </nav>
+
+        <div class="sidebar__footer">
+          <div class="muted" id="saveStatus">—</div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <!-- GENERAL -->
+        <section class="panel" id="section-general">
+          <h1>General</h1>
+
+          <div class="card">
+            <div class="row">
+              <div>
+                <div class="label">Enabled</div>
+                <div class="hint">Enable or disable the extension.</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="enabled" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- TRANSFER LIST -->
+        <section class="panel is-hidden" id="section-transfer">
+          <h1>Transfer List</h1>
+          <p class="sub">
+            Configure minimum thresholds (0–100) for filtering players.
+          </p>
+
+          <div class="grid2">
+            <div class="card">
+              <h2>Good now (Current skills)</h2>
+              <p class="hint">Minimum current value required per skill.</p>
+              <div class="skills" id="currentSkills"></div>
+            </div>
+
+            <div class="card">
+              <h2>Potential (Skill limits / caps)</h2>
+              <p class="hint">Minimum potential cap required per skill.</p>
+              <div class="skills" id="limitSkills"></div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" id="resetDefaults">Reset to defaults</button>
+            <button class="btn btn--primary" id="saveBtn">Save</button>
+          </div>
+
+          <div class="small muted">
+            Note: A player can match both filters (already strong + high potential).
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="options.js"></script>
+  </body>
+</html>
