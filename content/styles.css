@@ -181,7 +181,7 @@
 .cpl-ability-border {
   --cpl-ability-border-color: rgba(255, 255, 255, 0.6);
   border-radius: 6px;
-  box-shadow: 0 0 0 2px var(--cpl-ability-border-color);
+  box-shadow: 0 0 0 2px var(--cpl-ability-border-color) !important;
 }
 
 .cpl-ability-border--positive {
