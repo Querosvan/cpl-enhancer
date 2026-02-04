@@ -86,28 +86,13 @@
         <section class="panel is-hidden" id="section-tryouts">
           <h1>Tryouts</h1>
           <p class="sub">
-            Configure how tryouts are highlighted when you open that section.
+            Configure minimum thresholds (0-100) for tryouts.
           </p>
 
           <div class="card">
-            <div class="row">
-              <div>
-                <div class="label">Enabled</div>
-                <div class="hint">Enable or disable tryouts enhancements.</div>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="tryoutsEnabled" />
-                <span class="slider"></span>
-              </label>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="field">
-              <div class="label">Minimum overall skill</div>
-              <div class="hint">Used to flag strong tryout players (0-100).</div>
-              <input class="field__input" type="number" id="tryoutsMinSkill" min="0" max="100" step="1" inputmode="numeric" />
-            </div>
+            <h2>Limits (Skill caps)</h2>
+            <p class="hint">Minimum cap required per skill.</p>
+            <div class="skills" id="tryoutsSkills"></div>
           </div>
 
           <div class="actions">

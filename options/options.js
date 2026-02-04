@@ -18,10 +18,7 @@ const DEFAULTS = {
     current: Object.fromEntries(SKILLS.map(s => [s, 85])),
     limit: Object.fromEntries(SKILLS.map(s => [s, 90]))
   },
-  tryouts: {
-    enabled: true,
-    minSkill: 70
-  }
+  tryoutsFilters: Object.fromEntries(SKILLS.map(s => [s, 90]))
 };
 
 const el = (id) => document.getElementById(id);
@@ -80,7 +77,7 @@ function setActiveSection(section) {
   });
 
   // panels
-  const sections = ["general", "transfer", "tryouts"];
+const sections = ["general", "transfer", "tryouts"];
   for (const key of sections) {
     const panel = el(`section-${key}`);
     if (panel) panel.classList.toggle("is-hidden", key !== section);
@@ -110,19 +107,19 @@ function fillTransferInputs(filters) {
   }
 }
 
-function readTryoutsInputs() {
-  return {
-    enabled: !!el("tryoutsEnabled")?.checked,
-    minSkill: clamp100(el("tryoutsMinSkill")?.value)
-  };
+function readTryoutsFilters() {
+  const out = {};
+  document.querySelectorAll('input[type="number"][data-group="tryouts"]').forEach(inp => {
+    out[inp.dataset.skill] = clamp100(inp.value);
+  });
+  return out;
 }
 
-function fillTryoutsInputs(tryouts) {
-  const enabled = el("tryoutsEnabled");
-  const minSkill = el("tryoutsMinSkill");
-
-  if (enabled) enabled.checked = !!tryouts?.enabled;
-  if (minSkill) minSkill.value = String(clamp100(tryouts?.minSkill ?? 0));
+function fillTryoutsInputs(filters) {
+  for (const inp of document.querySelectorAll('input[type="number"][data-group="tryouts"]')) {
+    const skill = inp.dataset.skill;
+    inp.value = String(clamp100(filters?.[skill] ?? 0));
+  }
 }
 
 async function notifyEnabledChanged(enabled) {
@@ -146,7 +143,7 @@ async function loadSettings() {
   fillTransferInputs(data.transferFilters);
 
   // Tryouts
-  fillTryoutsInputs(data.tryouts);
+  fillTryoutsInputs(data.tryoutsFilters);
 
   setStatus("Loaded.");
 }
@@ -154,9 +151,9 @@ async function loadSettings() {
 async function saveSettings() {
   const enabled = !!el("enabled")?.checked;
   const transferFilters = readTransferInputs();
-  const tryouts = readTryoutsInputs();
+  const tryoutsFilters = readTryoutsFilters();
 
-  await chrome.storage.sync.set({ enabled, transferFilters, tryouts });
+  await chrome.storage.sync.set({ enabled, transferFilters, tryoutsFilters });
   setStatus("Saved OK");
   await notifyEnabledChanged(enabled);
 }
@@ -172,6 +169,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Build inputs
   createSkillInputs(el("currentSkills"), "current");
   createSkillInputs(el("limitSkills"), "limit");
+  createSkillInputs(el("tryoutsSkills"), "tryouts");
 
   // Sidebar nav
   document.querySelectorAll(".nav__item").forEach(btn => {
@@ -203,22 +201,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Tryouts quick save on toggle
-  const tryoutsEnabled = el("tryoutsEnabled");
-  if (tryoutsEnabled) {
-    tryoutsEnabled.addEventListener("change", async () => {
-      const tryouts = readTryoutsInputs();
-      await chrome.storage.sync.set({ tryouts });
-      setStatus("Saved OK");
-    });
-  }
-
-  const tryoutsMinSkill = el("tryoutsMinSkill");
-  if (tryoutsMinSkill) {
-    tryoutsMinSkill.addEventListener("change", (e) => {
+  const tryoutsInputs = document.querySelectorAll('input[type="number"][data-group="tryouts"]');
+  tryoutsInputs.forEach(inp => {
+    inp.addEventListener("change", (e) => {
       e.target.value = String(clamp100(e.target.value));
     });
-  }
+  });
 
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName !== "sync") return;
@@ -231,8 +219,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       fillTransferInputs(changes.transferFilters.newValue || DEFAULTS.transferFilters);
     }
 
-    if (changes.tryouts) {
-      fillTryoutsInputs(changes.tryouts.newValue || DEFAULTS.tryouts);
+    if (changes.tryoutsFilters) {
+      fillTryoutsInputs(changes.tryoutsFilters.newValue || DEFAULTS.tryoutsFilters);
     }
   });
 
