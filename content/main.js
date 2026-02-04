@@ -12,8 +12,10 @@
     // Always initialize features. They will activate only on matching pages.
     if (typeof api.initTransferTabs === "function") api.initTransferTabs(settings);
     if (typeof api.initTransferBadges === "function") api.initTransferBadges(settings);
+    if (typeof api.initSkillWhatEmbed === "function") api.initSkillWhatEmbed(settings);
 
-    api.initAgeHighlights();
+    if (typeof api.initAgeHighlights === "function") api.initAgeHighlights(settings);
+    if (typeof api.initAbilityBorders === "function") api.initAbilityBorders(settings);
   }
 
   async function setEnabled(enabled) {

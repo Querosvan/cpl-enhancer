@@ -1,12 +1,12 @@
-// ===== FORCE VERSION RENDER (ISOLATED) =====
+﻿// ===== FORCE VERSION RENDER (ISOLATED) =====
 
 // ===== END FORCE VERSION =====
 // Icons para MAX HEART POSSIBLE
-const ICON_TINY_HTML = '<span class="heart-small3">❤️</span>';
-const ICON_SMALL_HTML = '<span class="heart-small2">❤️</span>';
-const ICON_BIG_HTML   = '❤️';
-const ICON_GOLD_HTML  = '💛';
-const ICON_PLAT_HTML  = '💙';
+const ICON_TINY_HTML = '<span class="heart-small3">&#x2764;&#xFE0F;</span>';
+const ICON_SMALL_HTML = '<span class="heart-small2">&#x2764;&#xFE0F;</span>';
+const ICON_BIG_HTML   = '&#x2764;&#xFE0F;';
+const ICON_GOLD_HTML  = '&#x1F49B;';
+const ICON_PLAT_HTML  = '&#x1F499;';
 
 const GEAR_ICON_BY_SKILL = {
   Aim: "https://i.postimg.cc/349bq0ZG/aim.png",
@@ -55,7 +55,7 @@ let skills = [
 const initialSkillsBackup = JSON.parse(JSON.stringify(skills));
 
 
-// backup do último LOAD
+// backup do ÃƒÂºltimo LOAD
 let loadedSkillsBackup = JSON.parse(JSON.stringify(skills));
 let loadedName = "Spidevil";
 let loadedAge = "15yo (day 1)";
@@ -67,7 +67,6 @@ const totalMax = document.getElementById("total-skill-max");
 const heartBtn = document.querySelector(".heart-grey-btn");
 const moraleBtn = document.querySelector(".morale-btn");
 const maxBtn = document.querySelector(".max-btn");
-const loadBtn = document.getElementById("load-button");
 
 const START_DATE = new Date(2025, 3, 28);
 const SEASON_LENGTH = 35;
@@ -187,13 +186,7 @@ function updateGameDay() {
   computeMaxCareerHeart();
 }
 
-function updateClock() {
-  const now = new Date();
-  const el = document.getElementById("real-clock");
-  if (el) el.textContent = now.toTimeString().slice(0, 8);
-}
-updateClock(); updateGameDay();
-setInterval(updateClock, 1000);
+updateGameDay();
 setInterval(updateGameDay, 60000);
 
 function renderMiniGear() {
@@ -299,6 +292,12 @@ function updateTotals() {
     if (totalMax) totalMax.textContent = "/" + totalMaxValue;
 }
 
+function alignEditColumn() {
+    const editColumn = document.querySelector(".skill-edit-column");
+    if (!editColumn || !skillsList) return;
+    editColumn.style.top = skillsList.offsetTop + "px";
+}
+
 
 
 
@@ -348,7 +347,7 @@ function updateTotals() {
 
             const value = parseInt(valLine, 10) || 0;
 
-            // extrai apenas número ou ?
+            // extrai apenas nÃƒÂºmero ou ?
             let rawMax = maxLine.replace("/", "").trim();
             let max = null;
 
@@ -417,7 +416,7 @@ function updateRetireElement(ageStr) {
   const { age, birthdayDay } = parseAgeString(ageStr);
   const r = computeRetireSeasonFrom(age, birthdayDay);
   if (r.remainingSeasons === null) {
-    retireEl.textContent = "—";
+    retireEl.textContent = "\u2014";
     return;
   }
   const maxAge = getMaxCareerAge();
@@ -455,7 +454,7 @@ function renderSkills() {
     name.textContent = s.name;
     name.style.color = finalVal >= 100 ? "#f7f8c9" : "#ffffff";
 
-    // LIMIT REACHED (value == max, mas não 100)
+    // LIMIT REACHED (value == max, mas nÃƒÂ£o 100)
 if (s.value === s.max && s.max < 100 && finalVal < 100) {
     name.style.color = "#ffffffff"; // verde premium
     
@@ -476,7 +475,7 @@ if (s.value === s.max && s.max < 100) {
     limit.className = "skill-limit";
     limit.style.width = s.max + "%";
 
-    // Se o limite é 100 → arredondado dos dois lados
+    // Se o limite ÃƒÂ© 100 \\u2192 arredondado dos dois lados
     if (s.max === 100) {
         limit.style.borderRadius = "999px";
     } else {
@@ -502,7 +501,7 @@ bar.appendChild(limit);
     // ----------------------------------
 let boostF = null;
 
-// BOOST (HM + morale + gear) como único segmento de boost
+// BOOST (HM + morale + gear) como ÃƒÂºnico segmento de boost
 if (boostW > 0) {
   boostF = document.createElement("div");
   boostF.className = "skill-fill-boost";
@@ -512,7 +511,7 @@ if (boostW > 0) {
   
   
 
-  // Se final >= 100 → dourado + brilho + canto redondo
+  // Se final >= 100 \\u2192 dourado + brilho + canto redondo
   if (finalVal >= 100) {
     boostF.style.backgroundColor = "#f7e395";
     boostF.style.borderRadius = "0 999px 999px 0";
@@ -525,7 +524,7 @@ if (boostW > 0) {
   bar.appendChild(boostF);
 }
 
-// SE NÃO EXISTIR BOOST → base atinge 100 sozinha
+// SE NÃƒÆ’O EXISTIR BOOST \\u2192 base atinge 100 sozinha
 if (finalVal >= 100 && boostW === 0) {
   baseF.style.backgroundColor = "#edeec0";
   baseF.style.borderRadius = "999px";
@@ -564,7 +563,7 @@ if (finalVal >= 100) {
     cur.className = "skill-current";
     cur.textContent = maxMode ? s.max : Math.round(v.base);
     if (finalVal >= 100) cur.style.color = "#ee6b0e";
-    // LIMIT REACHED (value == max, mas não 100)
+    // LIMIT REACHED (value == max, mas nÃƒÂ£o 100)
     if (s.value === s.max && s.max < 100 && finalVal < 100) {
         cur.style.color = "#ffffffff";
     }
@@ -601,7 +600,6 @@ row.addEventListener("mouseleave", hideTooltip);
 // ===== UPDATE RIGHT COLUMN BUTTONS (ONLY IMAGE BUTTONS) =====
 if (globalButtonsContainer) {
     globalButtonsContainer.innerHTML = "";
-let boostCapAdded = false;
 
     skills.forEach((s, index) => {
 
@@ -611,41 +609,25 @@ let boostCapAdded = false;
         const row = document.createElement("div");
         row.className = "edit-row";
 
-        // BOTÃO -
+        // BOTÃƒÆ’O -
         const minus = document.createElement("img");
         minus.src = "https://i.postimg.cc/qBCQ18DZ/button.png";
         minus.className = "edit-btn-img";
         minus.addEventListener("click", () => applySkillChange(index, -1));
 
-        // BOTÃO +
+        // BOTÃƒÆ’O +
         const plus = document.createElement("img");
         plus.src = "https://i.postimg.cc/SQzVgW1v/button.png";
         plus.className = "edit-btn-img";
         plus.addEventListener("click", () => applySkillChange(index, +1));
 
-        // BARRA 100–120
+        // BARRA 100-120
         const boostContainer = document.createElement("div");
-boostContainer.style.display = "flex";
-boostContainer.style.flexDirection = "column";
-boostContainer.style.alignItems = "center";
+        boostContainer.style.display = "flex";
+        boostContainer.style.flexDirection = "column";
+        boostContainer.style.alignItems = "center";
 
-// 👉 adiciona BOOST CAP só UMA VEZ
-if (!boostCapAdded) {
-  const label = document.createElement("div");
-  label.textContent = "BOOST CAP";
-  label.style.fontSize = "9px";
-  label.style.fontWeight = "700";
-  label.style.color = "#ede3aa";
-  label.style.marginBottom = "18px";
-  label.style.marginTop = "-32px";   // 🔥 ISTO resolve
-  label.style.opacity = "0.85";
-  label.style.whiteSpace = "nowrap";
-
-  boostContainer.appendChild(label);
-  boostCapAdded = true;
-}
-
-const boostWrap = document.createElement("div");
+        const boostWrap = document.createElement("div");
 boostWrap.className = "skill-boost-wrap";
 
 boostWrap.addEventListener("mouseenter", e => {
@@ -683,6 +665,7 @@ row.appendChild(boostContainer);
 
 
   updateTotals();
+  alignEditColumn();
 }
 
 /* ==========================
@@ -726,7 +709,7 @@ if (maxMode) {
     // guardar valor real original apenas 1 vez
     if (s._backupValue === undefined) s._backupValue = s.value;
 
-    // valor a editar passa a ser o MAX (valor visível em MAX MODE)
+    // valor a editar passa a ser o MAX (valor visÃƒÂ­vel em MAX MODE)
     s.value = s.max;
 
     turnMaxModeOffAfterChange = true;
@@ -738,13 +721,13 @@ if (maxMode) {
     if (globalMode === "S") {
 
         if (delta === 1 && s.value === s.max && s.value < 100) {
-            // S+ quando value == max → sobem ambos
+            // S+ quando value == max \\u2192 sobem ambos
             s.value++;
             s.max++;
         }
 
         else if (delta === -1 && s.value === s.max) {
-            // S- quando value == max → desce só o value
+            // S- quando value == max \\u2192 desce sÃƒÂ³ o value
             if (s.value > 0) s.value--;
         }
 
@@ -765,12 +748,12 @@ if (maxMode) {
     else {
 
         if (delta === 1 && s.max === s.value && s.max < 100) {
-            // L+ quando max == value → só sobe max
+            // L+ quando max == value \\u2192 sÃƒÂ³ sobe max
             s.max++;
         }
 
         else if (delta === -1 && s.max === s.value && s.max > 0) {
-            // L- quando max == value → descem ambos
+            // L- quando max == value \\u2192 descem ambos
             s.max--;
             s.value--;
         }
@@ -787,14 +770,14 @@ if (maxMode) {
     }
 
     /* ================================
-       LIMITE FINAL (0–100)
+       LIMITE FINAL (0-100)
        ================================ */
     s.value = Math.max(0, Math.min(100, s.value));
     s.max   = Math.max(0, Math.min(100, s.max));
 
     /* ================================
-       SE FIZ CLICK EM +/– NO MAX MODE
-       → DESLIGAR MAX MODE AUTOMATICAMENTE
+       SE FIZ CLICK EM +/- NO MAX MODE
+       \\u2192 DESLIGAR MAX MODE AUTOMATICAMENTE
        ================================ */
     if (turnMaxModeOffAfterChange) {
         maxMode = false;
@@ -882,139 +865,134 @@ function hideTooltip() {
 }
 
 /* ---------------- LOAD ---------------- */
-if (loadBtn) {
-  loadBtn.addEventListener("click", () => {
-extendedCareer = false;
-const careerBtn = document.getElementById("career-plus-btn");
-if (careerBtn) careerBtn.classList.remove("active");
-    // FULL RESET — igual ao RUBBER (limpa estado UI e valores temporários)
-    heartState = 0;
-    moraleState = 0;
-    maxMode = false;
+function loadFromText(loadTextRaw) {
+  extendedCareer = false;
+  const careerBtn = document.getElementById("career-plus-btn");
+  if (careerBtn) careerBtn.classList.remove("active");
 
-    if (heartBtn)  heartBtn.className = "action-btn heart-grey-btn";
-    if (moraleBtn) moraleBtn.className = "action-btn morale-btn";
-    if (maxBtn)    maxBtn.classList.remove("max-active");
+  // FULL RESET - same as RUBBER (clears UI state and temp values)
+  heartState = 0;
+  moraleState = 0;
+  maxMode = false;
 
-    // RESET GEAR
-    Object.keys(equipped).forEach(k => equipped[k] = null);
-    updateBoostLabels();
-    recomputeEquipmentBoosts();
-    renderAllEquipmentUI();
-    updateGearButtonState();
+  if (heartBtn)  heartBtn.className = "action-btn heart-grey-btn";
+  if (moraleBtn) moraleBtn.className = "action-btn morale-btn";
+  if (maxBtn)    maxBtn.classList.remove("max-active");
 
-    // RESET POPUPS
-    gearLocked = false;
-    if (lockBtn) lockBtn.textContent = "🔓";
-    if (gearPopup) gearPopup.classList.add("hidden");
+  // RESET GEAR
+  Object.keys(equipped).forEach(k => equipped[k] = null);
+  updateBoostLabels();
+  recomputeEquipmentBoosts();
+  renderAllEquipmentUI();
+  updateGearButtonState();
 
-    gameLocked = false;
-    const gameLockBtn = document.getElementById("game-lock-btn");
-    if (gameLockBtn) gameLockBtn.textContent = "🔓";
-    if (gamePopup) gamePopup.classList.add("hidden");
+  // RESET POPUPS
+  gearLocked = false;
+  if (lockBtn) lockBtn.textContent = "\uD83D\uDD13";
+  if (gearPopup) gearPopup.classList.add("hidden");
 
-    // RESET GAMES
-    const gameInput = document.getElementById("game-input");
-    const gamesPlayedEl = document.getElementById("games-played");
+  gameLocked = false;
+  const gameLockBtn = document.getElementById("game-lock-btn");
+  if (gameLockBtn) gameLockBtn.textContent = "\uD83D\uDD13";
+  if (gamePopup) gamePopup.classList.add("hidden");
 
-if (gameInput) gameInput.value = "0";
-    if (gamesPlayedEl) gamesPlayedEl.textContent = "0";
-const gameOkBtn = document.getElementById("game-ok");
-if (gameOkBtn) {
-  setTimeout(() => gameOkBtn.click(), 0);
-}
-    // 🔥 FORÇAR ESTADO BASE DE CÁLCULO
-updateHeartsBasedOnGames(0);
-computeMaxCareerHeart();
-updateGamesButtonState();
+  // RESET GAMES
+  const gameInput = document.getElementById("game-input");
+  const gamesPlayedEl = document.getElementById("games-played");
 
+  if (gameInput) gameInput.value = "0";
+  if (gamesPlayedEl) gamesPlayedEl.textContent = "0";
+  const gameOkBtn = document.getElementById("game-ok");
+  if (gameOkBtn) {
+    setTimeout(() => gameOkBtn.click(), 0);
+  }
 
-    // RESET HEART SEASONS
-const tiny  = document.querySelector(".season-tiny");
-const small = document.querySelector(".season-small");
-const big   = document.querySelector(".season-big");
-const gold  = document.querySelector(".season-gold");
-const plat  = document.querySelector(".season-plat");
+  // FORCE BASE STATE
+  updateHeartsBasedOnGames(0);
+  computeMaxCareerHeart();
+  updateGamesButtonState();
 
-if (tiny)  { tiny.textContent  = ""; tiny.style.color  = ""; }
-if (small) { small.textContent = "S9";  small.style.color = ""; }
-if (big)   { big.textContent   = "S11"; big.style.color   = ""; }
-if (gold)  { gold.textContent  = "S15"; gold.style.color  = ""; }
-if (plat)  { plat.textContent  = "S23"; plat.style.color  = ""; }
+  // RESET HEART SEASONS
+  const tiny  = document.querySelector(".season-tiny");
+  const small = document.querySelector(".season-small");
+  const big   = document.querySelector(".season-big");
+  const gold  = document.querySelector(".season-gold");
+  const plat  = document.querySelector(".season-plat");
 
-    // RESET LOYAL
-    const gameImgBtn = document.getElementById("game-img-btn");
-    const loyalStatusEl = document.getElementById("loyal-status");
+  if (tiny)  { tiny.textContent  = ""; tiny.style.color  = ""; }
+  if (small) { small.textContent = "S9";  small.style.color = ""; }
+  if (big)   { big.textContent   = "S11"; big.style.color   = ""; }
+  if (gold)  { gold.textContent  = "S15"; gold.style.color  = ""; }
+  if (plat)  { plat.textContent  = "S23"; plat.style.color  = ""; }
 
-    if (gameImgBtn)   gameImgBtn.classList.remove("active");
-    if (loyalStatusEl) loyalStatusEl.textContent = "NO";
+  // RESET LOYAL
+  const gameImgBtn = document.getElementById("game-img-btn");
+  const loyalStatusEl = document.getElementById("loyal-status");
 
-    updateGamesButtonState();
+  if (gameImgBtn)   gameImgBtn.classList.remove("active");
+  if (loyalStatusEl) loyalStatusEl.textContent = "NO";
 
+  updateGamesButtonState();
 
-    // CHECK IF LOAD INPUT IS EMPTY -> RESTORE INITIAL STATE (option A)
-    const loadText = document.getElementById("skill-input").value.trim();
-    missingPopupOpen = false;
-    if (loadText.length === 0) {
-
-        // restore name + age defaults (initial view)
-        const nameEl = document.querySelector(".player-name");
-        const ageEl = document.querySelector(".player-age");
-        if (nameEl) nameEl.textContent = "Spidevil";
-        if (ageEl) ageEl.textContent  = "15yo (day 1)";
-
-        // restore skills to the initial backup (deep copy)
-        skills = JSON.parse(JSON.stringify(initialSkillsBackup));
-loadedSkillsBackup = JSON.parse(JSON.stringify(skills));
-loadedName = "Spidevil";
-loadedAge = "15yo (day 1)";
-        // recompute and refresh UI
-        recomputeEquipmentBoosts();
-        renderAllEquipmentUI();
-        updateGearButtonState();
-        renderSkills();
-        computeMaxCareerHeart();
-        updateGamesButtonState();
-        updateRetireDisplayIfNeeded();
-        renderMiniGear();
-        return; // done
-    }
-
-
-    // NORMAL LOAD (text present)
-    const data = parseCardText(loadText);
-
+  const loadText = typeof loadTextRaw === "string" ? loadTextRaw.trim() : "";
+  missingPopupOpen = false;
+  if (loadText.length === 0) {
+    // restore name + age defaults (initial view)
     const nameEl = document.querySelector(".player-name");
     const ageEl = document.querySelector(".player-age");
+    if (nameEl) nameEl.textContent = "Spidevil";
+    if (ageEl) ageEl.textContent  = "15yo (day 1)";
 
-    if (nameEl) nameEl.textContent = data.playerName;
-    if (ageEl)  ageEl.textContent  = data.playerAge;
+    // restore skills to the initial backup (deep copy)
+    skills = JSON.parse(JSON.stringify(initialSkillsBackup));
+    loadedSkillsBackup = JSON.parse(JSON.stringify(skills));
+    loadedName = "Spidevil";
+    loadedAge = "15yo (day 1)";
 
-    if (data.skills.length) {
-        skills = data.skills;
-    } 
-
-
-    // detectar skills com max = null
-const incomplete = skills.filter(s => s.max === null);
-
-if (incomplete.length > 0 && !missingPopupOpen) {
-    openMissingSkillPopup(incomplete);
-    return;
-}
-
-loadedSkillsBackup = JSON.parse(JSON.stringify(skills));
-loadedName = data.playerName;
-loadedAge = data.playerAge;
-    // ensure UI and calculations updated
+    // recompute and refresh UI
     recomputeEquipmentBoosts();
     renderAllEquipmentUI();
     updateGearButtonState();
-    updateRetireDisplayIfNeeded();
-    computeMaxCareerHeart();
     renderSkills();
+    computeMaxCareerHeart();
+    updateGamesButtonState();
+    updateRetireDisplayIfNeeded();
     renderMiniGear();
-  });
+    return;
+  }
+
+  // NORMAL LOAD (text present)
+  const data = parseCardText(loadText);
+
+  const nameEl = document.querySelector(".player-name");
+  const ageEl = document.querySelector(".player-age");
+
+  if (nameEl) nameEl.textContent = data.playerName;
+  if (ageEl)  ageEl.textContent  = data.playerAge;
+
+  if (data.skills.length) {
+    skills = data.skills;
+  }
+
+  // detectar skills com max = null
+  const incomplete = skills.filter(s => s.max === null);
+  if (incomplete.length > 0 && !missingPopupOpen) {
+    openMissingSkillPopup(incomplete);
+    return;
+  }
+
+  loadedSkillsBackup = JSON.parse(JSON.stringify(skills));
+  loadedName = data.playerName;
+  loadedAge = data.playerAge;
+
+  // ensure UI and calculations updated
+  recomputeEquipmentBoosts();
+  renderAllEquipmentUI();
+  updateGearButtonState();
+  updateRetireDisplayIfNeeded();
+  computeMaxCareerHeart();
+  renderSkills();
+  renderMiniGear();
 }
 
 /* ---------------- HEART / MORALE / MAX ---------------- */
@@ -1211,8 +1189,8 @@ function updateGamesButtonState() {
   }
 }
 function openMissingSkillPopup(list) {
-  if (missingPopupOpen) return; // ⛔ impede abrir de novo
-    missingPopupOpen = true;      // 🔒 marca como aberto
+  if (missingPopupOpen) return; // Ã¢â€ºâ€ impede abrir de novo
+    missingPopupOpen = true;      // \\uD83D\\uDD12 marca como aberto
     const popup = document.getElementById("missing-skill-popup");
     const container = document.getElementById("missing-skill-fields");
 
@@ -1229,7 +1207,7 @@ function openMissingSkillPopup(list) {
                 class="missing-input"
                 inputmode="numeric"
                 id="miss-${s.name}"
-                placeholder="70–100"
+                placeholder="70-100"
             >
         `;
 
@@ -1239,7 +1217,7 @@ function openMissingSkillPopup(list) {
     document.getElementById("modal-overlay").classList.remove("hidden");
     popup.classList.remove("hidden");
 
-    // ===== INPUT AUTO-VALIDATION (70–100) =====
+    // ===== INPUT AUTO-VALIDATION (70-100) =====
     const inputs = [...document.querySelectorAll('.missing-input')];
 
     inputs.forEach((input, index) => {
@@ -1248,7 +1226,7 @@ function openMissingSkillPopup(list) {
             input.value = input.value.replace(/\D/g, '');
             const value = input.value;
 
-            // máximo 3 dígitos
+            // mÃƒÂ¡ximo 3 dÃƒÂ­gitos
             if (value.length > 3) {
                 input.value = '';
                 return;
@@ -1257,7 +1235,7 @@ function openMissingSkillPopup(list) {
             // standby 10
             if (value === '10') return;
 
-            // 3 dígitos
+            // 3 dÃƒÂ­gitos
             if (value.length === 3) {
                 if (value === '100') {
                     inputs[index + 1]?.focus();
@@ -1267,7 +1245,7 @@ function openMissingSkillPopup(list) {
                 return;
             }
 
-            // 2 dígitos
+            // 2 dÃƒÂ­gitos
             if (value.length === 2) {
                 const num = Number(value);
 
@@ -1301,7 +1279,7 @@ function openMissingSkillPopup(list) {
             } else {
                 field.style.border = "";
                 s.max = val;
-                s.max = Number(val); // força número, nunca null
+                s.max = Number(val); // forÃƒÂ§a nÃƒÂºmero, nunca null
             }
         });
 
@@ -1309,7 +1287,7 @@ function openMissingSkillPopup(list) {
 
         popup.classList.add("hidden");
         document.getElementById("modal-overlay").classList.add("hidden");
-missingPopupOpen = false; // 🔓 permite novo popup num próximo LOAD
+missingPopupOpen = false; // \\uD83D\\uDD13 permite novo popup num prÃƒÂ³ximo LOAD
         loadedSkillsBackup = JSON.parse(JSON.stringify(skills));
         loadedName = document.querySelector(".player-name").textContent;
         loadedAge  = document.querySelector(".player-age").textContent;
@@ -1363,7 +1341,7 @@ const gameLockBtn = document.getElementById("game-lock-btn");
 const gameDrag = document.getElementById("game-drag");
 
 let gameLocked = false;
-if (gameLockBtn) gameLockBtn.textContent = "🔓";
+if (gameLockBtn) gameLockBtn.textContent = "\uD83D\uDD13";
 
 if (gamesBtn) {
   gamesBtn.addEventListener("click", () => {
@@ -1379,7 +1357,7 @@ if (gamesBtn) {
 if (gameLockBtn) {
   gameLockBtn.addEventListener("click", () => {
     gameLocked = !gameLocked;
-    gameLockBtn.textContent = gameLocked ? "🔒" : "🔓";
+    gameLockBtn.textContent = gameLocked ? "\uD83D\uDD12" : "\uD83D\uDD13";
   });
 }
 
@@ -1433,10 +1411,10 @@ document.addEventListener("mousedown", (e) => {
 /* LOCK button toggles whether outside clicks close the popup */
 let gearLocked = false;
 if (lockBtn) {
-  lockBtn.textContent = "🔓";
+  lockBtn.textContent = "\uD83D\uDD13";
   lockBtn.addEventListener("click", () => {
     gearLocked = !gearLocked;
-    lockBtn.textContent = gearLocked ? "🔒" : "🔓";
+    lockBtn.textContent = gearLocked ? "\uD83D\uDD12" : "\uD83D\uDD13";
     lockBtn.classList.toggle("locked", gearLocked);
   });
 }
@@ -1480,12 +1458,12 @@ if (careerBtn) careerBtn.classList.remove("active");
 
     // RESET POPUPS
     gearLocked = false;
-    if (lockBtn) lockBtn.textContent = "🔓";
+    if (lockBtn) lockBtn.textContent = "\uD83D\uDD13";
     if (gearPopup) gearPopup.classList.add("hidden");
 
     gameLocked = false;
     const gameLockBtn = document.getElementById("game-lock-btn");
-    if (gameLockBtn) gameLockBtn.textContent = "🔓";
+    if (gameLockBtn) gameLockBtn.textContent = "\uD83D\uDD13";
     if (gamePopup) gamePopup.classList.add("hidden");
 
     // RESET GAMES
@@ -1520,7 +1498,7 @@ if (plat)  { plat.textContent  = "S23"; plat.style.color  = ""; }
     if (gameImgBtn)   gameImgBtn.classList.remove("active");
     if (loyalStatusEl) loyalStatusEl.textContent = "NO";
 
-  // RESTAURAR ESTADO BASE DO ÚLTIMO LOAD
+  // RESTAURAR ESTADO BASE DO ÃƒÅ¡LTIMO LOAD
 skills = JSON.parse(JSON.stringify(loadedSkillsBackup));
 
 const nameEl = document.querySelector(".player-name");
@@ -1548,7 +1526,7 @@ const loyalVals = [37, 75, 150, 300, 600];
     if (!span) return;
 
     const value = loyal ? loyalVals[i] : base[i];
-    span.textContent = `${value} games → `;
+    span.textContent = `${value} games \u2192 `;
   });
 }
 function updateHeartsBasedOnGames(games) {
@@ -1597,19 +1575,19 @@ function targetMoment(req) {
 function label(req) {
   const moment = targetMoment(req);
 
-  // impossível antes de reformar
-  if (moment.season > retireSeason) return "❌";
+  // impossÃƒÂ­vel antes de reformar
+  if (moment.season > retireSeason) return "\u274C";
 
   if (games < req) {
     const ageAtSeason = age + (moment.season - currentSeason);
 
     const maxAge = getMaxCareerAge();
-if (ageAtSeason >= maxAge) return "❌";
+if (ageAtSeason >= maxAge) return "\u274C";
 
     return `S${moment.season} D${moment.day} (${ageAtSeason}yo)`;
   }
 
-  return "✔";
+  return "\u2705";
 }
 
 
@@ -1644,7 +1622,7 @@ if (careerBtn) {
     // estado visual
     careerBtn.classList.toggle("active", extendedCareer);
 
-    // 🔥 recalcular tudo o que depende da idade
+    // Ã°Å¸â€Â¥ recalcular tudo o que depende da idade
     updateRetireDisplayIfNeeded();
 
     const gamesPlayed =
@@ -1679,13 +1657,13 @@ gameImgBtn.addEventListener('click', () => {
     const reduced = Math.floor(games * 0.75);
     gamesPlayedEl.textContent = reduced;
 
-    updateHeartRequirementLabels(true);   // 🔥 AQUI
+    updateHeartRequirementLabels(true);   // Ã°Å¸â€Â¥ AQUI
     updateHeartsBasedOnGames(reduced);
   } else {
     if (originalGamesBeforeLoyal !== null) {
       gamesPlayedEl.textContent = originalGamesBeforeLoyal;
 
-      updateHeartRequirementLabels(false); // 🔥 AQUI
+      updateHeartRequirementLabels(false); // Ã°Å¸â€Â¥ AQUI
       updateHeartsBasedOnGames(originalGamesBeforeLoyal);
     }
   }
@@ -1806,69 +1784,14 @@ let seasonsLeft = maxAge - age;
   const maxLine = document.querySelector(".max-heart-final");
   if (!maxLine) return;
 
-  // Se NÃO consegue nenhum → mostrar "—"
+  // Se NÃƒÆ’O consegue nenhum \\u2192 mostrar "\\u2014"
   if (!icon) {
-    maxLine.innerHTML = `MAX HEART POSSIBLE: —`;
+    maxLine.innerHTML = `MAX HEART POSSIBLE: \u2014`;
     return;
   }
 
   maxLine.innerHTML = `MAX HEART POSSIBLE: ${icon} (${finalSeason})`;
 }
-// ===== INFO TOOLTIP (STABLE, NO FLICKER) =====
-const infoWrapper = document.getElementById("info-wrapper");
-const infoTooltip = document.getElementById("info-tooltip");
-const overlay = document.getElementById("modal-overlay");
-
-if (infoWrapper && infoTooltip && overlay) {
-
-  infoWrapper.addEventListener("mouseenter", () => {
-    infoTooltip.classList.remove("hidden");
-    overlay.classList.remove("hidden");
-  });
-
-  infoWrapper.addEventListener("mouseleave", () => {
-    infoTooltip.classList.add("hidden");
-    overlay.classList.add("hidden");
-  });
-
-}
-
-
-
-window.addEventListener("load", () => {
-  const v = document.getElementById("app-version");
-  const u = document.getElementById("app-updates");
-
-  if (!v || !u) {
-    console.error("VERSION ELEMENTS NOT FOUND");
-    return;
-  }
-
-  v.textContent = "v1.4.12 - 13:55 - January.15.2026";
-
-  u.innerHTML = `
-    <li>Visual update gear</li>
-    <li>Long Lived icon added</li>
-    <li>info png fix</li>
-    <li>visual % boost</li>
-    <li>Fix exact game-based heart calculation</li>
-    <li>New heart mechanism boost</li>
-    <li>Fixed Total Skill Tooltip & boost cap tooltip info</li>
-    <li>Add Boost Bar over 100 until 120</li>
-    <li>Fix Minimap Position</li>
-    <li>Add Minimap gear</li>
-    <li>Add PNG export button</li>
-    <li>Fixed Missing Limits flow for players loaded with unknown limits</li>
-    <li>Loyal button moved</li>
-    <li>Skill bars visual updates</li>
-    <li>Tooltip Total Skills correction</li>
-    <li>Updates menu</li>
-    <li>Add Missing Limites to tryout copy>past</li>
-    `;
-});
-
-
-
 /* ---------------- INIT ---------------- */
 document.addEventListener("DOMContentLoaded", () => {
   
@@ -1881,17 +1804,6 @@ document.addEventListener("DOMContentLoaded", () => {
   updateHeartsBasedOnGames(0);
   computeMaxCareerHeart();
   updateGamesButtonState();
-});
-document.addEventListener("DOMContentLoaded", () => {
-  const clearBtn = document.getElementById("clear-load-btn");
-  const input = document.getElementById("skill-input");
-
-  if (!clearBtn || !input) return;
-
-  clearBtn.addEventListener("click", () => {
-    input.value = "";
-    input.focus();
-  });
 });
 document.addEventListener("DOMContentLoaded", () => {
   const exportBtn = document.getElementById("export-card-btn");
@@ -1958,13 +1870,9 @@ window.addEventListener("message", (event) => {
   const data = event && event.data;
   if (!data || data.type !== "CPLE_SKILLWHAT_LOAD") return;
 
-  const input = document.getElementById("skill-input");
-  if (!input) return;
-
-  input.value = typeof data.text === "string" ? data.text : "";
-
-  if (data.autoLoad) {
-    const btn = document.getElementById("load-button");
-    if (btn) btn.click();
-  }
+  const text = typeof data.text === "string" ? data.text : "";
+  loadFromText(text);
 });
+
+
+

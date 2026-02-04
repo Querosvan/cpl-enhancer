@@ -38,6 +38,7 @@ body {
 }
 
 .card-inner {
+    position: relative;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -100,6 +101,7 @@ body {
     display: flex;
     align-items: center;
     position: relative; /* necessário */
+    height: 22px;
 }
 
 .skill-name {
@@ -441,7 +443,7 @@ body {
 
 /* Estado base (0) */
 .heart-grey-btn {
-    background-image: url('image.png');
+    background-image: url('+0%25.png');
     background-size: 70%;
     background-position: center;
     background-repeat: no-repeat;
@@ -455,12 +457,12 @@ body {
 
 /* Estado 2 → +1% */
 .heart-active-2 {
-    background-image: url('1.png');
+    background-image: url('+1%25.png');
     filter: brightness(1.2);
 }
 /* Estado 3 → +3% */
 .heart-active-3 {
-    background-image: url('3.png');
+    background-image: url('+3%25.png');
     filter: brightness(1.2);
 }
 /* Estado 3 → +5% */
@@ -476,7 +478,7 @@ body {
 }
 /* MORALE — 0% */
 .morale-btn {
-    background-image: url('image.png');
+    background-image: url('0.png');
     background-size: 70%;
     background-position: center;
     background-repeat: no-repeat;
@@ -1043,11 +1045,18 @@ position: relative;   /* 🔥 obrigatório */
     background: #ff7f2f;
 }
 
+/* Container das linhas de + / - */
+#edit-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;   /* igual ao gap das skill rows */
+}
+
 /* COLUNA GLOBAL */
 .skill-edit-column {
     position: absolute;
-    right: 140px;
-    top: 222px;
+    right: 115px;
+    top: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1056,12 +1065,26 @@ position: relative;   /* 🔥 obrigatório */
 
 }
 
+/* Label do BOOST CAP sem afetar o alinhamento das linhas */
+.skill-edit-column::before {
+    content: "BOOST CAP";
+    position: absolute;
+    top: -16px;
+    right: 0;
+    font-size: 9px;
+    font-weight: 700;
+    color: #ede3aa;
+    opacity: 0.85;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
 /* Espaçamento IGUAL ao das skill rows */
 .edit-row {
     display: flex;
     gap: 6px;              /* espaço entre - e + */
     height: 22px;          /* igual à altura aproximada da skill row */
-    margin-bottom: 5px;    /* escolhe 6–10px conforme o gosto */
+    margin-bottom: 0;
     align-items: center;
 }
 
@@ -1539,4 +1562,6 @@ pointer-events: auto;
 .clear-load-btn:hover {
   filter: brightness(1.3);
 }
+
+
 

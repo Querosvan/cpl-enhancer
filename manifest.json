@@ -41,6 +41,7 @@
         "content/features/transferTabs.js",
         "content/features/transferBadges.js",
         "content/features/ageHighlights.js",
+        "content/features/abilityBorders.js",
         "content/features/skillwhatEmbed.js",
         "content/main.js"
       ],
