@@ -1,4 +1,4 @@
-const DEFAULTS = { enabled: true };
+﻿const DEFAULTS = { enabled: true };
 
 function setStatus(text) {
   document.getElementById("status").textContent = text;
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await saveSetting("enabled", enabled);
     setStatus(enabled ? "Enhancements enabled." : "Enhancements disabled.");
 
-    // Ask current tab to refresh behavior (we’ll implement later)
+    // Ask current tab to refresh behavior (we'll implement later)
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tab?.id) chrome.tabs.sendMessage(tab.id, { type: "SET_ENABLED", enabled });
   });
@@ -32,3 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
 });
+
+
+
+

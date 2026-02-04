@@ -1,4 +1,4 @@
-const SKILLS = [
+﻿const SKILLS = [
   "Aim",
   "Handling",
   "Quickness",
@@ -52,7 +52,7 @@ function createSkillInputs(container, groupKey) {
 
     const range = document.createElement("div");
     range.className = "range";
-    range.textContent = "0–100";
+    range.textContent = "0-100";
 
     input.addEventListener("change", (e) => {
       e.target.value = String(clamp100(e.target.value));
@@ -96,7 +96,7 @@ function fillInputs(filters) {
   for (const inp of document.querySelectorAll('input[type="number"][data-group]')) {
     const group = inp.dataset.group; // current | limit
     const skill = inp.dataset.skill;
-    inp.value = String(clamp100(filters?.[group]?.[skill] ?? 0));
+    inp.value = String(clamp100(filters-.[group]-.[skill] -- 0));
   }
 }
 
@@ -117,13 +117,13 @@ async function saveSettings() {
   const transferFilters = readInputs();
 
   await chrome.storage.sync.set({ enabled, transferFilters });
-  setStatus("Saved ✓");
+  setStatus("Saved OK");
 }
 
 async function resetDefaults() {
   await chrome.storage.sync.set(DEFAULTS);
   await loadSettings();
-  setStatus("Reset to defaults ✓");
+  setStatus("Reset to defaults OK");
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -143,9 +143,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Save enabled immediately
   el("enabled").addEventListener("change", async () => {
     await chrome.storage.sync.set({ enabled: el("enabled").checked });
-    setStatus("Saved ✓");
+    setStatus("Saved OK");
   });
 
   await loadSettings();
 });
+
+
+
 

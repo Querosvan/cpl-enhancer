@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   window.CPLEnhancer = window.CPLEnhancer || {};
 
   const SKILLS = [
@@ -90,15 +90,15 @@
 
       if (goodNow && potential) {
         stateClass = "cpl-enhancer-highlight--both";
-        pillText = "⭐ NOW+POT";
+        pillText = "POT";
         pillClass = "cpl-enhancer-tag-pill--both";
       } else if (goodNow) {
         stateClass = "cpl-enhancer-highlight--now";
-        pillText = "🔥 NOW";
+        pillText = "NOW";
         pillClass = "cpl-enhancer-tag-pill--now";
       } else if (potential) {
         stateClass = "cpl-enhancer-highlight--pot";
-        pillText = "⬆️ POT";
+        pillText = "POT";
         pillClass = "cpl-enhancer-tag-pill--pot";
       }
 
@@ -150,3 +150,6 @@
   };
   
 })();
+
+
+
