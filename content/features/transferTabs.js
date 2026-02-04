@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   window.CPLEnhancer = window.CPLEnhancer || {};
 
   const SKILL_PARAM_MAP = {
@@ -389,10 +389,11 @@
       history.replaceState({}, "", url.toString());
     } catch (_) {}
 
+    const label = mode === "now" ? "skills" : "limits";
     const labelCandidates =
       mode === "now"
         ? ["skills", "skill", "habilidades", "habilidad"]
-        : ["limits", "limit", "límite", "limite", "límites", "limites", "cap", "caps"];
+        : ["limits", "limit", "limite", "limites", "cap", "caps"];
     const groupEl = findGroupByLabel(headerEl, labelCandidates);
 
     if (!groupEl) {
@@ -401,18 +402,19 @@
     }
 
     const urlBefore = location.href;
+
+    // Prefer URL params (fast + reliable)
+    const urlApplied = applyPresetViaUrlParams(preset, mode);
+    if (urlApplied) return true;
+
     const opened = await openDropdownAndGetUl(groupEl, preset);
     if (!opened) {
-      // Fallback: if we previously learned URL param mapping, apply via query params.
-      const ok = applyPresetViaUrlParamsIfKnown(preset);
-      if (!ok) {
-        console.warn(
-          `[CPL Enhancer] Could not open "${label}" dropdown (likely blocks synthetic events). ` +
-            `Open it manually once and the enhancer will apply and click filter.`
-        );
-        waitForUserOpenAndApply(groupEl, preset, applyBtn);
-      }
-      return ok;
+      console.warn(
+        `[CPL Enhancer] Could not open "${label}" dropdown (likely blocks synthetic events). ` +
+          `Open it manually once and the enhancer will apply and click filter.`
+      );
+      waitForUserOpenAndApply(groupEl, preset, applyBtn);
+      return false;
     }
 
     // Fill values
@@ -504,10 +506,7 @@
     if (learnedCount > 0) setLearnedParamMap(map);
   }
 
-  function applyPresetViaUrlParamsIfKnown(preset) {
-    const map = getLearnedParamMap();
-    if (!map || !map.min || !map.max) return false;
-
+  function applyPresetViaUrlParams(preset, mode) {
     let url;
     try {
       url = new URL(location.href);
@@ -517,18 +516,18 @@
 
     url.searchParams.set("page", "1");
 
+    // Base param format on current CPLManager URLs:
+    // - current skills: aim-skill=85-100
+    // - limits/caps:   aim-limit-skill=85-100
+    const suffix = mode === "pot" ? "-limit-skill" : "-skill";
+
     let applied = 0;
     for (const [skill, range] of Object.entries(preset)) {
-      const minKey = map.min[skill];
-      const maxKey = map.max[skill];
-      if (minKey) {
-        url.searchParams.set(minKey, String(range.min));
-        applied++;
-      }
-      if (maxKey) {
-        url.searchParams.set(maxKey, String(range.max));
-        applied++;
-      }
+      const base = SKILL_PARAM_MAP[skill];
+      if (!base) continue;
+      const key = `${base}${suffix}`;
+      url.searchParams.set(key, `${range.min}-${range.max}`);
+      applied++;
     }
 
     if (!applied) return false;
@@ -619,3 +618,4 @@
     run();
   };
 })();
+
