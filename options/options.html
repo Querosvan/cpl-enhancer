@@ -62,12 +62,28 @@
             <div class="card">
               <h2>Good now (Current skills)</h2>
               <p class="hint">Minimum current value required per skill.</p>
+              <div class="age-range">
+                <div class="label">Age range</div>
+                <div class="age-row">
+                  <input class="age-input" type="number" id="currentAgeMin" min="13" max="44" step="1" inputmode="numeric" />
+                  <span class="age-sep">to</span>
+                  <input class="age-input" type="number" id="currentAgeMax" min="13" max="44" step="1" inputmode="numeric" />
+                </div>
+              </div>
               <div class="skills" id="currentSkills"></div>
             </div>
 
             <div class="card">
               <h2>Potential (Skill limits / caps)</h2>
               <p class="hint">Minimum potential cap required per skill.</p>
+              <div class="age-range">
+                <div class="label">Age range</div>
+                <div class="age-row">
+                  <input class="age-input" type="number" id="limitAgeMin" min="13" max="44" step="1" inputmode="numeric" />
+                  <span class="age-sep">to</span>
+                  <input class="age-input" type="number" id="limitAgeMax" min="13" max="44" step="1" inputmode="numeric" />
+                </div>
+              </div>
               <div class="skills" id="limitSkills"></div>
             </div>
           </div>

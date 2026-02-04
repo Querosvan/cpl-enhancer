@@ -15,8 +15,16 @@
   const DEFAULTS = {
     enabled: true,
     transferFilters: {
-      current: Object.fromEntries(SKILLS.map(s => [s, 85])),
-      limit: Object.fromEntries(SKILLS.map(s => [s, 90]))
+      current: {
+        ...Object.fromEntries(SKILLS.map(s => [s, 85])),
+        ageMin: 13,
+        ageMax: 44
+      },
+      limit: {
+        ...Object.fromEntries(SKILLS.map(s => [s, 90])),
+        ageMin: 13,
+        ageMax: 25
+      }
     },
     tryoutsFilters: Object.fromEntries(SKILLS.map(s => [s, 90]))
   };

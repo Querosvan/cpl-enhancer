@@ -15,8 +15,16 @@
 const DEFAULTS = {
   enabled: true,
   transferFilters: {
-    current: Object.fromEntries(SKILLS.map(s => [s, 85])),
-    limit: Object.fromEntries(SKILLS.map(s => [s, 90]))
+    current: {
+      ...Object.fromEntries(SKILLS.map(s => [s, 85])),
+      ageMin: 13,
+      ageMax: 44
+    },
+    limit: {
+      ...Object.fromEntries(SKILLS.map(s => [s, 90])),
+      ageMin: 13,
+      ageMax: 25
+    }
   },
   tryoutsFilters: Object.fromEntries(SKILLS.map(s => [s, 90]))
 };
@@ -27,6 +35,12 @@ function clamp100(value) {
   const n = Number(value);
   if (Number.isNaN(n)) return 0;
   return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+function clampAge(value) {
+  const n = Number(value);
+  if (Number.isNaN(n)) return 13;
+  return Math.max(13, Math.min(44, Math.round(n)));
 }
 
 function setStatus(text) {
@@ -96,6 +110,16 @@ function readTransferInputs() {
     limit[inp.dataset.skill] = clamp100(inp.value);
   });
 
+  const currentAgeMin = clampAge(el("currentAgeMin")?.value);
+  const currentAgeMax = clampAge(el("currentAgeMax")?.value);
+  current.ageMin = Math.min(currentAgeMin, currentAgeMax);
+  current.ageMax = Math.max(currentAgeMin, currentAgeMax);
+
+  const limitAgeMin = clampAge(el("limitAgeMin")?.value);
+  const limitAgeMax = clampAge(el("limitAgeMax")?.value);
+  limit.ageMin = Math.min(limitAgeMin, limitAgeMax);
+  limit.ageMax = Math.max(limitAgeMin, limitAgeMax);
+
   return { current, limit };
 }
 
@@ -105,6 +129,16 @@ function fillTransferInputs(filters) {
     const skill = inp.dataset.skill;
     inp.value = String(clamp100(filters?.[group]?.[skill] ?? 0));
   }
+
+  const currentMin = clampAge(filters?.current?.ageMin ?? DEFAULTS.transferFilters.current.ageMin);
+  const currentMax = clampAge(filters?.current?.ageMax ?? DEFAULTS.transferFilters.current.ageMax);
+  const limitMin = clampAge(filters?.limit?.ageMin ?? DEFAULTS.transferFilters.limit.ageMin);
+  const limitMax = clampAge(filters?.limit?.ageMax ?? DEFAULTS.transferFilters.limit.ageMax);
+
+  if (el("currentAgeMin")) el("currentAgeMin").value = String(currentMin);
+  if (el("currentAgeMax")) el("currentAgeMax").value = String(currentMax);
+  if (el("limitAgeMin")) el("limitAgeMin").value = String(limitMin);
+  if (el("limitAgeMax")) el("limitAgeMax").value = String(limitMax);
 }
 
 function readTryoutsFilters() {
@@ -205,6 +239,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   tryoutsInputs.forEach(inp => {
     inp.addEventListener("change", (e) => {
       e.target.value = String(clamp100(e.target.value));
+    });
+  });
+
+  ["currentAgeMin", "currentAgeMax", "limitAgeMin", "limitAgeMax"].forEach((id) => {
+    const input = el(id);
+    if (!input) return;
+    input.addEventListener("change", (e) => {
+      e.target.value = String(clampAge(e.target.value));
     });
   });
 

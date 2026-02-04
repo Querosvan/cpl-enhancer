@@ -28,6 +28,20 @@
     return Math.max(0, Math.min(100, Math.round(v)));
   }
 
+  function clampAge(n) {
+    const v = Number(n);
+    if (Number.isNaN(v)) return 13;
+    return Math.max(13, Math.min(44, Math.round(v)));
+  }
+
+  function getAgeRangeForMode(settings, mode) {
+    const defaults = mode === "now" ? { min: 13, max: 44 } : { min: 13, max: 25 };
+    const src = mode === "now" ? settings?.transferFilters?.current : settings?.transferFilters?.limit;
+    const min = clampAge(src?.ageMin ?? defaults.min);
+    const max = clampAge(src?.ageMax ?? defaults.max);
+    return { min: Math.min(min, max), max: Math.max(min, max) };
+  }
+
   function buildNowPresetFromSettings(settings) {
     const current = settings?.transferFilters?.current || {};
     const preset = {};
@@ -166,6 +180,9 @@
         url.searchParams.delete(key);
       }
     }
+    url.searchParams.delete("age_range");
+    url.searchParams.delete("age-min");
+    url.searchParams.delete("age-max");
   }
 
   const appliedSearches = new Set();
@@ -500,11 +517,11 @@
     applyViaBackground(true, url.search, token);
   }
 
-  async function applyPreset({ mode, preset }) {
+  async function applyPreset({ mode, preset, ageRange }) {
     if (!isTransfersPage()) return false;
 
     // Prefer URL params (fast + reliable)
-    const urlApplied = applyPresetViaUrlParams(preset, mode);
+    const urlApplied = applyPresetViaUrlParams(preset, mode, ageRange);
     if (urlApplied) return true;
 
     const headerEl = findFiltersHeader();
@@ -542,7 +559,7 @@
     const opened = await openDropdownAndGetUl(groupEl, preset);
     if (!opened) {
       // Fallback: if we previously learned URL param mapping, apply via query params.
-      const ok = applyPresetViaUrlParamsIfKnown(preset);
+      const ok = applyPresetViaUrlParamsIfKnown(preset, ageRange);
       if (!ok) {
         console.warn(
           `[CPL Enhancer] Could not open "${label}" dropdown (likely blocks synthetic events). ` +
@@ -587,7 +604,7 @@
     return true;
   }
 
-  function applyPresetViaUrlParams(preset, mode) {
+  function applyPresetViaUrlParams(preset, mode, ageRange) {
     let url;
     try {
       url = new URL(location.href);
@@ -597,6 +614,9 @@
 
     clearSkillParams(url);
     url.searchParams.set("page", "1");
+    if (ageRange) {
+      url.searchParams.set("age_range", `${ageRange.min}-${ageRange.max}`);
+    }
 
     // Base param format on current CPLManager URLs:
     // - current skills: aim-skill=85-100
@@ -699,7 +719,7 @@
     if (learnedCount > 0) setLearnedParamMap(map);
   }
 
-  function applyPresetViaUrlParamsIfKnown(preset) {
+  function applyPresetViaUrlParamsIfKnown(preset, ageRange) {
     const map = getLearnedParamMap();
     if (!map || !map.min || !map.max) return false;
 
@@ -712,6 +732,9 @@
 
     clearSkillParams(url);
     url.searchParams.set("page", "1");
+    if (ageRange) {
+      url.searchParams.set("age_range", `${ageRange.min}-${ageRange.max}`);
+    }
 
     let applied = 0;
     for (const [skill, range] of Object.entries(preset)) {
@@ -762,6 +785,8 @@
 
     const nowPreset = buildNowPresetFromSettings(settings);
     const potPreset = buildPotPresetFromSettings(settings);
+    const nowAge = getAgeRangeForMode(settings, "now");
+    const potAge = getAgeRangeForMode(settings, "pot");
 
     const nowTab = document.createElement("a");
     nowTab.href = "#";
@@ -770,7 +795,7 @@
     nowTab.className = `${baseClass} cpl-enhancer-top-tab cpl-enhancer-top-tab--now`;
     nowTab.addEventListener("click", (e) => {
       e.preventDefault();
-      applyPreset({ mode: "now", preset: nowPreset });
+      applyPreset({ mode: "now", preset: nowPreset, ageRange: nowAge });
     });
 
     const potTab = document.createElement("a");
@@ -780,7 +805,7 @@
     potTab.className = `${baseClass} cpl-enhancer-top-tab cpl-enhancer-top-tab--pot`;
     potTab.addEventListener("click", (e) => {
       e.preventDefault();
-      applyPreset({ mode: "pot", preset: potPreset });
+      applyPreset({ mode: "pot", preset: potPreset, ageRange: potAge });
     });
 
     const resetTab = document.createElement("a");
