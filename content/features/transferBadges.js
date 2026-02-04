@@ -18,6 +18,37 @@
     return Math.max(0, Math.min(99, Math.round(v)));
   }
 
+  function clampAge(n) {
+    const v = Number(n);
+    if (Number.isNaN(v)) return 13;
+    return Math.max(13, Math.min(44, Math.round(v)));
+  }
+
+  function getAgeRangeForMode(settings, mode) {
+    const defaults = mode === "now" ? { min: 13, max: 44 } : { min: 13, max: 25 };
+    const src = mode === "now" ? settings?.transferFilters?.current : settings?.transferFilters?.limit;
+    const min = clampAge(src?.ageMin ?? defaults.min);
+    const max = clampAge(src?.ageMax ?? defaults.max);
+    return { min: Math.min(min, max), max: Math.max(min, max) };
+  }
+
+  function parseAgeFromText(text) {
+    const m = String(text || "").match(/(\d{1,2})\s*yo\b/i);
+    if (!m) return null;
+    const age = Number(m[1]);
+    return Number.isFinite(age) ? age : null;
+  }
+
+  function readAgeFromCard(card) {
+    if (!card) return null;
+    return parseAgeFromText(card.innerText || "");
+  }
+
+  function withinAgeRange(age, range) {
+    if (age == null) return false;
+    return age >= range.min && age <= range.max;
+  }
+
   function readThreshold(map, skillKey) {
     const cap = skillKey.charAt(0).toUpperCase() + skillKey.slice(1);
     const v = (map && (map[skillKey] ?? map[cap])) ?? 0;
@@ -64,20 +95,29 @@
 
     const currentThr = settings?.transferFilters?.current || {};
     const limitThr = settings?.transferFilters?.limit || {};
+    const currentAgeRange = getAgeRangeForMode(settings, "now");
+    const limitAgeRange = getAgeRangeForMode(settings, "pot");
 
     const cards = getRootTransferCards();
 
     for (const card of cards) {
-      // Clean up duplicates inside this card
-      for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-badges"))) {
+      // Clean up previous highlights/tags inside this card
+      for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-badges, .cpl-enhancer-tag"))) {
         el.remove();
       }
+      card.classList.remove(
+        "cpl-enhancer-highlight",
+        "cpl-enhancer-highlight--now",
+        "cpl-enhancer-highlight--pot",
+        "cpl-enhancer-highlight--both"
+      );
 
       const pairs = parsePairsFromCardText(card);
       if (!pairs) continue;
 
-      const goodNow = meetsAll(pairs, currentThr, "current");
-      const potential = meetsAll(pairs, limitThr, "limit");
+      const age = readAgeFromCard(card);
+      const goodNow = meetsAll(pairs, currentThr, "current") && withinAgeRange(age, currentAgeRange);
+      const potential = meetsAll(pairs, limitThr, "limit") && withinAgeRange(age, limitAgeRange);
 
       if (!goodNow && !potential) continue;
 
