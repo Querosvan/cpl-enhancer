@@ -480,13 +480,14 @@
 
     if (!shouldAutoApply(url)) return;
 
-    const doneKey = `cplEnhancer_autoApply_done_${url.search}`;
-    if (sessionStorage.getItem(doneKey) === "1") return;
-    sessionStorage.setItem(doneKey, "1");
-
     const pendingSearch = sessionStorage.getItem("cplEnhancer_pendingSearch");
     const pendingToken = sessionStorage.getItem("cplEnhancer_pendingToken");
     const token = pendingSearch === url.search && pendingToken ? pendingToken : `${Date.now()}`;
+
+    const doneKey = `cplEnhancer_autoApply_done_${token}`;
+    if (sessionStorage.getItem(doneKey) === "1") return;
+    sessionStorage.setItem(doneKey, "1");
+
     if (pendingSearch === url.search) {
       sessionStorage.removeItem("cplEnhancer_pendingSearch");
       sessionStorage.removeItem("cplEnhancer_pendingToken");
@@ -612,7 +613,7 @@
     // Mark pending apply so the next load can auto-apply once.
     try {
       sessionStorage.setItem("cplEnhancer_pendingSearch", url.search);
-      sessionStorage.setItem("cplEnhancer_pendingToken", String(Date.now()));
+      sessionStorage.setItem("cplEnhancer_pendingToken", `${Date.now()}_${Math.random().toString(36).slice(2)}`);
     } catch (_) {}
 
     // Navigate to apply the new params.
@@ -723,7 +724,7 @@
     // Mark pending apply so the next load can auto-apply once.
     try {
       sessionStorage.setItem("cplEnhancer_pendingSearch", url.search);
-      sessionStorage.setItem("cplEnhancer_pendingToken", String(Date.now()));
+      sessionStorage.setItem("cplEnhancer_pendingToken", `${Date.now()}_${Math.random().toString(36).slice(2)}`);
     } catch (_) {}
 
     // Navigate to apply the new params.
