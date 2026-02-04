@@ -241,6 +241,17 @@
     } catch (_) {}
   }
 
+  function applyViaBackground() {
+    try {
+      if (chrome?.runtime?.sendMessage) {
+        chrome.runtime.sendMessage({
+          type: "APPLY_FILTER",
+          selector: APPLY_BTN_SELECTOR
+        });
+      }
+    } catch (_) {}
+  }
+
   function triggerApply(btn) {
     if (!btn) return false;
 
@@ -265,6 +276,8 @@
     clickElement(btn);
     // Fallback in page context (some apps ignore isolated-world events)
     clickApplyInPageContext();
+    // Fallback via background -> MAIN world executeScript (bypasses CSP inline)
+    applyViaBackground();
     return true;
   }
 
