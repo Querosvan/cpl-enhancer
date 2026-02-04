@@ -127,8 +127,12 @@ function fillTryoutsInputs(tryouts) {
 
 async function notifyEnabledChanged(enabled) {
   try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab?.id) chrome.tabs.sendMessage(tab.id, { type: "SET_ENABLED", enabled });
+    const tabs = await chrome.tabs.query({
+      url: ["https://cplmanager.com/*", "https://www.cplmanager.com/*"]
+    });
+    for (const tab of tabs) {
+      if (tab?.id) chrome.tabs.sendMessage(tab.id, { type: "SET_ENABLED", enabled });
+    }
   } catch (_) {}
 }
 
@@ -173,6 +177,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.querySelectorAll(".nav__item").forEach(btn => {
     btn.addEventListener("click", () => setActiveSection(btn.dataset.section));
   });
+  setActiveSection("general");
 
   // Actions
   const saveButtons = ["saveBtn", "saveBtnTryouts"];
