@@ -189,6 +189,28 @@
     return `${cards.length}:${first}`;
   }
 
+  function clickApplyInPageContext() {
+    try {
+      const script = document.createElement("script");
+      script.textContent = `
+        (function () {
+          try {
+            const matchText = /apply filter|aplicar filtro|aplicar|filter|filtro/i;
+            let btn = Array.from(document.querySelectorAll("button.button-primary"))
+              .find(b => matchText.test(b.textContent || ""));
+            if (!btn) {
+              btn = Array.from(document.querySelectorAll("button.button-primary"))
+                .find(b => b.querySelector("svg polygon"));
+            }
+            if (btn) btn.click();
+          } catch (_) {}
+        })();
+      `;
+      (document.head || document.documentElement).appendChild(script);
+      script.remove();
+    } catch (_) {}
+  }
+
   function triggerApply(btn) {
     if (!btn) return false;
 
@@ -211,6 +233,8 @@
     } catch (_) {}
 
     clickElement(btn);
+    // Fallback in page context (some apps ignore isolated-world events)
+    clickApplyInPageContext();
     return true;
   }
 
