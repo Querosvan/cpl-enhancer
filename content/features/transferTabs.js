@@ -59,25 +59,56 @@
   // Filters (Header) helpers
   // =========================
 
+  function matchesAnyText(el, patterns) {
+    const text = (el?.textContent || "").trim().toLowerCase();
+    return patterns.some((p) => text.includes(p));
+  }
+
   function findFiltersHeader() {
-    // Header that contains the "Apply filter" button
+    // Header that contains the "Apply filter" button (localized-safe)
+    const applyPatterns = ["apply filter", "apply", "aplicar filtro", "aplicar", "filter", "filtro"];
+    const buttons = Array.from(document.querySelectorAll("button"));
+    const btn = buttons.find((b) => matchesAnyText(b, applyPatterns));
+    if (btn) return btn.closest("header") || btn.parentElement || null;
+
     const headers = Array.from(document.querySelectorAll("header"));
-    return headers.find((h) => (h.textContent || "").toLowerCase().includes("apply filter")) || null;
+    return (
+      headers.find((h) => {
+        const btns = Array.from(h.querySelectorAll("button"));
+        return btns.some((b) => matchesAnyText(b, applyPatterns));
+      }) || null
+    );
   }
 
   function findApplyButton(headerEl) {
-    // Prefer exact text match
+    if (!headerEl) return null;
+
     const btns = Array.from(headerEl.querySelectorAll("button"));
-    return btns.find((b) => (b.textContent || "").trim().toLowerCase() === "apply filter") || null;
+    const textPatterns = ["apply filter", "apply", "aplicar filtro", "aplicar", "filter", "filtro"];
+
+    // Prefer exact/contains text match
+    const byText = btns.find((b) => matchesAnyText(b, textPatterns));
+    if (byText) return byText;
+
+    // Fallback: type="submit"
+    const submit = btns.find((b) => (b.getAttribute("type") || "").toLowerCase() === "submit");
+    if (submit) return submit;
+
+    // Fallback: class or data attribute hints
+    return (
+      btns.find((b) => /apply|filter|aplicar|filtro/i.test(b.className || "")) ||
+      btns.find((b) => Array.from(b.attributes || []).some((a) => /apply|filter/i.test(a.name)))
+    );
   }
 
-  function findGroupByLabel(headerEl, labelText) {
+  function findGroupByLabel(headerEl, labelCandidates) {
     // Groups are: <div class="flex items-center gap-3"><p>Skills</p> <div class="relative"><button>...</button> ...</div></div>
     const groups = Array.from(headerEl.querySelectorAll("div.flex.items-center.gap-3"));
     return (
-      groups.find(
-        (g) => (g.querySelector("p")?.textContent || "").trim().toLowerCase() === labelText.toLowerCase()
-      ) || null
+      groups.find((g) => {
+        const label = (g.querySelector("p")?.textContent || "").trim().toLowerCase();
+        return labelCandidates.some((c) => label.includes(c));
+      }) || null
     );
   }
 
@@ -292,6 +323,12 @@
   }
 
   async function applyPreset({ mode, preset }) {
+    if (!isTransfersPage()) return false;
+
+    // Prefer URL params (fast + reliable)
+    const urlApplied = applyPresetViaUrlParams(preset, mode);
+    if (urlApplied) return true;
+
     const headerEl = findFiltersHeader();
     if (!headerEl) {
       console.warn("[CPL Enhancer] Filters header not found.");
@@ -311,8 +348,12 @@
       history.replaceState({}, "", url.toString());
     } catch (_) {}
 
-    const label = mode === "now" ? "Skills" : "Limits";
-    const groupEl = findGroupByLabel(headerEl, label);
+    const label = mode === "now" ? "skills" : "limits";
+    const labelCandidates =
+      mode === "now"
+        ? ["skills", "skill", "habilidades", "habilidad"]
+        : ["limits", "limit", "limite", "limites", "cap", "caps"];
+    const groupEl = findGroupByLabel(headerEl, labelCandidates);
 
     if (!groupEl) {
       console.warn(`[CPL Enhancer] Group "${label}" not found.`);
@@ -352,6 +393,36 @@
   // =========================
   // URL-param fallback (learned)
   // =========================
+
+  function applyPresetViaUrlParams(preset, mode) {
+    let url;
+    try {
+      url = new URL(location.href);
+    } catch (_) {
+      return false;
+    }
+
+    url.searchParams.set("page", "1");
+
+    // Base param format on current CPLManager URLs:
+    // - current skills: aim-skill=85-100
+    // - limits/caps:   aim-limit-skill=85-100
+    const suffix = mode === "pot" ? "-limit-skill" : "-skill";
+
+    let applied = 0;
+    for (const [skillKey, range] of Object.entries(preset)) {
+      const key = String(skillKey || "").toLowerCase();
+      if (!key) continue;
+      url.searchParams.set(`${key}${suffix}`, `${range.min}-${range.max}`);
+      applied++;
+    }
+
+    if (!applied) return false;
+
+    // Navigate to apply the new params.
+    location.href = url.toString();
+    return true;
+  }
 
   function getLearnedParamMap() {
     try {
