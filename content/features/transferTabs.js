@@ -68,7 +68,7 @@
     // Header that contains the "Apply filter" button (localized-safe)
     const applyPatterns = ["apply filter", "apply", "aplicar filtro", "aplicar", "filter", "filtro"];
     const buttons = Array.from(document.querySelectorAll("button"));
-    const btn = buttons.find((b) => matchesAnyText(b, applyPatterns));
+    const btn = buttons.find((b) => matchesAnyText(b, applyPatterns)) || buttons.find((b) => b.querySelector("svg"));
     if (btn) return btn.closest("header") || btn.parentElement || null;
 
     const headers = Array.from(document.querySelectorAll("header"));
@@ -93,6 +93,10 @@
     // Fallback: type="submit"
     const submit = btns.find((b) => (b.getAttribute("type") || "").toLowerCase() === "submit");
     if (submit) return submit;
+
+    // Fallback: button with filter icon (SVG)
+    const withIcon = btns.find((b) => b.querySelector("svg"));
+    if (withIcon) return withIcon;
 
     // Fallback: class or data attribute hints
     return (
