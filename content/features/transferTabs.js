@@ -176,6 +176,13 @@
     } catch (_) {}
   }
 
+  function getTransferCardsSignature() {
+    const cards = Array.from(document.querySelectorAll("div.card"));
+    if (!cards.length) return "0";
+    const first = (cards[0].innerText || "").slice(0, 80);
+    return `${cards.length}:${first}`;
+  }
+
   function isVisible(el) {
     if (!el) return false;
     const r = el.getBoundingClientRect();
@@ -371,24 +378,37 @@
     if (!shouldAutoApply(url)) return;
 
     const guardKey = `cplEnhancer_autoApply_${url.search}`;
+    const triesKey = `${guardKey}_tries`;
     if (sessionStorage.getItem(guardKey) === "1") return;
 
-    let attempts = 0;
+    const maxTries = 12;
+
     const tryClick = () => {
-      attempts += 1;
+      const tries = Number(sessionStorage.getItem(triesKey) || "0");
+      if (tries >= maxTries) return;
+      sessionStorage.setItem(triesKey, String(tries + 1));
+
       const header = findFiltersHeader();
       const btn = header ? findApplyButton(header) : null;
 
-      if (btn && isVisible(btn)) {
-        sessionStorage.setItem(guardKey, "1");
-        clearAutoApply();
+      if (btn && isVisible(btn) && !btn.disabled && btn.getAttribute("aria-disabled") !== "true") {
+        const beforeSig = getTransferCardsSignature();
         clickElement(btn);
+
+        setTimeout(() => {
+          const afterSig = getTransferCardsSignature();
+          if (afterSig !== beforeSig) {
+            sessionStorage.setItem(guardKey, "1");
+            sessionStorage.removeItem(triesKey);
+            clearAutoApply();
+            return;
+          }
+          setTimeout(tryClick, 300);
+        }, 600);
         return;
       }
 
-      if (attempts < 20) {
-        setTimeout(tryClick, 250);
-      }
+      setTimeout(tryClick, 300);
     };
 
     tryClick();
