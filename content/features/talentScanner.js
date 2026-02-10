@@ -47,6 +47,39 @@
     return sig;
   }
 
+  function getIconFromStyle(el) {
+    if (!el) return "";
+    const style = window.getComputedStyle ? window.getComputedStyle(el) : null;
+    if (!style) return "";
+    const bg = style.backgroundImage || "";
+    const match = bg.match(/url\\([\"']?(.*?)[\"']?\\)/i);
+    return match ? match[1] : "";
+  }
+
+  function findIconData(container) {
+    if (!container) return { svgSignature: "", iconUrl: "" };
+
+    const svg =
+      container.querySelector("svg") ||
+      container.closest("svg") ||
+      container.parentElement?.querySelector?.("svg");
+    const svgSignature = getSvgSignature(svg);
+
+    const img =
+      container.querySelector("img") ||
+      container.closest("img") ||
+      container.parentElement?.querySelector?.("img");
+    const imgSrc = img?.getAttribute?.("src") || "";
+
+    const styleUrl =
+      getIconFromStyle(container) ||
+      getIconFromStyle(container.querySelector?.("div")) ||
+      getIconFromStyle(container.parentElement);
+
+    const iconUrl = imgSrc || styleUrl || "";
+    return { svgSignature, iconUrl };
+  }
+
   function findTalentModal() {
     const candidates = Array.from(document.querySelectorAll("div, section, article, dialog"));
     let best = null;
@@ -145,9 +178,9 @@
       if (!container) continue;
 
       const name = resolveTalentName(container);
-      const svg = container.querySelector("svg");
-      const signature = getSvgSignature(svg);
-      const id = normalizeId(name || signature || "");
+      const icon = findIconData(container);
+      const signature = icon.svgSignature;
+      const id = normalizeId(name || signature || icon.iconUrl || "");
       const dedupeKey = `${id}:${current}/${max}`;
       if (seen.has(dedupeKey)) continue;
       seen.add(dedupeKey);
@@ -159,7 +192,8 @@
         name: name || null,
         category: category || null,
         points: { current, max },
-        svgSignature: signature || null
+        svgSignature: signature || null,
+        iconUrl: icon.iconUrl || null
       });
     }
 
