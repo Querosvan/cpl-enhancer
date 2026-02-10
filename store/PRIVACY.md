@@ -1,4 +1,7 @@
-﻿# Privacy Summary (Chrome Web Store)
+# Privacy Summary (Chrome Web Store)
+
+Single purpose
+- Enhance CPLManager with quality-of-life features (Transfers and Tryouts) on cplmanager.com only.
 
 Data collection
 - No personal data is collected.
@@ -6,16 +9,20 @@ Data collection
 - No analytics or telemetry.
 
 Data usage
-- Settings are stored using chrome.storage.sync to keep your preferences across Chrome profiles.
+- Settings are stored using chrome.storage.sync to keep preferences across Chrome profiles.
 - Data never leaves the device through the extension.
 
 Data sharing
 - No data is shared with third parties.
 
-Permissions explanation
+Permissions justification
 - storage: save your settings and thresholds.
-- activeTab and scripting: apply presets on the current CPLManager tab.
-- host permissions: run only on cplmanager.com.
+- activeTab: apply actions only on the current CPLManager tab.
+- scripting: inject UI enhancements and apply presets on CPLManager.
+- host permissions: run only on cplmanager.com (including www).
+
+Remote code
+- Not used. The extension does not load or execute remote code.
 
 Developer contact
 querosvan@gmail.com
