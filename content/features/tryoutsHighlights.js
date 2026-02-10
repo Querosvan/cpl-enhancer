@@ -150,6 +150,22 @@
     return `${stars}|${isMust ? "1" : "0"}|${statusKey}`;
   }
 
+  function ratingTitle(stars) {
+    switch (stars) {
+      case 5:
+        return "5★: Must pick. All skills meet your minimums.";
+      case 4:
+        return "4★: Can reach minimums with remaining points (no unknowns).";
+      case 3:
+        return "3★: Potential fit, but some skills are unknown.";
+      case 2:
+        return "2★: Mixed. Some skills miss minimums and are not reachable yet.";
+      case 1:
+      default:
+        return "1★: Not viable. One or more skills cannot reach minimums.";
+    }
+  }
+
   // Isolated rating logic so we can tweak it later without touching the DOM work.
   function computeStarRating(summary) {
     const { met, reachable, nope, unknown, total } = summary;
@@ -183,7 +199,7 @@
     return null;
   }
 
-  function addRating(card, rating) {
+  function addRating(card, rating, title) {
     for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-tryout-rating"))) {
       el.remove();
     }
@@ -191,6 +207,7 @@
     const wrap = document.createElement("span");
     wrap.className = "cpl-enhancer-tryout-rating";
     wrap.setAttribute("data-stars", String(rating));
+    if (title) wrap.setAttribute("title", title);
 
     for (let i = 1; i <= 5; i += 1) {
       const star = document.createElement("span");
@@ -266,12 +283,14 @@
       const signature = buildSignature(statuses, stars, isMust);
 
       if (card.dataset.cplTryoutSig === signature) {
-        if (!card.querySelector(".cpl-enhancer-tryout-rating")) addRating(card, stars);
-        applySkillClasses(card, statuses);
-        if (isMust) {
-          card.classList.add("cpl-enhancer-tryout-highlight");
-          ensureMustTag(card);
-        }
+      if (!card.querySelector(".cpl-enhancer-tryout-rating")) {
+        addRating(card, stars, ratingTitle(stars));
+      }
+      applySkillClasses(card, statuses);
+      if (isMust) {
+        card.classList.add("cpl-enhancer-tryout-highlight");
+        ensureMustTag(card);
+      }
         continue;
       }
 
@@ -290,7 +309,7 @@
       }
       card.classList.remove("cpl-enhancer-tryout-highlight");
 
-      addRating(card, stars);
+      addRating(card, stars, ratingTitle(stars));
       applySkillClasses(card, statuses);
 
       if (isMust) {
