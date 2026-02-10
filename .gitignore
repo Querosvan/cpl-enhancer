@@ -17,3 +17,6 @@ out/
 
 # Node (if added later)
 node_modules/
+
+# Store raw assets
+store/raw/

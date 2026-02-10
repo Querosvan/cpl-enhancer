@@ -1,22 +1,23 @@
-﻿# Store Listing (ES)
+# Store Listing (ES)
 
 Title
 CPL Enhancer
 
 Short description (<= 132 chars)
-Mejoras rapidas para CPLManager: presets Now/Pot, badges de talento y edades resaltadas.
+Mejoras para CPLManager: presets rapidos, badges de talento, edades resaltadas y tryouts.
 
 Detailed description
-CPL Enhancer agrega mejoras de calidad de vida a CPLManager, enfocadas en Transfers.
+CPL Enhancer agrega mejoras de calidad de vida a CPLManager, centradas en Transfers y Tryouts.
 
 Lo que hace
-- Tabs Now y Pot para aplicar presets de filtros con un clic.
-- Badges y bordes para destacar jugadores con buen nivel o potencial.
+- Tabs Now y Pot para aplicar presets con un clic.
+- Badges y bordes para destacar jugadores fuertes o con potencial.
 - Gradientes de edad para escanear rapido.
+- Resaltados en Tryouts para detectar prospectos.
 - Pagina de opciones con umbrales configurables.
 
 Como usar
-1. Entra en cplmanager.com y abre Transfers.
+1. Entra en cplmanager.com y abre Transfers o Tryouts.
 2. Activa la extension desde el popup.
 3. Usa Now o Pot y ajusta umbrales en Opciones.
 
@@ -33,19 +34,20 @@ Title
 CPL Enhancer
 
 Short description (<= 132 chars)
-Quick CPLManager upgrades: Now/Pot presets, talent badges, and age highlights.
+CPLManager upgrades: one-click presets, player badges, age highlights, and tryouts insights.
 
 Detailed description
-CPL Enhancer adds quality-of-life upgrades to CPLManager, focused on Transfers.
+CPL Enhancer adds quality-of-life upgrades to CPLManager, focused on Transfers and Tryouts.
 
 What it does
 - Now and Pot tabs that apply filter presets in one click.
 - Badges and borders that highlight strong or high-potential players.
 - Age gradients for faster scanning.
+- Tryouts highlights to spot top prospects.
 - Options page with configurable thresholds.
 
 How to use
-1. Go to cplmanager.com and open Transfers.
+1. Go to cplmanager.com and open Transfers or Tryouts.
 2. Toggle the extension from the popup.
 3. Use Now or Pot and tune thresholds in Options.
 
