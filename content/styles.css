@@ -76,10 +76,12 @@
 .cpl-enhancer-tag {
   position: absolute;
   top: 12px;
-  left: 12px;
+  right: 12px;
   z-index: 5;
   display: inline-flex;
   gap: 6px;
+  justify-content: flex-end;
+  max-width: 65%;
 }
 
 .cpl-enhancer-tag-pill {
