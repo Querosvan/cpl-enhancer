@@ -207,7 +207,7 @@
     const wrap = document.createElement("span");
     wrap.className = "cpl-enhancer-tryout-rating";
     wrap.setAttribute("data-stars", String(rating));
-    if (title) wrap.setAttribute("title", title);
+    wrap.tabIndex = 0;
 
     for (let i = 1; i <= 5; i += 1) {
       const star = document.createElement("span");
@@ -215,6 +215,13 @@
       if (i <= rating) star.classList.add("is-on");
       star.textContent = "*";
       wrap.appendChild(star);
+    }
+
+    if (title) {
+      const tip = document.createElement("span");
+      tip.className = "cpl-enhancer-tryout-tooltip";
+      tip.textContent = title;
+      wrap.appendChild(tip);
     }
 
     const anchor = findNameAnchor(card);
