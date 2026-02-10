@@ -38,11 +38,20 @@
   function getSvgSignature(svg) {
     if (!svg || (svg.tagName || "").toLowerCase() !== "svg") return "";
     if (svg.dataset?.cplTalentSig) return svg.dataset.cplTalentSig;
-    const parts = Array.from(svg.querySelectorAll("path")).map((path) =>
-      (path.getAttribute("d") || "").slice(0, 40)
-    );
-    if (!parts.length) return "";
-    const sig = parts.join("|");
+    const paths = Array.from(svg.querySelectorAll("path"));
+    const parts = paths.map((path) => (path.getAttribute("d") || "").slice(0, 40));
+    let sig = "";
+    if (parts.length) {
+      sig = parts.join("|");
+    } else {
+      const useEl = svg.querySelector("use");
+      const href =
+        useEl?.getAttribute?.("href") ||
+        useEl?.getAttribute?.("xlink:href") ||
+        "";
+      sig = href || "";
+    }
+    if (!sig) return "";
     if (sig) svg.dataset.cplTalentSig = sig;
     return sig;
   }
@@ -58,26 +67,65 @@
 
   function findIconData(container) {
     if (!container) return { svgSignature: "", iconUrl: "" };
+    const candidates = [];
+    const addNode = (node) => {
+      if (!node) return;
+      candidates.push(node);
+      const extra = node.querySelectorAll?.("svg,img,div,span");
+      if (extra && extra.length) candidates.push(...extra);
+    };
 
-    const svg =
-      container.querySelector("svg") ||
-      container.closest("svg") ||
-      container.parentElement?.querySelector?.("svg");
-    const svgSignature = getSvgSignature(svg);
+    addNode(container);
+    addNode(container.parentElement);
+    addNode(container.parentElement?.parentElement);
 
-    const img =
-      container.querySelector("img") ||
-      container.closest("img") ||
-      container.parentElement?.querySelector?.("img");
-    const imgSrc = img?.getAttribute?.("src") || "";
+    let prev = container.previousElementSibling;
+    for (let i = 0; i < 2 && prev; i += 1) {
+      addNode(prev);
+      prev = prev.previousElementSibling;
+    }
 
-    const styleUrl =
-      getIconFromStyle(container) ||
-      getIconFromStyle(container.querySelector?.("div")) ||
-      getIconFromStyle(container.parentElement);
+    let next = container.nextElementSibling;
+    for (let i = 0; i < 2 && next; i += 1) {
+      addNode(next);
+      next = next.nextElementSibling;
+    }
 
-    const iconUrl = imgSrc || styleUrl || "";
-    return { svgSignature, iconUrl };
+    for (const node of candidates) {
+      const svg = node.querySelector?.("svg") || (node.tagName === "svg" ? node : null);
+      const svgSignature = getSvgSignature(svg);
+      const img = node.querySelector?.("img") || (node.tagName === "img" ? node : null);
+      const imgSrc = img?.getAttribute?.("src") || "";
+      const styleUrl = getIconFromStyle(node);
+      const iconUrl = imgSrc || styleUrl || "";
+      if (svgSignature || iconUrl) {
+        return { svgSignature, iconUrl };
+      }
+    }
+
+    return { svgSignature: "", iconUrl: "" };
+  }
+
+  function findBadgeNodes(root) {
+    if (!root) return [];
+    const nodes = Array.from(root.querySelectorAll("div, span, p"));
+    return nodes.filter((node) => /^\d+\s*\/\s*\d+$/.test((node.textContent || "").trim()));
+  }
+
+  function collectCategoryRoots(modal) {
+    const out = new Map();
+    const headings = Array.from(modal.querySelectorAll("h1,h2,h3,h4,h5,h6"));
+    for (const heading of headings) {
+      const name = normalize(heading.textContent);
+      if (!CATEGORIES.includes(name)) continue;
+      const root = heading.parentElement || heading;
+      const score = findBadgeNodes(root).length;
+      const prev = out.get(name);
+      if (!prev || score > prev.score) {
+        out.set(name, { root, score });
+      }
+    }
+    return new Map(Array.from(out.entries()).map(([key, val]) => [key, val.root]));
   }
 
   function findTalentModal() {
@@ -106,28 +154,10 @@
     return Number(match[1]);
   }
 
-  function findCategoryForNode(node, modal) {
-    if (!node || !modal) return null;
-    let current = node;
-    while (current && current !== modal) {
-      const headings = Array.from(current.querySelectorAll("h1,h2,h3,h4,h5,h6,div,span,strong"));
-      for (const h of headings) {
-        const name = normalize(h.textContent);
-        if (CATEGORIES.includes(name)) return name;
-      }
-      current = current.parentElement;
-    }
-
-    // fallback: scan siblings upwards
-    current = node;
-    while (current && current !== modal) {
-      let prev = current.previousElementSibling;
-      while (prev) {
-        const name = normalize(prev.textContent);
-        if (CATEGORIES.includes(name)) return name;
-        prev = prev.previousElementSibling;
-      }
-      current = current.parentElement;
+  function findCategoryForNode(node, roots) {
+    if (!node || !roots) return null;
+    for (const [category, root] of roots.entries()) {
+      if (root && root.contains(node)) return category;
     }
     return null;
   }
@@ -152,15 +182,10 @@
     return "";
   }
 
-  function findBadgeNodes(modal) {
-    if (!modal) return [];
-    const nodes = Array.from(modal.querySelectorAll("div, span, p"));
-    return nodes.filter((node) => /^\d+\s*\/\s*\d+$/.test((node.textContent || "").trim()));
-  }
-
   function buildTalentList(modal) {
     const pointsLeft = findPointsLeft(modal);
     const badges = findBadgeNodes(modal);
+    const categoryRoots = collectCategoryRoots(modal);
     const talents = [];
     const seen = new Set();
 
@@ -185,7 +210,7 @@
       if (seen.has(dedupeKey)) continue;
       seen.add(dedupeKey);
 
-      const category = findCategoryForNode(container, modal);
+      const category = findCategoryForNode(container, categoryRoots);
 
       talents.push({
         id: id || null,
