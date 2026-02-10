@@ -313,6 +313,31 @@
     return text.trim();
   }
 
+  function insertLauncherByTotalLabel(card, launcher) {
+    const labelNodes = Array.from(card.querySelectorAll("p"));
+    const totalLabel = labelNodes.find((node) => {
+      const text = (node.textContent || "").trim().toLowerCase();
+      return text === "total skill";
+    });
+
+    const totalBox = totalLabel ? totalLabel.parentElement : null;
+    if (!totalBox || !totalBox.parentElement) return false;
+
+    const parent = totalBox.parentElement;
+    const wrapClass = "cpl-skillwhat-total-wrap";
+    const existingWrap = totalBox.closest("." + wrapClass);
+    const wrap = existingWrap || document.createElement("div");
+
+    if (!existingWrap) {
+      wrap.className = wrapClass;
+      parent.insertBefore(wrap, totalBox);
+      wrap.appendChild(totalBox);
+    }
+
+    wrap.appendChild(launcher);
+    return true;
+  }
+
   function openModalWithText(text) {
     const modal = ensureModal();
     if (!modal) return;
@@ -367,28 +392,7 @@
       openModalWithText(text);
     });
 
-    const labelNodes = Array.from(card.querySelectorAll("p"));
-    const totalLabel = labelNodes.find((node) => {
-      const text = (node.textContent || "").trim().toLowerCase();
-      return text === "total skill";
-    });
-
-    const totalBox = totalLabel ? totalLabel.parentElement : null;
-    if (totalBox && totalBox.parentElement) {
-      const parent = totalBox.parentElement;
-      const wrapClass = "cpl-skillwhat-total-wrap";
-      const existingWrap = totalBox.closest("." + wrapClass);
-      const wrap = existingWrap || document.createElement("div");
-
-      if (!existingWrap) {
-        wrap.className = wrapClass;
-        parent.insertBefore(wrap, totalBox);
-        wrap.appendChild(totalBox);
-      }
-
-      wrap.appendChild(launcher);
-      return;
-    }
+    if (insertLauncherByTotalLabel(card, launcher)) return;
 
     const nameLink =
       card.querySelector("h5 a[href*='/players/']") ||
@@ -434,6 +438,8 @@
       const text = buildTryoutText(card) || (await getSelectedText());
       openModalWithText(text);
     });
+
+    if (insertLauncherByTotalLabel(card, launcher)) return;
 
     const nameAnchor = findTryoutNameAnchor(card);
     if (nameAnchor) {
