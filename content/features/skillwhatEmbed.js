@@ -50,16 +50,22 @@
 
   function findTryoutCards() {
     const candidates = Array.from(document.querySelectorAll("div.card, li, article, section"));
-    return candidates.filter((el) => {
-      if (!el || !el.innerText) return false;
+    const roots = new Map();
+    candidates.forEach((el) => {
+      if (!el || !el.innerText) return;
 
       const parentMatch = el.parentElement && el.parentElement.closest("div.card, li, article, section");
-      if (parentMatch && parentMatch !== el) return false;
+      if (parentMatch && parentMatch !== el) return;
 
       const pairs = parseTryoutSkills(el.innerText);
       const count = Object.keys(pairs).length;
-      return count >= 3;
+      if (count < 3) return;
+
+      const root = el.closest("div.card") || el;
+      roots.set(root, true);
     });
+
+    return Array.from(roots.keys());
   }
 
   function ensureModal() {
@@ -321,9 +327,16 @@
     const icon = document.createElement("img");
     icon.className = "cpl-skillwhat-launcher__icon";
     const iconSrc = safeRuntimeUrl("skillwhat/favicon.ico");
-    if (iconSrc) icon.src = iconSrc;
-    icon.alt = "SkillWhat";
-    launcher.appendChild(icon);
+    if (iconSrc) {
+      icon.src = iconSrc;
+      icon.addEventListener("error", () => {
+        icon.remove();
+        if (!launcher.textContent) launcher.textContent = "SkillWhat";
+      });
+      launcher.appendChild(icon);
+    } else {
+      launcher.textContent = "SkillWhat";
+    }
 
     launcher.addEventListener("click", async (event) => {
       if (event && typeof event.stopPropagation === "function") {
@@ -389,9 +402,16 @@
     const icon = document.createElement("img");
     icon.className = "cpl-skillwhat-launcher__icon";
     const iconSrc = safeRuntimeUrl("skillwhat/favicon.ico");
-    if (iconSrc) icon.src = iconSrc;
-    icon.alt = "SkillWhat";
-    launcher.appendChild(icon);
+    if (iconSrc) {
+      icon.src = iconSrc;
+      icon.addEventListener("error", () => {
+        icon.remove();
+        if (!launcher.textContent) launcher.textContent = "SkillWhat";
+      });
+      launcher.appendChild(icon);
+    } else {
+      launcher.textContent = "SkillWhat";
+    }
 
     launcher.addEventListener("click", async (event) => {
       if (event && typeof event.stopPropagation === "function") {
@@ -402,17 +422,16 @@
     });
 
     const nameAnchor = findTryoutNameAnchor(card);
-    const header =
-      (nameAnchor && nameAnchor.closest("h1, h2, h3, h4, h5")) ||
-      card.querySelector("header") ||
-      card;
-
-    if (header) {
-      header.appendChild(launcher);
-      return;
+    if (nameAnchor) {
+      const header = nameAnchor.closest("h1, h2, h3, h4, h5") || nameAnchor.parentElement;
+      if (header) {
+        header.appendChild(launcher);
+        return;
+      }
     }
 
-    card.prepend(launcher);
+    const header = card.querySelector("header") || card.querySelector(".card-header") || card;
+    header.appendChild(launcher);
   }
 
   function ensureLaunchersInCards() {
