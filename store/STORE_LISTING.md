@@ -24,6 +24,7 @@ Como usar
 Notas
 - Funciona solo en cplmanager.com.
 - No recopila datos ni envia informacion a servidores externos.
+- No afiliado ni respaldado por CPLManager.
 
 Soporte
 querosvan@gmail.com
@@ -54,6 +55,7 @@ How to use
 Notes
 - Works only on cplmanager.com.
 - No data collection and no external servers.
+- Not affiliated with or endorsed by CPLManager.
 
 Support
 querosvan@gmail.com

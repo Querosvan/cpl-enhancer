@@ -26,7 +26,10 @@ thresholds.
 ## Privacy and Permissions
 - No personal data is collected.
 - Settings are stored with `chrome.storage.sync`.
-- Permissions are limited to `cplmanager.com`.
+- Permissions are limited to `cplmanager.com` (including `www`).
+
+## Disclaimer
+Not affiliated with or endorsed by CPLManager.
 
 See `PRIVACY.md` for the full privacy policy.
 

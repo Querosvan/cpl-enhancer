@@ -19,7 +19,7 @@ Permissions justification
 - storage: save your settings and thresholds.
 - activeTab: apply actions only on the current CPLManager tab.
 - scripting: inject UI enhancements and apply presets on CPLManager.
-- host permissions: run only on cplmanager.com.
+- host permissions: run only on cplmanager.com (including www).
 
 Remote code
 - Not used. The extension does not load or execute remote code.
