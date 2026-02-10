@@ -135,6 +135,23 @@
     return rootCards.filter(c => (c.innerText || "").includes("Primary skills"));
   }
 
+  function findPrimarySkillsAnchor(card) {
+    if (!card) return null;
+    const nodes = Array.from(
+      card.querySelectorAll("h1,h2,h3,h4,h5,h6,p,div,span,strong")
+    );
+    return nodes.find((el) => /primary skills/i.test(el.textContent || "")) || null;
+  }
+
+  function insertTagBeforePrimarySkills(card, tag) {
+    const label = findPrimarySkillsAnchor(card);
+    if (!label) return false;
+    const row = label.closest("div") || label.parentElement || label;
+    const parent = row.parentElement || card;
+    parent.insertBefore(tag, row);
+    return true;
+  }
+
   function applyBadges(settings) {
     if (!location.pathname.includes("/cpl/office/transfers")) return;
 
@@ -223,7 +240,9 @@
         }
       }
 
-      card.appendChild(tag);
+      if (!insertTagBeforePrimarySkills(card, tag)) {
+        card.appendChild(tag);
+      }
 
     }
   }
