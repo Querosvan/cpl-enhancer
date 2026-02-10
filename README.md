@@ -36,5 +36,8 @@ See `PRIVACY.md` for the full privacy policy.
 ## Support
 Contact: querosvan@gmail.com
 
+## Credits
+See `CREDITS.md` for third-party credits.
+
 ## License
 MIT
