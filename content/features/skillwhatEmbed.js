@@ -145,6 +145,7 @@
       "h3",
       "h4",
       "h5",
+      "h6",
       ".player-name",
       ".player__name",
       ".name",
@@ -436,19 +437,23 @@
       openModalWithText(text);
     });
 
+    const nameAnchor = findTryoutNameAnchor(card);
+    if (nameAnchor) {
+      const heading = nameAnchor.closest("h1, h2, h3, h4, h5, h6") || nameAnchor;
+      const row = heading.parentElement;
+      if (row) {
+        row.appendChild(launcher);
+        return;
+      }
+
+      heading.appendChild(launcher);
+      return;
+    }
+
     const actions = findTryoutActions(card);
     if (actions) {
       actions.insertBefore(launcher, actions.firstChild);
       return;
-    }
-
-    const nameAnchor = findTryoutNameAnchor(card);
-    if (nameAnchor) {
-      const header = nameAnchor.closest("h1, h2, h3, h4, h5") || nameAnchor.parentElement;
-      if (header) {
-        header.appendChild(launcher);
-        return;
-      }
     }
 
     const header = card.querySelector("header") || card.querySelector(".card-header") || card;
