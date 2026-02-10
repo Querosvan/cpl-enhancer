@@ -29,6 +29,18 @@
     return null;
   }
 
+  function createLauncherIcon() {
+    const iconSrc = safeRuntimeUrl("skillwhat/favicon.ico");
+    if (!iconSrc) return null;
+    const icon = document.createElement("span");
+    icon.className = "cpl-skillwhat-launcher__icon";
+    icon.style.backgroundImage = `url("${iconSrc}")`;
+    icon.style.backgroundSize = "cover";
+    icon.style.backgroundPosition = "center";
+    icon.style.backgroundRepeat = "no-repeat";
+    return icon;
+  }
+
   function isTryoutsPage() {
     return location.pathname.includes("/cpl/academy/tryouts");
   }
@@ -340,15 +352,8 @@
     launcher.type = "button";
     launcher.setAttribute("aria-label", "SkillWhat");
 
-    const icon = document.createElement("img");
-    icon.className = "cpl-skillwhat-launcher__icon";
-    const iconSrc = safeRuntimeUrl("skillwhat/favicon.ico");
-    if (iconSrc) {
-      icon.src = iconSrc;
-      icon.addEventListener("error", () => {
-        icon.remove();
-        if (!launcher.textContent) launcher.textContent = "SkillWhat";
-      });
+    const icon = createLauncherIcon();
+    if (icon) {
       launcher.appendChild(icon);
     } else {
       launcher.textContent = "SkillWhat";
@@ -415,15 +420,8 @@
     launcher.type = "button";
     launcher.setAttribute("aria-label", "SkillWhat");
 
-    const icon = document.createElement("img");
-    icon.className = "cpl-skillwhat-launcher__icon";
-    const iconSrc = safeRuntimeUrl("skillwhat/favicon.ico");
-    if (iconSrc) {
-      icon.src = iconSrc;
-      icon.addEventListener("error", () => {
-        icon.remove();
-        if (!launcher.textContent) launcher.textContent = "SkillWhat";
-      });
+    const icon = createLauncherIcon();
+    if (icon) {
       launcher.appendChild(icon);
     } else {
       launcher.textContent = "SkillWhat";
