@@ -202,7 +202,7 @@
       }
 
       if (suitableRoles.length) {
-        const maxRoles = 3;
+        const maxRoles = 2;
         const visible = suitableRoles.slice(0, maxRoles);
         const extra = suitableRoles.length - visible.length;
 
