@@ -163,26 +163,43 @@
     const cards = getRootTransferCards();
 
     for (const card of cards) {
-      // Clean up previous highlights/tags inside this card
-      for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-badges, .cpl-enhancer-tag"))) {
-        el.remove();
-      }
-      card.classList.remove(
-        "cpl-enhancer-highlight",
-        "cpl-enhancer-highlight--now",
-        "cpl-enhancer-highlight--pot",
-        "cpl-enhancer-highlight--both"
-      );
-
       const pairs = parsePairsFromCardText(card);
-      if (!pairs) continue;
+      if (!pairs) {
+        if (card.dataset.cplEnhancerTagSig) {
+          for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-badges, .cpl-enhancer-tag"))) {
+            el.remove();
+          }
+          card.classList.remove(
+            "cpl-enhancer-highlight",
+            "cpl-enhancer-highlight--now",
+            "cpl-enhancer-highlight--pot",
+            "cpl-enhancer-highlight--both"
+          );
+          delete card.dataset.cplEnhancerTagSig;
+        }
+        continue;
+      }
 
       const age = readAgeFromCard(card);
       const goodNow = meetsAll(pairs, currentThr, "current") && withinAgeRange(age, currentAgeRange);
       const potential = meetsAll(pairs, limitThr, "limit") && withinAgeRange(age, limitAgeRange);
       const suitableRoles = getSuitableRoles(pairs, settings);
 
-      if (!goodNow && !potential && !suitableRoles.length) continue;
+      if (!goodNow && !potential && !suitableRoles.length) {
+        if (card.dataset.cplEnhancerTagSig) {
+          for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-badges, .cpl-enhancer-tag"))) {
+            el.remove();
+          }
+          card.classList.remove(
+            "cpl-enhancer-highlight",
+            "cpl-enhancer-highlight--now",
+            "cpl-enhancer-highlight--pot",
+            "cpl-enhancer-highlight--both"
+          );
+          delete card.dataset.cplEnhancerTagSig;
+        }
+        continue;
+      }
 
       // Apply whole-card highlight base
       card.classList.add("cpl-enhancer-highlight");
@@ -206,6 +223,26 @@
       }
 
       if (stateClass) card.classList.add(stateClass);
+
+      const roleSig = suitableRoles.map(r => r.id || r.label || "").join(",");
+      const sig = `${stateClass || "none"}|${pillText || ""}|${roleSig}`;
+      if (card.dataset.cplEnhancerTagSig === sig) {
+        continue;
+      }
+
+      // Clean up previous highlights/tags inside this card
+      for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-badges, .cpl-enhancer-tag"))) {
+        el.remove();
+      }
+      card.classList.remove(
+        "cpl-enhancer-highlight",
+        "cpl-enhancer-highlight--now",
+        "cpl-enhancer-highlight--pot",
+        "cpl-enhancer-highlight--both"
+      );
+
+      if (stateClass) card.classList.add(stateClass);
+      card.classList.add("cpl-enhancer-highlight");
 
       // Add a top-left tag (very visible)
       const tag = document.createElement("div");
@@ -243,6 +280,8 @@
       if (!insertTagBeforePrimarySkills(card, tag)) {
         card.appendChild(tag);
       }
+
+      card.dataset.cplEnhancerTagSig = sig;
 
     }
   }
