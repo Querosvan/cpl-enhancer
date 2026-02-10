@@ -403,6 +403,4 @@
   box-shadow: inset 3px 0 0 rgba(90, 160, 255, 0.75);
   background: rgba(90, 160, 255, 0.12);
   color: rgba(120, 180, 255, 0.95);
-  text-decoration: underline dotted;
-  text-decoration-thickness: 2px;
 }
