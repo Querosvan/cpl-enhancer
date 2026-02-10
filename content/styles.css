@@ -356,3 +356,53 @@
   user-select: none;
   white-space: nowrap;
 }
+
+.cpl-enhancer-tryout-rating {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 8px;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.cpl-enhancer-tryout-star {
+  font-size: 12px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.cpl-enhancer-tryout-star.is-on {
+  color: rgba(255, 210, 90, 0.95);
+  text-shadow: 0 0 6px rgba(255, 210, 90, 0.35);
+}
+
+.cpl-enhancer-tryout-skill {
+  border-radius: 6px;
+  transition: background 120ms ease, box-shadow 120ms ease, color 120ms ease;
+}
+
+.cpl-enhancer-tryout-skill--met {
+  box-shadow: inset 3px 0 0 rgba(0, 200, 120, 0.75);
+  background: rgba(0, 200, 120, 0.10);
+  color: rgba(0, 200, 120, 0.95);
+}
+
+.cpl-enhancer-tryout-skill--reachable {
+  box-shadow: inset 3px 0 0 rgba(255, 191, 84, 0.75);
+  background: rgba(255, 191, 84, 0.12);
+  color: rgba(255, 191, 84, 0.95);
+}
+
+.cpl-enhancer-tryout-skill--nope {
+  box-shadow: inset 3px 0 0 rgba(255, 107, 107, 0.75);
+  background: rgba(255, 107, 107, 0.12);
+  color: rgba(255, 107, 107, 0.95);
+}
+
+.cpl-enhancer-tryout-skill--unknown {
+  box-shadow: inset 3px 0 0 rgba(154, 160, 166, 0.7);
+  background: rgba(154, 160, 166, 0.10);
+  color: rgba(154, 160, 166, 0.95);
+  text-decoration: underline dotted;
+  text-decoration-thickness: 2px;
+}
