@@ -44,6 +44,7 @@
         "content/features/abilityBorders.js",
         "content/features/skillwhatEmbed.js",
         "content/features/tryoutsHighlights.js",
+        "content/features/rolePicker.js",
         "content/main.js"
       ],
       "css": ["content/styles.css"],

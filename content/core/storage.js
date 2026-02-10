@@ -12,6 +12,19 @@
     "Movement"
   ];
 
+  const DEFAULT_ROLES = [
+    { id: "entry", label: "Entry" },
+    { id: "support", label: "Support" },
+    { id: "igl", label: "IGL" },
+    { id: "lurker", label: "Lurker" },
+    { id: "flex", label: "Flex" }
+  ];
+
+  const DEFAULT_ROLE_SKILLS = Object.fromEntries(SKILLS.map(s => [s, 0]));
+  const DEFAULT_ROLE_PROFILES = Object.fromEntries(
+    DEFAULT_ROLES.map(role => [role.id, { skills: { ...DEFAULT_ROLE_SKILLS } }])
+  );
+
   const DEFAULTS = {
     enabled: true,
     transferFilters: {
@@ -26,7 +39,10 @@
         ageMax: 25
       }
     },
-    tryoutsFilters: Object.fromEntries(SKILLS.map(s => [s, 90]))
+    tryoutsFilters: Object.fromEntries(SKILLS.map(s => [s, 90])),
+    rolesRosterOnly: true,
+    rolesCatalog: DEFAULT_ROLES,
+    roleProfiles: DEFAULT_ROLE_PROFILES
   };
 
   window.CPLEnhancer.getSettings = async function getSettings() {
@@ -35,7 +51,9 @@
       ...DEFAULTS,
       ...data,
       transferFilters: data.transferFilters ?? DEFAULTS.transferFilters,
-      tryoutsFilters: data.tryoutsFilters ?? DEFAULTS.tryoutsFilters
+      tryoutsFilters: data.tryoutsFilters ?? DEFAULTS.tryoutsFilters,
+      rolesCatalog: data.rolesCatalog ?? DEFAULTS.rolesCatalog,
+      roleProfiles: data.roleProfiles ?? DEFAULTS.roleProfiles
     };
   };
 })();

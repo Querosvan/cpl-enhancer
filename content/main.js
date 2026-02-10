@@ -14,6 +14,7 @@
     if (typeof api.initTransferBadges === "function") api.initTransferBadges(settings);
     if (typeof api.initTryoutsHighlights === "function") api.initTryoutsHighlights(settings);
     if (typeof api.initSkillWhatEmbed === "function") api.initSkillWhatEmbed(settings);
+    if (typeof api.initRolePicker === "function") api.initRolePicker(settings);
 
     if (typeof api.initAgeHighlights === "function") api.initAgeHighlights(settings);
     if (typeof api.initAbilityBorders === "function") api.initAbilityBorders(settings);

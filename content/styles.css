@@ -316,6 +316,49 @@
   background: rgba(35, 35, 35, 0.95);
 }
 
+/* =========================
+   CPL Enhancer - Roles
+   ========================= */
+.cpl-role-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.cpl-role-select {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1;
+  padding: 5px 22px 5px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(255, 255, 255, 0.7) 50%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.7) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 9px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.cpl-role-select.is-empty {
+  color: rgba(255, 255, 255, 0.65);
+  border-color: rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.cpl-role-select:focus {
+  outline: 2px solid rgba(90, 160, 255, 0.65);
+  outline-offset: 2px;
+}
+
 @media (max-width: 900px) {
   .cpl-skillwhat-launcher--floating {
     right: 16px;
