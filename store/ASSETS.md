@@ -4,6 +4,10 @@ Generated assets
 - store/assets/promo-small-440x280.png
 - store/assets/promo-marquee-1400x560.png
 - store/assets/screenshot-template-1280x800.png
+- store/assets/screenshot-01-1280x800.png
+- store/assets/screenshot-02-1280x800.png
+- store/assets/screenshot-03-1280x800.png
+- store/assets/screenshot-04-1280x800.png
 
 Notes
 - Replace the screenshot template with a real capture of Transfers + enhancements before submission.
