@@ -123,6 +123,25 @@
     return summary;
   }
 
+  function statusChar(status) {
+    switch (status) {
+      case "met":
+        return "M";
+      case "reachable":
+        return "R";
+      case "nope":
+        return "N";
+      case "unknown":
+      default:
+        return "U";
+    }
+  }
+
+  function buildSignature(statuses, stars, isMust) {
+    const statusKey = SKILLS.map((skill) => statusChar(statuses[skill] || "unknown")).join("");
+    return `${stars}|${isMust ? "1" : "0"}|${statusKey}`;
+  }
+
   // Isolated rating logic so we can tweak it later without touching the DOM work.
   function computeStarRating(summary) {
     const { met, reachable, nope, unknown, total } = summary;
@@ -182,6 +201,14 @@
     card.prepend(wrap);
   }
 
+  function ensureMustTag(card) {
+    if (card.querySelector(".cpl-enhancer-tryout-tag")) return;
+    const tag = document.createElement("div");
+    tag.className = "cpl-enhancer-tryout-tag";
+    tag.textContent = "MUST";
+    card.appendChild(tag);
+  }
+
   function findSkillNodes(card, skill) {
     const nodes = Array.from(card.querySelectorAll("li, div, span, p, td, th"));
     const matches = nodes.filter((el) => {
@@ -195,6 +222,17 @@
     return matches.filter((el) => !matches.some((other) => other !== el && el.contains(other)));
   }
 
+  function applySkillClasses(card, statuses) {
+    for (const skill of SKILLS) {
+      const status = statuses[skill];
+      const nodes = findSkillNodes(card, skill);
+      if (!nodes.length) continue;
+      for (const node of nodes) {
+        node.classList.add("cpl-enhancer-tryout-skill", `cpl-enhancer-tryout-skill--${status}`);
+      }
+    }
+  }
+
   function applyTryouts(settings) {
     if (!isTryoutsPage()) return;
 
@@ -202,6 +240,33 @@
     const cards = getTryoutCards();
 
     for (const card of cards) {
+      const pairs = parsePairsFromText(card.innerText || "");
+      if (!pairs || !Object.keys(pairs).length) continue;
+
+      const age = parseAgeFromText(card.innerText || "");
+      const remainingPoints = getRemainingPoints(age);
+
+      const statuses = {};
+      for (const skill of SKILLS) {
+        const thr = readThreshold(thresholds, skill);
+        statuses[skill] = getSkillStatus(pairs[skill], thr, remainingPoints);
+      }
+
+      const summary = summarizeStatuses(statuses);
+      const stars = computeStarRating(summary);
+      const isMust = summary.unknown === 0 && summary.met === summary.total;
+      const signature = buildSignature(statuses, stars, isMust);
+
+      if (card.dataset.cplTryoutSig === signature) {
+        if (!card.querySelector(".cpl-enhancer-tryout-rating")) addRating(card, stars);
+        applySkillClasses(card, statuses);
+        if (isMust) {
+          card.classList.add("cpl-enhancer-tryout-highlight");
+          ensureMustTag(card);
+        }
+        continue;
+      }
+
       // Clean up previous tags/marks on this card
       for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-tryout-tag, .cpl-enhancer-tryout-rating"))) {
         el.remove();
@@ -217,40 +282,15 @@
       }
       card.classList.remove("cpl-enhancer-tryout-highlight");
 
-      const pairs = parsePairsFromText(card.innerText || "");
-      if (!pairs || !Object.keys(pairs).length) continue;
-
-      const age = parseAgeFromText(card.innerText || "");
-      const remainingPoints = getRemainingPoints(age);
-
-      const statuses = {};
-      for (const skill of SKILLS) {
-        const thr = readThreshold(thresholds, skill);
-        statuses[skill] = getSkillStatus(pairs[skill], thr, remainingPoints);
-      }
-
-      const summary = summarizeStatuses(statuses);
-      const stars = computeStarRating(summary);
       addRating(card, stars);
+      applySkillClasses(card, statuses);
 
-      for (const skill of SKILLS) {
-        const status = statuses[skill];
-        const nodes = findSkillNodes(card, skill);
-        if (!nodes.length) continue;
-        for (const node of nodes) {
-          node.classList.add("cpl-enhancer-tryout-skill", `cpl-enhancer-tryout-skill--${status}`);
-        }
+      if (isMust) {
+        card.classList.add("cpl-enhancer-tryout-highlight");
+        ensureMustTag(card);
       }
 
-      const isMust = summary.unknown === 0 && summary.met === summary.total;
-      if (!isMust) continue;
-
-      card.classList.add("cpl-enhancer-tryout-highlight");
-
-      const tag = document.createElement("div");
-      tag.className = "cpl-enhancer-tryout-tag";
-      tag.textContent = "MUST";
-      card.appendChild(tag);
+      card.dataset.cplTryoutSig = signature;
     }
   }
 
