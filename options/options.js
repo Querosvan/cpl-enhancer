@@ -16,10 +16,66 @@ const DEFAULT_ROLES = [
   { id: "flex", label: "Flex" }
 ];
 
+const DEFAULT_ROLE_LIMITS = {
+  entry: {
+    Aim: 85,
+    Handling: 80,
+    Quickness: 80,
+    Movement: 75,
+    Gamesense: 70,
+    Awareness: 70,
+    Teamplay: 60,
+    Determination: 70
+  },
+  support: {
+    Teamplay: 85,
+    Awareness: 80,
+    Gamesense: 80,
+    Determination: 80,
+    Movement: 70,
+    Aim: 70,
+    Handling: 70,
+    Quickness: 65
+  },
+  igl: {
+    Gamesense: 85,
+    Awareness: 85,
+    Teamplay: 80,
+    Determination: 85,
+    Movement: 65,
+    Aim: 65,
+    Handling: 65,
+    Quickness: 60
+  },
+  lurker: {
+    Gamesense: 85,
+    Awareness: 80,
+    Movement: 80,
+    Aim: 75,
+    Handling: 70,
+    Quickness: 70,
+    Teamplay: 65,
+    Determination: 70
+  },
+  flex: {
+    Aim: 75,
+    Handling: 75,
+    Quickness: 75,
+    Determination: 75,
+    Awareness: 75,
+    Teamplay: 75,
+    Gamesense: 75,
+    Movement: 75
+  }
+};
+
 function buildDefaultRoleProfiles(roles) {
   const defaults = Object.fromEntries(SKILLS.map(s => [s, 0]));
   return Object.fromEntries(
-    roles.map(role => [role.id, { skills: { ...defaults } }])
+    roles.map(role => [
+      role.id,
+      { skills: { ...defaults, ...(DEFAULT_ROLE_LIMITS[role.id] || {}) } }
+    ])
   );
 }
 

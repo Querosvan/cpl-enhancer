@@ -140,6 +140,16 @@
   background: rgba(255, 176, 0, 0.16);
 }
 
+/* Role pills */
+.cpl-enhancer-tag-pill--role {
+  border-color: rgba(90, 160, 255, 0.40);
+  background: rgba(90, 160, 255, 0.16);
+}
+
+.cpl-enhancer-tag-pill--role-more {
+  opacity: 0.85;
+}
+
 /* =========================
    CPL Enhancer - Left accent bar
    ========================= */

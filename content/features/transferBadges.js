@@ -11,6 +11,8 @@
     "gamesense",
     "movement"
   ];
+  const ROLE_PILL_CLASS = "cpl-enhancer-tag-pill--role";
+  const ROLE_MORE_CLASS = "cpl-enhancer-tag-pill--role-more";
 
   function clamp99(n) {
     const v = Number(n);
@@ -53,6 +55,49 @@
     const cap = skillKey.charAt(0).toUpperCase() + skillKey.slice(1);
     const v = (map && (map[skillKey] ?? map[cap])) ?? 0;
     return clamp99(v);
+  }
+
+  function normalizeRoleId(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .trim();
+  }
+
+  function getRoleProfiles(settings) {
+    const roles = Array.isArray(settings?.rolesCatalog) ? settings.rolesCatalog : [];
+    const profiles = settings?.roleProfiles || {};
+    const out = [];
+
+    for (const role of roles) {
+      const id = role?.id || normalizeRoleId(role?.label || role?.name || "");
+      const label = role?.label || role?.name || role?.id || id || "Role";
+      if (!id) continue;
+      const profile = profiles[id] || {};
+      const skills = profile.skills || profile;
+      out.push({ id, label, skills });
+    }
+
+    return out;
+  }
+
+  function meetsRole(pairs, roleSkills) {
+    if (!roleSkills) return false;
+    let hasAny = false;
+    for (const skill of SKILLS) {
+      const thr = readThreshold(roleSkills, skill);
+      if (thr > 0) {
+        hasAny = true;
+        if ((pairs[skill]?.limit ?? 0) < thr) return false;
+      }
+    }
+    return hasAny;
+  }
+
+  function getSuitableRoles(pairs, settings) {
+    const roles = getRoleProfiles(settings);
+    return roles.filter((role) => meetsRole(pairs, role.skills));
   }
 
   function parsePairsFromCardText(card) {
@@ -118,10 +163,11 @@
       const age = readAgeFromCard(card);
       const goodNow = meetsAll(pairs, currentThr, "current") && withinAgeRange(age, currentAgeRange);
       const potential = meetsAll(pairs, limitThr, "limit") && withinAgeRange(age, limitAgeRange);
+      const suitableRoles = getSuitableRoles(pairs, settings);
 
-      if (!goodNow && !potential) continue;
+      if (!goodNow && !potential && !suitableRoles.length) continue;
 
-      // Apply whole-card highlight
+      // Apply whole-card highlight base
       card.classList.add("cpl-enhancer-highlight");
 
       let stateClass = "";
@@ -142,17 +188,41 @@
         pillClass = "cpl-enhancer-tag-pill--pot";
       }
 
-      card.classList.add(stateClass);
+      if (stateClass) card.classList.add(stateClass);
 
       // Add a top-left tag (very visible)
       const tag = document.createElement("div");
       tag.className = "cpl-enhancer-tag";
 
-      const pill = document.createElement("span");
-      pill.className = `cpl-enhancer-tag-pill ${pillClass}`;
-      pill.textContent = pillText;
+      if (pillText) {
+        const pill = document.createElement("span");
+        pill.className = `cpl-enhancer-tag-pill ${pillClass}`;
+        pill.textContent = pillText;
+        tag.appendChild(pill);
+      }
 
-      tag.appendChild(pill);
+      if (suitableRoles.length) {
+        const maxRoles = 3;
+        const visible = suitableRoles.slice(0, maxRoles);
+        const extra = suitableRoles.length - visible.length;
+
+        for (const role of visible) {
+          const rolePill = document.createElement("span");
+          rolePill.className = `cpl-enhancer-tag-pill ${ROLE_PILL_CLASS}`;
+          rolePill.textContent = role.label || role.id;
+          rolePill.title = `Suitable for: ${role.label || role.id}`;
+          tag.appendChild(rolePill);
+        }
+
+        if (extra > 0) {
+          const morePill = document.createElement("span");
+          morePill.className = `cpl-enhancer-tag-pill ${ROLE_PILL_CLASS} ${ROLE_MORE_CLASS}`;
+          morePill.textContent = `+${extra}`;
+          morePill.title = `Suitable for: ${suitableRoles.map(r => r.label || r.id).join(", ")}`;
+          tag.appendChild(morePill);
+        }
+      }
+
       card.appendChild(tag);
 
     }
