@@ -45,6 +45,7 @@
         "content/features/skillwhatEmbed.js",
         "content/features/tryoutsHighlights.js",
         "content/features/rolePicker.js",
+        "content/features/talentScanner.js",
         "content/main.js"
       ],
       "css": ["content/styles.css"],
