@@ -64,26 +64,34 @@
     const out = {};
 
     for (const skill of SKILLS) {
-      // Try to capture "skill 85 / 100" or "skill 85/100"
-      let m = t.match(new RegExp(`${skill}\\s*[^\\d?]{0,20}(\\d{1,3})\\s*\\/\\s*(\\d{1,3})`, "i"));
-      if (m) {
-        out[skill] = { current: clamp99(m[1]), limit: clamp99(m[2]), known: true };
-        continue;
+      // Capture "skill 85 / 100", "skill 85", "skill ? / 100", "skill 85 / ?"
+      const re = new RegExp(`${skill}\\s*[^\\d?]{0,20}(\\?|\\d{1,3})(?:\\s*\\/\\s*(\\?|\\d{1,3}))?`, "i");
+      const m = t.match(re);
+      if (!m) continue;
+
+      const rawCurrent = m[1];
+      const rawLimit = m[2];
+
+      const entry = { known: false };
+      if (rawCurrent && rawCurrent !== "?") {
+        entry.current = clamp99(rawCurrent);
+        entry.known = true;
+      }
+      if (rawLimit && rawLimit !== "?") {
+        entry.limit = clamp99(rawLimit);
+        entry.known = true;
       }
 
-      // Unknown / hidden value
-      m = t.match(new RegExp(`${skill}\\s*[^\\d]{0,20}\\?`, "i"));
-      if (m) {
-        out[skill] = { unknown: true };
-        continue;
+      if (rawCurrent === "?" || rawLimit === "?") {
+        entry.unknown = true;
       }
 
-      // Fallback: "skill 85"
-      m = t.match(new RegExp(`${skill}\\s*[^\\d]{0,20}(\\d{1,3})`, "i"));
-      if (m) {
-        const val = clamp99(m[1]);
-        out[skill] = { current: val, limit: val, known: true, approx: true };
+      if (entry.limit == null && entry.current != null) {
+        entry.limit = entry.current;
+        entry.approx = true;
       }
+
+      out[skill] = entry;
     }
 
     return out;
