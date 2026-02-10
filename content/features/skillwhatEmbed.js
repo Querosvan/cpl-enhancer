@@ -163,6 +163,21 @@
     return null;
   }
 
+  function findTryoutActions(card) {
+    const buttons = Array.from(card.querySelectorAll("button"));
+    const signBtn = buttons.find((btn) => /\bsign\b/i.test(btn.textContent || ""));
+    const rejectBtn = buttons.find((btn) => /\breject\b/i.test(btn.textContent || ""));
+
+    if (signBtn && rejectBtn) {
+      const signWrap = signBtn.closest("div");
+      if (signWrap && signWrap.contains(rejectBtn)) return signWrap;
+      const rejectWrap = rejectBtn.closest("div");
+      if (rejectWrap && rejectWrap.contains(signBtn)) return rejectWrap;
+    }
+
+    return null;
+  }
+
   function findTryoutAgeLine(text) {
     const t = String(text || "");
     const patterns = [
@@ -420,6 +435,12 @@
       const text = buildTryoutText(card) || (await getSelectedText());
       openModalWithText(text);
     });
+
+    const actions = findTryoutActions(card);
+    if (actions) {
+      actions.insertBefore(launcher, actions.firstChild);
+      return;
+    }
 
     const nameAnchor = findTryoutNameAnchor(card);
     if (nameAnchor) {
