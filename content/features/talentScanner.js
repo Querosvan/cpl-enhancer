@@ -56,17 +56,30 @@
     return sig;
   }
 
-  function getIconFromStyle(el) {
-    if (!el) return "";
-    const style = window.getComputedStyle ? window.getComputedStyle(el) : null;
+  function extractImageFromStyle(style) {
     if (!style) return "";
     const bg = style.backgroundImage || "";
-    const match = bg.match(/url\\([\"']?(.*?)[\"']?\\)/i);
+    const mask = style.maskImage || style.webkitMaskImage || "";
+    const combined = `${bg} ${mask}`.trim();
+    const match = combined.match(/url\\([\"']?(.*?)[\"']?\\)/i);
     return match ? match[1] : "";
   }
 
+  function getIconFromStyle(el) {
+    if (!el) return "";
+    const style = window.getComputedStyle ? window.getComputedStyle(el) : null;
+    return extractImageFromStyle(style);
+  }
+
+  function getIconFromPseudo(el) {
+    if (!el || !window.getComputedStyle) return "";
+    const before = window.getComputedStyle(el, "::before");
+    const after = window.getComputedStyle(el, "::after");
+    return extractImageFromStyle(before) || extractImageFromStyle(after) || "";
+  }
+
   function findIconData(container) {
-    if (!container) return { svgSignature: "", iconUrl: "" };
+    if (!container) return { svgSignature: "", iconUrl: "", iconClass: "", iconTag: "" };
     const candidates = [];
     const addNode = (node) => {
       if (!node) return;
@@ -96,14 +109,16 @@
       const svgSignature = getSvgSignature(svg);
       const img = node.querySelector?.("img") || (node.tagName === "img" ? node : null);
       const imgSrc = img?.getAttribute?.("src") || "";
-      const styleUrl = getIconFromStyle(node);
+      const styleUrl = getIconFromStyle(node) || getIconFromPseudo(node);
       const iconUrl = imgSrc || styleUrl || "";
       if (svgSignature || iconUrl) {
-        return { svgSignature, iconUrl };
+        const iconClass = node.className || "";
+        const iconTag = (node.tagName || "").toLowerCase();
+        return { svgSignature, iconUrl, iconClass, iconTag };
       }
     }
 
-    return { svgSignature: "", iconUrl: "" };
+    return { svgSignature: "", iconUrl: "", iconClass: "", iconTag: "" };
   }
 
   function findBadgeNodes(root) {
@@ -112,20 +127,17 @@
     return nodes.filter((node) => /^\d+\s*\/\s*\d+$/.test((node.textContent || "").trim()));
   }
 
-  function collectCategoryRoots(modal) {
+  function collectCategoryAnchors(modal) {
     const out = new Map();
     const headings = Array.from(modal.querySelectorAll("h1,h2,h3,h4,h5,h6"));
     for (const heading of headings) {
       const name = normalize(heading.textContent);
       if (!CATEGORIES.includes(name)) continue;
-      const root = heading.parentElement || heading;
-      const score = findBadgeNodes(root).length;
-      const prev = out.get(name);
-      if (!prev || score > prev.score) {
-        out.set(name, { root, score });
-      }
+      const rect = heading.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      out.set(name, centerX);
     }
-    return new Map(Array.from(out.entries()).map(([key, val]) => [key, val.root]));
+    return out;
   }
 
   function findTalentModal() {
@@ -154,12 +166,20 @@
     return Number(match[1]);
   }
 
-  function findCategoryForNode(node, roots) {
-    if (!node || !roots) return null;
-    for (const [category, root] of roots.entries()) {
-      if (root && root.contains(node)) return category;
+  function findCategoryForNode(node, anchors) {
+    if (!node || !anchors || !anchors.size) return null;
+    const rect = node.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    let best = null;
+    let bestDist = Infinity;
+    for (const [category, x] of anchors.entries()) {
+      const dist = Math.abs(centerX - x);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = category;
+      }
     }
-    return null;
+    return best;
   }
 
   function getTitleFromNode(node) {
@@ -185,7 +205,7 @@
   function buildTalentList(modal) {
     const pointsLeft = findPointsLeft(modal);
     const badges = findBadgeNodes(modal);
-    const categoryRoots = collectCategoryRoots(modal);
+    const categoryAnchors = collectCategoryAnchors(modal);
     const talents = [];
     const seen = new Set();
 
@@ -206,11 +226,13 @@
       const icon = findIconData(container);
       const signature = icon.svgSignature;
       const id = normalizeId(name || signature || icon.iconUrl || "");
-      const dedupeKey = `${id}:${current}/${max}`;
+      const rect = container.getBoundingClientRect();
+      const position = { x: Math.round(rect.left), y: Math.round(rect.top) };
+      const dedupeKey = `${id}:${current}/${max}:${position.x}:${position.y}`;
       if (seen.has(dedupeKey)) continue;
       seen.add(dedupeKey);
 
-      const category = findCategoryForNode(container, categoryRoots);
+      const category = findCategoryForNode(container, categoryAnchors);
 
       talents.push({
         id: id || null,
@@ -218,7 +240,10 @@
         category: category || null,
         points: { current, max },
         svgSignature: signature || null,
-        iconUrl: icon.iconUrl || null
+        iconUrl: icon.iconUrl || null,
+        iconClass: icon.iconClass || null,
+        iconTag: icon.iconTag || null,
+        position
       });
     }
 
