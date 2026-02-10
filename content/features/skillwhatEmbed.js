@@ -7,6 +7,16 @@
   const LAUNCHER_ATTR = "data-cpl-skillwhat-launcher";
   const LAUNCHER_CLASS = "cpl-skillwhat-launcher";
   const LAUNCHER_INLINE_CLASS = "cpl-skillwhat-launcher--inline";
+  const SKILLS = [
+    "aim",
+    "handling",
+    "quickness",
+    "determination",
+    "awareness",
+    "teamplay",
+    "gamesense",
+    "movement"
+  ];
 
   function safeRuntimeUrl(path) {
     try {
@@ -19,9 +29,37 @@
     return null;
   }
 
+  function isTryoutsPage() {
+    return location.pathname.includes("/cpl/academy/tryouts");
+  }
+
   function findPlayerCards() {
     const cards = Array.from(document.querySelectorAll(".card.p-0"));
     return cards.filter((card) => card.querySelector("a[href*='/players/']"));
+  }
+
+  function parseTryoutSkills(text) {
+    const t = (text || "").toLowerCase();
+    const out = {};
+    for (const skill of SKILLS) {
+      const re = new RegExp(`${skill}\\s*[^\\d?]{0,20}(\\?|\\d{1,3})(?:\\s*\\/\\s*(\\?|\\d{1,3}))?`, "i");
+      if (re.test(t)) out[skill] = true;
+    }
+    return out;
+  }
+
+  function findTryoutCards() {
+    const candidates = Array.from(document.querySelectorAll("div.card, li, article, section"));
+    return candidates.filter((el) => {
+      if (!el || !el.innerText) return false;
+
+      const parentMatch = el.parentElement && el.parentElement.closest("div.card, li, article, section");
+      if (parentMatch && parentMatch !== el) return false;
+
+      const pairs = parseTryoutSkills(el.innerText);
+      const count = Object.keys(pairs).length;
+      return count >= 3;
+    });
   }
 
   function ensureModal() {
@@ -92,6 +130,83 @@
     }
 
     return "";
+  }
+
+  function findTryoutNameAnchor(card) {
+    const selectors = [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      ".player-name",
+      ".player__name",
+      ".name",
+      "a[href*='/players/']",
+      "strong",
+      "b"
+    ];
+    for (const sel of selectors) {
+      const el = card.querySelector(sel);
+      if (!el) continue;
+      const text = (el.textContent || "").trim();
+      if (text.length < 2 || text.length > 40) continue;
+      if (!/[a-z]/i.test(text)) continue;
+      return el;
+    }
+    return null;
+  }
+
+  function findTryoutAgeLine(text) {
+    const t = String(text || "");
+    const patterns = [
+      /\b\d{1,2}\s*yo\b[^\n]*/i,
+      /\bedad\b[^\n]*/i,
+      /\bage\b[^\n]*/i,
+      /\b\d{1,2}\s*a.os?\b[^\n]*/i
+    ];
+    for (const re of patterns) {
+      const m = t.match(re);
+      if (m) return m[0].trim();
+    }
+    return "";
+  }
+
+  function buildTryoutText(card) {
+    if (!card) return "";
+
+    const lines = [];
+    const rawText = (card.innerText || "").trim();
+
+    const nameAnchor = findTryoutNameAnchor(card);
+    const name = nameAnchor ? (nameAnchor.textContent || "").trim() : "";
+    if (name) lines.push(name);
+
+    const ageLine = findTryoutAgeLine(rawText);
+    if (ageLine) lines.push(ageLine);
+
+    const skillLines = [];
+    for (const skill of SKILLS) {
+      const re = new RegExp(`${skill}\\s*[^\\d?]{0,20}(\\?|\\d{1,3})(?:\\s*\\/\\s*(\\?|\\d{1,3}))?`, "i");
+      const m = rawText.match(re);
+      if (!m) continue;
+      const current = m[1] || "?";
+      const limit = m[2] || "?";
+      const label = skill.charAt(0).toUpperCase() + skill.slice(1);
+      if (m[2] == null) {
+        skillLines.push(`${label} ${current}`);
+      } else {
+        skillLines.push(`${label} ${current} / ${limit}`);
+      }
+    }
+
+    if (skillLines.length) {
+      lines.push(...skillLines);
+    } else if (rawText) {
+      lines.push(rawText);
+    }
+
+    return lines.join("\n").trim();
   }
 
   function buildPlayerText(card) {
@@ -262,9 +377,54 @@
     actions.appendChild(launcher);
   }
 
+  function insertTryoutLauncher(card) {
+    if (!card || card.querySelector("[" + LAUNCHER_ATTR + "='1']")) return;
+
+    const launcher = document.createElement("button");
+    launcher.setAttribute(LAUNCHER_ATTR, "1");
+    launcher.className = LAUNCHER_CLASS + " " + LAUNCHER_INLINE_CLASS;
+    launcher.type = "button";
+    launcher.setAttribute("aria-label", "SkillWhat");
+
+    const icon = document.createElement("img");
+    icon.className = "cpl-skillwhat-launcher__icon";
+    const iconSrc = safeRuntimeUrl("skillwhat/favicon.ico");
+    if (iconSrc) icon.src = iconSrc;
+    icon.alt = "SkillWhat";
+    launcher.appendChild(icon);
+
+    launcher.addEventListener("click", async (event) => {
+      if (event && typeof event.stopPropagation === "function") {
+        event.stopPropagation();
+      }
+      const text = buildTryoutText(card) || (await getSelectedText());
+      openModalWithText(text);
+    });
+
+    const nameAnchor = findTryoutNameAnchor(card);
+    const header =
+      (nameAnchor && nameAnchor.closest("h1, h2, h3, h4, h5")) ||
+      card.querySelector("header") ||
+      card;
+
+    if (header) {
+      header.appendChild(launcher);
+      return;
+    }
+
+    card.prepend(launcher);
+  }
+
   function ensureLaunchersInCards() {
+    if (isTryoutsPage()) {
+      const cards = findTryoutCards();
+      cards.forEach((card) => insertTryoutLauncher(card));
+      return cards.length;
+    }
+
     const cards = findPlayerCards();
     cards.forEach((card) => insertLauncher(card));
+    return cards.length;
   }
 
   function removeLaunchers() {
@@ -279,15 +439,14 @@
     if (!settings || !settings.enabled) return;
 
     const run = () => {
-      const cards = findPlayerCards();
-      if (!cards.length) {
+      const count = ensureLaunchersInCards();
+      if (!count) {
         removeLaunchers();
         closeModal();
         return;
       }
 
       ensureModal();
-      ensureLaunchersInCards();
     };
 
     if (typeof window.CPLEnhancer.observeChildren === "function") {
