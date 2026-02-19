@@ -11,6 +11,8 @@
     "gamesense",
     "movement"
   ];
+  const ROLE_PILL_CLASS = "cpl-enhancer-tag-pill--role";
+  const ROLE_MORE_CLASS = "cpl-enhancer-tag-pill--role-more";
 
   function clamp99(n) {
     const v = Number(n);
@@ -55,6 +57,49 @@
     return clamp99(v);
   }
 
+  function normalizeRoleId(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .trim();
+  }
+
+  function getRoleProfiles(settings) {
+    const roles = Array.isArray(settings?.rolesCatalog) ? settings.rolesCatalog : [];
+    const profiles = settings?.roleProfiles || {};
+    const out = [];
+
+    for (const role of roles) {
+      const id = role?.id || normalizeRoleId(role?.label || role?.name || "");
+      const label = role?.label || role?.name || role?.id || id || "Role";
+      if (!id) continue;
+      const profile = profiles[id] || {};
+      const skills = profile.skills || profile;
+      out.push({ id, label, skills });
+    }
+
+    return out;
+  }
+
+  function meetsRole(pairs, roleSkills) {
+    if (!roleSkills) return false;
+    let hasAny = false;
+    for (const skill of SKILLS) {
+      const thr = readThreshold(roleSkills, skill);
+      if (thr > 0) {
+        hasAny = true;
+        if ((pairs[skill]?.limit ?? 0) < thr) return false;
+      }
+    }
+    return hasAny;
+  }
+
+  function getSuitableRoles(pairs, settings) {
+    const roles = getRoleProfiles(settings);
+    return roles.filter((role) => meetsRole(pairs, role.skills));
+  }
+
   function parsePairsFromCardText(card) {
     const text = (card.innerText || "").toLowerCase();
     const out = {};
@@ -90,6 +135,23 @@
     return rootCards.filter(c => (c.innerText || "").includes("Primary skills"));
   }
 
+  function findPrimarySkillsAnchor(card) {
+    if (!card) return null;
+    const nodes = Array.from(
+      card.querySelectorAll("h1,h2,h3,h4,h5,h6,p,div,span,strong")
+    );
+    return nodes.find((el) => /primary skills/i.test(el.textContent || "")) || null;
+  }
+
+  function insertTagBeforePrimarySkills(card, tag) {
+    const label = findPrimarySkillsAnchor(card);
+    if (!label) return false;
+    const row = label.closest("div") || label.parentElement || label;
+    const parent = row.parentElement || card;
+    parent.insertBefore(tag, row);
+    return true;
+  }
+
   function applyBadges(settings) {
     if (!location.pathname.includes("/cpl/office/transfers")) return;
 
@@ -101,27 +163,45 @@
     const cards = getRootTransferCards();
 
     for (const card of cards) {
-      // Clean up previous highlights/tags inside this card
-      for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-badges, .cpl-enhancer-tag"))) {
-        el.remove();
-      }
-      card.classList.remove(
-        "cpl-enhancer-highlight",
-        "cpl-enhancer-highlight--now",
-        "cpl-enhancer-highlight--pot",
-        "cpl-enhancer-highlight--both"
-      );
-
       const pairs = parsePairsFromCardText(card);
-      if (!pairs) continue;
+      if (!pairs) {
+        if (card.dataset.cplEnhancerTagSig) {
+          for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-badges, .cpl-enhancer-tag"))) {
+            el.remove();
+          }
+          card.classList.remove(
+            "cpl-enhancer-highlight",
+            "cpl-enhancer-highlight--now",
+            "cpl-enhancer-highlight--pot",
+            "cpl-enhancer-highlight--both"
+          );
+          delete card.dataset.cplEnhancerTagSig;
+        }
+        continue;
+      }
 
       const age = readAgeFromCard(card);
       const goodNow = meetsAll(pairs, currentThr, "current") && withinAgeRange(age, currentAgeRange);
       const potential = meetsAll(pairs, limitThr, "limit") && withinAgeRange(age, limitAgeRange);
+      const suitableRoles = getSuitableRoles(pairs, settings);
 
-      if (!goodNow && !potential) continue;
+      if (!goodNow && !potential && !suitableRoles.length) {
+        if (card.dataset.cplEnhancerTagSig) {
+          for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-badges, .cpl-enhancer-tag"))) {
+            el.remove();
+          }
+          card.classList.remove(
+            "cpl-enhancer-highlight",
+            "cpl-enhancer-highlight--now",
+            "cpl-enhancer-highlight--pot",
+            "cpl-enhancer-highlight--both"
+          );
+          delete card.dataset.cplEnhancerTagSig;
+        }
+        continue;
+      }
 
-      // Apply whole-card highlight
+      // Apply whole-card highlight base
       card.classList.add("cpl-enhancer-highlight");
 
       let stateClass = "";
@@ -142,18 +222,66 @@
         pillClass = "cpl-enhancer-tag-pill--pot";
       }
 
-      card.classList.add(stateClass);
+      if (stateClass) card.classList.add(stateClass);
+
+      const roleSig = suitableRoles.map(r => r.id || r.label || "").join(",");
+      const sig = `${stateClass || "none"}|${pillText || ""}|${roleSig}`;
+      if (card.dataset.cplEnhancerTagSig === sig) {
+        continue;
+      }
+
+      // Clean up previous highlights/tags inside this card
+      for (const el of Array.from(card.querySelectorAll(".cpl-enhancer-badges, .cpl-enhancer-tag"))) {
+        el.remove();
+      }
+      card.classList.remove(
+        "cpl-enhancer-highlight",
+        "cpl-enhancer-highlight--now",
+        "cpl-enhancer-highlight--pot",
+        "cpl-enhancer-highlight--both"
+      );
+
+      if (stateClass) card.classList.add(stateClass);
+      card.classList.add("cpl-enhancer-highlight");
 
       // Add a top-left tag (very visible)
       const tag = document.createElement("div");
       tag.className = "cpl-enhancer-tag";
 
-      const pill = document.createElement("span");
-      pill.className = `cpl-enhancer-tag-pill ${pillClass}`;
-      pill.textContent = pillText;
+      if (pillText) {
+        const pill = document.createElement("span");
+        pill.className = `cpl-enhancer-tag-pill ${pillClass}`;
+        pill.textContent = pillText;
+        tag.appendChild(pill);
+      }
 
-      tag.appendChild(pill);
-      card.appendChild(tag);
+      if (suitableRoles.length) {
+        const maxRoles = 2;
+        const visible = suitableRoles.slice(0, maxRoles);
+        const extra = suitableRoles.length - visible.length;
+
+        for (const role of visible) {
+          const rolePill = document.createElement("span");
+          rolePill.className = `cpl-enhancer-tag-pill ${ROLE_PILL_CLASS}`;
+          rolePill.textContent = role.label || role.id;
+          rolePill.title = `Suitable for: ${role.label || role.id}`;
+          tag.appendChild(rolePill);
+        }
+
+        if (extra > 0) {
+          const morePill = document.createElement("span");
+          morePill.className = `cpl-enhancer-tag-pill ${ROLE_PILL_CLASS} ${ROLE_MORE_CLASS}`;
+          morePill.textContent = `+${extra}`;
+          morePill.title = `Suitable for: ${suitableRoles.map(r => r.label || r.id).join(", ")}`;
+          tag.appendChild(morePill);
+        }
+      }
+
+      if (!insertTagBeforePrimarySkills(card, tag)) {
+        card.appendChild(tag);
+      }
+
+      card.dataset.cplEnhancerTagSig = sig;
 
     }
   }

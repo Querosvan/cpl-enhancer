@@ -1,4 +1,4 @@
-﻿const SKILLS = [
+const SKILLS = [
   "Aim",
   "Handling",
   "Quickness",
@@ -8,6 +8,76 @@
   "Gamesense",
   "Movement"
 ];
+const DEFAULT_ROLES = [
+  { id: "entry", label: "Entry" },
+  { id: "support", label: "Support" },
+  { id: "igl", label: "IGL" },
+  { id: "lurker", label: "Lurker" },
+  { id: "flex", label: "Flex" }
+];
+
+const DEFAULT_ROLE_LIMITS = {
+  entry: {
+    Aim: 85,
+    Handling: 80,
+    Quickness: 80,
+    Movement: 75,
+    Gamesense: 70,
+    Awareness: 70,
+    Teamplay: 60,
+    Determination: 70
+  },
+  support: {
+    Teamplay: 85,
+    Awareness: 80,
+    Gamesense: 80,
+    Determination: 80,
+    Movement: 70,
+    Aim: 70,
+    Handling: 70,
+    Quickness: 65
+  },
+  igl: {
+    Gamesense: 85,
+    Awareness: 85,
+    Teamplay: 80,
+    Determination: 85,
+    Movement: 65,
+    Aim: 65,
+    Handling: 65,
+    Quickness: 60
+  },
+  lurker: {
+    Gamesense: 85,
+    Awareness: 80,
+    Movement: 80,
+    Aim: 75,
+    Handling: 70,
+    Quickness: 70,
+    Teamplay: 65,
+    Determination: 70
+  },
+  flex: {
+    Aim: 75,
+    Handling: 75,
+    Quickness: 75,
+    Determination: 75,
+    Awareness: 75,
+    Teamplay: 75,
+    Gamesense: 75,
+    Movement: 75
+  }
+};
+
+function buildDefaultRoleProfiles(roles) {
+  const defaults = Object.fromEntries(SKILLS.map(s => [s, 0]));
+  return Object.fromEntries(
+    roles.map(role => [
+      role.id,
+      { skills: { ...defaults, ...(DEFAULT_ROLE_LIMITS[role.id] || {}) } }
+    ])
+  );
+}
 
 // Reasonable defaults (tweak later if you want)
 // - current: for "good now"
@@ -26,7 +96,10 @@ const DEFAULTS = {
       ageMax: 25
     }
   },
-  tryoutsFilters: Object.fromEntries(SKILLS.map(s => [s, 90]))
+  tryoutsFilters: Object.fromEntries(SKILLS.map(s => [s, 90])),
+  rolesRosterOnly: true,
+  rolesCatalog: DEFAULT_ROLES,
+  roleProfiles: buildDefaultRoleProfiles(DEFAULT_ROLES)
 };
 
 const el = (id) => document.getElementById(id);
@@ -43,6 +116,54 @@ function clampAge(value) {
   return Math.max(13, Math.min(44, Math.round(n)));
 }
 
+function normalizeRoleId(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .trim();
+}
+
+function normalizeRolesCatalog(list) {
+  if (!Array.isArray(list)) return DEFAULT_ROLES;
+  const out = [];
+  const seen = new Set();
+  for (const item of list) {
+    if (!item) continue;
+    const label = String(item.label || item.name || item.id || "").trim();
+    let id = String(item.id || item.key || "").trim();
+    if (!id) id = normalizeRoleId(label);
+    if (!label || !id || seen.has(id)) continue;
+    seen.add(id);
+    out.push({ id, label });
+  }
+  return out.length ? out : DEFAULT_ROLES;
+}
+
+function normalizeRoleProfiles(raw, roles) {
+  const out = {};
+  const source = raw && typeof raw === "object" ? raw : {};
+
+  for (const role of roles) {
+    const roleEntry = source[role.id] || {};
+    const skills = {};
+    for (const skill of SKILLS) {
+      const val = roleEntry.skills?.[skill] ?? roleEntry[skill] ?? 0;
+      skills[skill] = clamp100(val);
+    }
+    out[role.id] = { skills };
+  }
+
+  return out;
+}
+
+function uniqueRoleId(base, taken) {
+  let id = base || "role";
+  if (!taken.has(id)) return id;
+  let i = 2;
+  while (taken.has(`${id}-${i}`)) i += 1;
+  return `${id}-${i}`;
+}
 function setStatus(text) {
   const status = el("saveStatus");
   if (status) status.textContent = text;
@@ -91,7 +212,7 @@ function setActiveSection(section) {
   });
 
   // panels
-const sections = ["general", "transfer", "tryouts"];
+  const sections = ["general", "transfer", "tryouts", "roles"];
   for (const key of sections) {
     const panel = el(`section-${key}`);
     if (panel) panel.classList.toggle("is-hidden", key !== section);
@@ -156,6 +277,137 @@ function fillTryoutsInputs(filters) {
   }
 }
 
+function createRoleSkillInputs(container, roleId, roleProfiles) {
+  if (!container) return;
+  container.innerHTML = "";
+  const skills = roleProfiles?.[roleId]?.skills || {};
+  for (const skill of SKILLS) {
+    const row = document.createElement("div");
+    row.className = "role-skill-row";
+
+    const name = document.createElement("div");
+    name.className = "name";
+    name.textContent = skill;
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.max = "100";
+    input.step = "1";
+    input.inputMode = "numeric";
+    input.dataset.roleId = roleId;
+    input.dataset.skill = skill;
+    input.value = String(clamp100(skills[skill] ?? 0));
+    input.addEventListener("change", (e) => {
+      e.target.value = String(clamp100(e.target.value));
+    });
+
+    row.appendChild(name);
+    row.appendChild(input);
+    container.appendChild(row);
+  }
+}
+
+function createRoleCard(role, roleProfiles) {
+  const card = document.createElement("div");
+  card.className = "role-card";
+  card.dataset.roleCard = "1";
+  if (role?.id) card.dataset.roleId = role.id;
+
+  const header = document.createElement("div");
+  header.className = "role-header";
+
+  const nameWrap = document.createElement("div");
+  nameWrap.className = "role-name";
+
+  const nameLabel = document.createElement("div");
+  nameLabel.className = "label";
+  nameLabel.textContent = "Role name";
+
+  const nameInput = document.createElement("input");
+  nameInput.type = "text";
+  nameInput.placeholder = "Role name";
+  nameInput.dataset.roleName = "1";
+  nameInput.value = String(role?.label || "");
+
+  nameWrap.appendChild(nameLabel);
+  nameWrap.appendChild(nameInput);
+
+  const actions = document.createElement("div");
+  actions.className = "role-actions";
+
+  const removeBtn = document.createElement("button");
+  removeBtn.className = "btn btn--danger";
+  removeBtn.type = "button";
+  removeBtn.textContent = "Remove";
+  removeBtn.addEventListener("click", () => {
+    card.remove();
+  });
+
+  actions.appendChild(removeBtn);
+
+  header.appendChild(nameWrap);
+  header.appendChild(actions);
+
+  const skillsWrap = document.createElement("div");
+  skillsWrap.className = "role-skills";
+  createRoleSkillInputs(skillsWrap, role?.id || "", roleProfiles);
+
+  card.appendChild(header);
+  card.appendChild(skillsWrap);
+
+  return card;
+}
+
+function renderRolesList(rolesCatalog, roleProfiles) {
+  const list = el("rolesList");
+  if (!list) return;
+  list.innerHTML = "";
+
+  rolesCatalog.forEach((role) => {
+    const card = createRoleCard(role, roleProfiles);
+    list.appendChild(card);
+  });
+}
+
+function readRolesFromUI() {
+  const cards = Array.from(document.querySelectorAll("[data-role-card='1']"));
+  const roles = [];
+  const profiles = {};
+  const seen = new Set();
+
+  for (const card of cards) {
+    const nameInput = card.querySelector("input[data-role-name='1']");
+    const label = String(nameInput?.value || "").trim();
+    if (!label) continue;
+
+    let id = String(card.dataset.roleId || "").trim();
+    if (!id) id = normalizeRoleId(label);
+    if (!id) id = "role";
+    id = uniqueRoleId(id, seen);
+    seen.add(id);
+    card.dataset.roleId = id;
+
+    const skills = {};
+    for (const skill of SKILLS) {
+      const input = card.querySelector(`input[data-skill="${skill}"]`);
+      skills[skill] = clamp100(input?.value ?? 0);
+    }
+
+    roles.push({ id, label });
+    profiles[id] = { skills };
+  }
+
+  if (!roles.length) {
+    return {
+      rolesCatalog: DEFAULT_ROLES,
+      roleProfiles: buildDefaultRoleProfiles(DEFAULT_ROLES)
+    };
+  }
+
+  return { rolesCatalog: roles, roleProfiles: profiles };
+}
+
 async function notifyEnabledChanged(enabled) {
   try {
     const tabs = await chrome.tabs.query({
@@ -179,6 +431,12 @@ async function loadSettings() {
   // Tryouts
   fillTryoutsInputs(data.tryoutsFilters);
 
+  // Roles
+  const rolesCatalog = normalizeRolesCatalog(data.rolesCatalog);
+  const roleProfiles = normalizeRoleProfiles(data.roleProfiles, rolesCatalog);
+  renderRolesList(rolesCatalog, roleProfiles);
+  if (el("rolesRosterOnly")) el("rolesRosterOnly").checked = data.rolesRosterOnly !== false;
+
   setStatus("Loaded.");
 }
 
@@ -186,8 +444,17 @@ async function saveSettings() {
   const enabled = !!el("enabled")?.checked;
   const transferFilters = readTransferInputs();
   const tryoutsFilters = readTryoutsFilters();
+  const rolesRosterOnly = !!el("rolesRosterOnly")?.checked;
+  const { rolesCatalog, roleProfiles } = readRolesFromUI();
 
-  await chrome.storage.sync.set({ enabled, transferFilters, tryoutsFilters });
+  await chrome.storage.sync.set({
+    enabled,
+    transferFilters,
+    tryoutsFilters,
+    rolesRosterOnly,
+    rolesCatalog,
+    roleProfiles
+  });
   setStatus("Saved OK");
   await notifyEnabledChanged(enabled);
 }
@@ -212,16 +479,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   setActiveSection("general");
 
   // Actions
-  const saveButtons = ["saveBtn", "saveBtnTryouts"];
+  const saveButtons = ["saveBtn", "saveBtnTryouts", "saveBtnRoles"];
   for (const id of saveButtons) {
     const btn = el(id);
     if (btn) btn.addEventListener("click", saveSettings);
   }
 
-  const resetButtons = ["resetDefaults", "resetDefaultsTryouts"];
+  const resetButtons = ["resetDefaults", "resetDefaultsTryouts", "resetDefaultsRoles"];
   for (const id of resetButtons) {
     const btn = el(id);
     if (btn) btn.addEventListener("click", resetDefaults);
+  }
+
+  const addRoleBtn = el("addRoleBtn");
+  if (addRoleBtn) {
+    addRoleBtn.addEventListener("click", () => {
+      const list = el("rolesList");
+      if (!list) return;
+      const card = createRoleCard({ id: "", label: "" }, {});
+      list.appendChild(card);
+    });
   }
 
   // Save enabled immediately
@@ -264,7 +541,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (changes.tryoutsFilters) {
       fillTryoutsInputs(changes.tryoutsFilters.newValue || DEFAULTS.tryoutsFilters);
     }
+
+    if (changes.rolesCatalog || changes.roleProfiles || changes.rolesRosterOnly) {
+      const rolesCatalog = normalizeRolesCatalog(
+        changes.rolesCatalog?.newValue || DEFAULTS.rolesCatalog
+      );
+      const roleProfiles = normalizeRoleProfiles(
+        changes.roleProfiles?.newValue || DEFAULTS.roleProfiles,
+        rolesCatalog
+      );
+      renderRolesList(rolesCatalog, roleProfiles);
+      if (el("rolesRosterOnly")) {
+        el("rolesRosterOnly").checked =
+          (changes.rolesRosterOnly?.newValue ?? DEFAULTS.rolesRosterOnly) !== false;
+      }
+    }
   });
 
   await loadSettings();
 });
+
+
+
+
+
+
