@@ -196,6 +196,21 @@
   box-shadow: 0 0 0 2px var(--cpl-ability-border-color) !important;
 }
 
+.cpl-ability-border-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 8px;
+  line-height: 1;
+}
+
+.cpl-ability-border-wrap > img,
+.cpl-ability-border-wrap > svg {
+  display: block;
+  border-radius: 6px;
+}
+
 .cpl-ability-border--positive {
   --cpl-ability-border-color: rgba(76, 217, 100, 0.9);
   --cpl-ability-fill-color: rgba(76, 217, 100, 0.18);

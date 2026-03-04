@@ -277,6 +277,20 @@
     return ABILITY_MAP.get(normalize(abilityName)) || null;
   }
 
+  function ensureWrap(target) {
+    if (!target || !target.parentNode) return target;
+    if (target.classList?.contains("cpl-ability-border-wrap")) return target;
+    if (target.parentElement?.classList?.contains("cpl-ability-border-wrap")) {
+      return target.parentElement;
+    }
+
+    const wrapper = document.createElement("span");
+    wrapper.className = "cpl-ability-border-wrap";
+    target.parentNode.insertBefore(wrapper, target);
+    wrapper.appendChild(target);
+    return wrapper;
+  }
+
   function applyBorder(el, type) {
     if (!el || !type) return;
 
@@ -284,11 +298,17 @@
     const tag = (el.tagName || "").toLowerCase();
     if (tag === "img" || tag === "svg") {
       const iconBox = el.closest?.("div[style*='background-image']");
-      target = iconBox || el;
+      target = iconBox || ensureWrap(el);
     } else if (isLabeledElement(el)) {
       target = el;
     } else {
-      target = el.querySelector?.("img, svg") || el;
+      const icon = el.querySelector?.("img, svg");
+      if (icon) {
+        const iconBox = icon.closest?.("div[style*='background-image']");
+        target = iconBox || ensureWrap(icon);
+      } else {
+        target = el;
+      }
     }
 
     if (!target) return;
