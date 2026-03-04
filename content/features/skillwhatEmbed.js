@@ -19,6 +19,16 @@
     "gamesense",
     "movement"
   ];
+  const PLAYER_SKILL_LABELS = [
+    "Aim",
+    "Handling",
+    "Quickness",
+    "Determination",
+    "Awareness",
+    "Teamplay",
+    "Gamesense",
+    "Movement"
+  ];
 
   function safeRuntimeUrl(path) {
     try {
@@ -49,7 +59,10 @@
 
   function findPlayerCards() {
     const cards = Array.from(document.querySelectorAll(".card.p-0"));
-    return cards.filter((card) => card.querySelector("a[href*='/players/']"));
+    return cards.filter((card) => {
+      if (!card.querySelector("a[href*='/players/']")) return false;
+      return hasPlayerSkills(card);
+    });
   }
 
   function parseTryoutSkills(text) {
@@ -248,16 +261,7 @@
   function buildPlayerText(card) {
     if (!card) return "";
 
-    const skillNames = [
-      "Aim",
-      "Handling",
-      "Quickness",
-      "Determination",
-      "Awareness",
-      "Teamplay",
-      "Gamesense",
-      "Movement"
-    ];
+    const skillNames = PLAYER_SKILL_LABELS;
 
     const nameEl =
       card.querySelector("h5 a[href*='/players/']") ||
@@ -338,6 +342,27 @@
 
     wrap.appendChild(launcher);
     return true;
+  }
+
+  function hasPlayerSkills(card) {
+    if (!card || !card.querySelectorAll) return false;
+
+    const labelSet = new Set(PLAYER_SKILL_LABELS.map((label) => label.toLowerCase()));
+    const nodes = Array.from(card.querySelectorAll("p, span, div"));
+    let found = 0;
+
+    for (const node of nodes) {
+      const text = (node.textContent || "").trim();
+      if (!text || text.length > 18) continue;
+      const lower = text.toLowerCase();
+      if (lower === "total skill") return true;
+      if (labelSet.has(lower)) {
+        found += 1;
+        if (found >= 2) return true;
+      }
+    }
+
+    return false;
   }
 
   function openModalWithText(text) {

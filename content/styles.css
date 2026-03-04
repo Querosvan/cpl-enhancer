@@ -190,20 +190,25 @@
    ========================= */
 .cpl-ability-border {
   --cpl-ability-border-color: rgba(255, 255, 255, 0.6);
+  --cpl-ability-fill-color: rgba(255, 255, 255, 0.12);
   border-radius: 6px;
+  background-color: var(--cpl-ability-fill-color);
   box-shadow: 0 0 0 2px var(--cpl-ability-border-color) !important;
 }
 
 .cpl-ability-border--positive {
   --cpl-ability-border-color: rgba(76, 217, 100, 0.9);
+  --cpl-ability-fill-color: rgba(76, 217, 100, 0.18);
 }
 
 .cpl-ability-border--negative {
   --cpl-ability-border-color: rgba(244, 67, 54, 0.9);
+  --cpl-ability-fill-color: rgba(244, 67, 54, 0.18);
 }
 
 .cpl-ability-border--mixed {
   --cpl-ability-border-color: rgba(250, 204, 21, 0.95);
+  --cpl-ability-fill-color: rgba(250, 204, 21, 0.18);
 }
 
 /* =========================
