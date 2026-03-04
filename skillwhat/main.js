@@ -1147,7 +1147,7 @@ function renderCategory(id, items) {
   setSelectedHtml();
 
   const options = document.createElement("div");
-  options.className = "gear-options gear-grid hidden";
+  options.className = "gear-options gear-grid";
 
   const addOption = (label, item) => {
     const b = document.createElement("div");
@@ -1182,7 +1182,7 @@ function renderCategory(id, items) {
 
     b.addEventListener("click", () => {
       equipped[cat] = item || null;
-      options.classList.add("hidden");
+      options.classList.remove("is-open");
       recomputeEquipmentBoosts();
       updateGearButtonState();
       renderAllEquipmentUI();
@@ -1198,7 +1198,11 @@ function renderCategory(id, items) {
 
   selected.addEventListener("click", (e) => {
     e.stopPropagation();
-    options.classList.toggle("hidden");
+    const isOpen = options.classList.contains("is-open");
+    document.querySelectorAll(".gear-options.is-open").forEach((el) => {
+      if (el !== options) el.classList.remove("is-open");
+    });
+    options.classList.toggle("is-open", !isOpen);
   });
 
   selectWrap.appendChild(selected);
@@ -1228,7 +1232,7 @@ function renderAllEquipmentUI() {
 if (!document.body.dataset.cplGearOptionsBound) {
   document.body.dataset.cplGearOptionsBound = "1";
   document.addEventListener("click", () => {
-    document.querySelectorAll(".gear-options").forEach((el) => el.classList.add("hidden"));
+    document.querySelectorAll(".gear-options.is-open").forEach((el) => el.classList.remove("is-open"));
   });
 }
 
@@ -1275,10 +1279,10 @@ function ensureLoyalCareerBindings() {
       // toggle ON / OFF
       extendedCareer = !extendedCareer;
 
-      // estado visual
+      // visual state
       careerBtn.classList.toggle("active", extendedCareer);
 
-      // recalcular tudo o que depende da idade
+      // recompute everything that depends on age
       updateRetireDisplayIfNeeded();
 
       const gamesPlayed =

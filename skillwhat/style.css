@@ -558,11 +558,11 @@ filter: brightness(1.2);
     background-position: center;
     background-repeat: no-repeat;
     transition: 0.15s ease;
-    filter: brightness(1);      /* estado base */
+    filter: brightness(1);      /* default state */
 }
 
 .gear-btn.gear-active {
-    filter: brightness(1.35);   /* estado ativo */
+    filter: brightness(1.35);   /* active state */
 }
 
 .gear-title {
@@ -889,12 +889,16 @@ position: relative;   /* note */
     border: 1px solid #2b2b2b;
     border-radius: 8px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.45);
-    display: grid;
+    display: none;
 }
 
 #gear-popup.gear-popup--static .gear-options.gear-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 6px 6px;
+}
+
+#gear-popup.gear-popup--static .gear-options.is-open {
+    display: grid;
 }
 
 #gear-popup.gear-popup--static .gear-item--option {
@@ -962,7 +966,7 @@ position: relative;   /* note */
     color: #ffd54a;       /* nice yellow for the lock */
 }
 .game-popup-inner {
-    user-select: none;     /* 🔥 impede copiar */
+    user-select: none;     /* prevent selection */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;position: absolute;
@@ -996,12 +1000,12 @@ position: relative;   /* note */
 
     cursor: pointer;
     transition: 0.2s ease;
-    filter: brightness(0.5); /* estado normal */
+    filter: brightness(0.5); /* normal state */
     z-index: 5;
     pointer-events: auto;
 }
 
-/* Estado ativo */
+/* Active state */
 .game-img-btn.active {
     filter: brightness(1);
 }
@@ -1804,4 +1808,5 @@ pointer-events: auto;
     text-align: left;
     margin-top: 2px;
 }
+
 
