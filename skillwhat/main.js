@@ -1,7 +1,7 @@
-﻿// ===== FORCE VERSION RENDER (ISOLATED) =====
+// ===== FORCE VERSION RENDER (ISOLATED) =====
 
 // ===== END FORCE VERSION =====
-// Icons para MAX HEART POSSIBLE
+// Icons for MAX HEART POSSIBLE
 const ICON_TINY_HTML = '<span class="heart-small3">&#x2764;&#xFE0F;</span>';
 const ICON_SMALL_HTML = '<span class="heart-small2">&#x2764;&#xFE0F;</span>';
 const ICON_BIG_HTML   = '&#x2764;&#xFE0F;';
@@ -56,7 +56,7 @@ let skills = [
 const initialSkillsBackup = JSON.parse(JSON.stringify(skills));
 
 
-// backup do ÃƒÂºltimo LOAD
+// note
 let loadedSkillsBackup = JSON.parse(JSON.stringify(skills));
 let loadedName = "Spidevil";
 let loadedAge = "15yo (day 1)";
@@ -129,8 +129,10 @@ const GAMES_PER_DAY = {
   32: 7
 };
 
-let extendedCareer = false; // OFF por defeito
+let extendedCareer = false; // OFF by default
+let shortLived = false;
 function getMaxCareerAge() {
+  if (shortLived) return 38;
   return extendedCareer ? 42 : 40;
 }
 let heartState = 0;
@@ -308,7 +310,7 @@ function alignEditColumn() {
     const lines = txt
         .split("\n")
         .map(l => l.trim())
-        .filter(l => l.length > 0); // remove vazios
+        .filter(l => l.length > 0); // remove empty lines
 
     const skillNames = [
         "Aim", "Handling", "Quickness", "Determination",
@@ -321,7 +323,7 @@ function alignEditColumn() {
         const line = lines[i];
 
         // -----------------------------------
-        // 1) FORMATO INLINE: "Skill 42/?"
+        // 1) INLINE FORMAT: "Skill 42/?"
         // -----------------------------------
         const inlineMatch = line.match(/^(\w+)\s+(\d+)\s*\/\s*(\d+|\?)$/i);
         if (inlineMatch && skillNames.includes(inlineMatch[1])) {
@@ -335,10 +337,10 @@ function alignEditColumn() {
         }
 
         // -----------------------------------
-        // 2) FORMATO 3 LINHAS:
+        // 2) 3-LINE FORMAT:
         // Skill
         // 42
-        // /93   ou   / ?   ou   ?
+        // /93   or   / ?   or   ?
         // -----------------------------------
         if (skillNames.includes(line)) {
             const name = line;
@@ -348,7 +350,7 @@ function alignEditColumn() {
 
             const value = parseInt(valLine, 10) || 0;
 
-            // extrai apenas nÃƒÂºmero ou ?
+            // extract only number or ?
             let rawMax = maxLine.replace("/", "").trim();
             let max = null;
 
@@ -442,7 +444,7 @@ function renderSkills() {
     const finalVal = v.final;
 
     // ------------------------------
-    // WIDTHS (apenas 2 segmentos)
+    // WIDTHS (only 2 segments)
     // ------------------------------
     const baseW = Math.min(baseVal, 100);
     const boostW = Math.max(0, Math.min(finalVal, 100) - baseW);
@@ -455,13 +457,13 @@ function renderSkills() {
     name.textContent = s.name;
     name.style.color = finalVal >= 100 ? "#f7f8c9" : "#ffffff";
 
-    // LIMIT REACHED (value == max, mas nÃƒÂ£o 100)
+    // LIMIT REACHED (value == max, but not 100)
 if (s.value === s.max && s.max < 100 && finalVal < 100) {
-    name.style.color = "#ffffffff"; // verde premium
+    name.style.color = "#ffffffff"; // premium green
     
 }
     // ===============================
-// LIMIT REACHED (value === max, mas < 100)
+// LIMIT REACHED (value === max, but < 100)
 // ===============================
 if (s.value === s.max && s.max < 100) {
     name.classList.add("limit-reached");
@@ -476,7 +478,7 @@ if (s.value === s.max && s.max < 100) {
     limit.className = "skill-limit";
     limit.style.width = s.max + "%";
 
-    // Se o limite ÃƒÂ© 100 \\u2192 arredondado dos dois lados
+    // If the limit is 100 -> rounded on both sides
     if (s.max === 100) {
         limit.style.borderRadius = "999px";
     } else {
@@ -486,7 +488,7 @@ if (s.value === s.max && s.max < 100) {
 bar.appendChild(limit); 
 
     // ----------------------------------
-    // BASE (sempre laranja)
+    // BASE (always orange)
     // ----------------------------------
     const baseF = document.createElement("div");
     baseF.className = "skill-fill";
@@ -498,11 +500,11 @@ bar.appendChild(limit);
     bar.appendChild(baseF);
 
     // ----------------------------------
-    // BOOST TOTAL (HM + morale + gear)
+    // TOTAL BOOST (HM + morale + gear)
     // ----------------------------------
 let boostF = null;
 
-// BOOST (HM + morale + gear) como ÃƒÂºnico segmento de boost
+// BOOST (HM + morale + gear) as a single boost segment
 if (boostW > 0) {
   boostF = document.createElement("div");
   boostF.className = "skill-fill-boost";
@@ -512,7 +514,7 @@ if (boostW > 0) {
   
   
 
-  // Se final >= 100 \\u2192 dourado + brilho + canto redondo
+  // If final >= 100 -> gold + glow + rounded corner
   if (finalVal >= 100) {
     boostF.style.backgroundColor = "#f7e395";
     boostF.style.borderRadius = "0 999px 999px 0";
@@ -525,7 +527,7 @@ if (boostW > 0) {
   bar.appendChild(boostF);
 }
 
-// SE NÃƒÆ’O EXISTIR BOOST \\u2192 base atinge 100 sozinha
+// If there is no boost -> base reaches 100 on its own
 if (finalVal >= 100 && boostW === 0) {
   baseF.style.backgroundColor = "#edeec0";
   baseF.style.borderRadius = "999px";
@@ -555,7 +557,7 @@ if (finalVal >= 100) {
 
 
     // ----------------------------------
-    // VALORES
+    // VALUES
     // ----------------------------------
     const val = document.createElement("div");
     val.className = "skill-value";
@@ -564,7 +566,7 @@ if (finalVal >= 100) {
     cur.className = "skill-current";
     cur.textContent = maxMode ? s.max : Math.round(v.base);
     if (finalVal >= 100) cur.style.color = "#ee6b0e";
-    // LIMIT REACHED (value == max, mas nÃƒÂ£o 100)
+    // LIMIT REACHED (value == max, but not 100)
     if (s.value === s.max && s.max < 100 && finalVal < 100) {
         cur.style.color = "#ffffffff";
     }
@@ -606,17 +608,17 @@ if (globalButtonsContainer) {
 
         const v = computeSkillValues(s);
 
-        // LINHA DA COLUNA DIREITA
+        // RIGHT COLUMN ROW
         const row = document.createElement("div");
         row.className = "edit-row";
 
-        // BOTÃƒÆ’O -
+        // note
         const minus = document.createElement("img");
         minus.src = "https://i.postimg.cc/qBCQ18DZ/button.png";
         minus.className = "edit-btn-img";
         minus.addEventListener("click", () => applySkillChange(index, -1));
 
-        // BOTÃƒÆ’O +
+        // note
         const plus = document.createElement("img");
         plus.src = "https://i.postimg.cc/SQzVgW1v/button.png";
         plus.className = "edit-btn-img";
@@ -673,7 +675,7 @@ row.appendChild(boostContainer);
    GLOBAL EDIT COLUMN LOGIC
 ========================== */
 
-let globalMode = "S"; // S = editar value, L = editar max
+let globalMode = "S"; // S = edit value, L = edit max
 const globalModeBtn = document.getElementById("mode-btn");
 const globalButtonsContainer = document.getElementById("edit-buttons-container");
 
@@ -704,87 +706,87 @@ function applySkillChange(idx, delta) {
     let turnMaxModeOffAfterChange = false;
 
     /* ================================
-       SE MAX MODE ESTIVER ATIVO
+       IF MAX MODE IS ACTIVE
        ================================ */
 if (maxMode) {
-    // guardar valor real original apenas 1 vez
+    // store the original real value only once
     if (s._backupValue === undefined) s._backupValue = s.value;
 
-    // valor a editar passa a ser o MAX (valor visÃƒÂ­vel em MAX MODE)
+    // value to edit becomes MAX (value shown in MAX MODE)
     s.value = s.max;
 
     turnMaxModeOffAfterChange = true;
 }
 
     /* ================================
-       REGRAS S
+       S RULES
        ================================ */
     if (globalMode === "S") {
 
         if (delta === 1 && s.value === s.max && s.value < 100) {
-            // S+ quando value == max \\u2192 sobem ambos
+            // S+ when value == max -> increase both
             s.value++;
             s.max++;
         }
 
         else if (delta === -1 && s.value === s.max) {
-            // S- quando value == max \\u2192 desce sÃƒÂ³ o value
+            // S- when value == max -> decrease only value
             if (s.value > 0) s.value--;
         }
 
         else if (delta === 1 && s.value < s.max && s.value < 100) {
-            // S+ normal
+            // normal S+
             s.value++;
         }
 
         else if (delta === -1 && s.value > 0) {
-            // S- normal
+            // normal S-
             s.value--;
         }
     }
 
     /* ================================
-       REGRAS L
+       L RULES
        ================================ */
     else {
 
         if (delta === 1 && s.max === s.value && s.max < 100) {
-            // L+ quando max == value \\u2192 sÃƒÂ³ sobe max
+            // L+ when max == value -> increase only max
             s.max++;
         }
 
         else if (delta === -1 && s.max === s.value && s.max > 0) {
-            // L- quando max == value \\u2192 descem ambos
+            // L- when max == value -> decrease both
             s.max--;
             s.value--;
         }
 
         else if (delta === 1 && s.max < 100) {
-            // L+ normal
+            // normal L+
             s.max++;
         }
 
         else if (delta === -1 && s.max > s.value) {
-            // L- normal
+            // normal L-
             s.max--;
         }
     }
 
     /* ================================
-       LIMITE FINAL (0-100)
+       FINAL LIMIT (0-100)
        ================================ */
     s.value = Math.max(0, Math.min(100, s.value));
     s.max   = Math.max(0, Math.min(100, s.max));
 
     /* ================================
-       SE FIZ CLICK EM +/- NO MAX MODE
-       \\u2192 DESLIGAR MAX MODE AUTOMATICAMENTE
+       IF +/- CLICKED IN MAX MODE
+       -> TURN OFF MAX MODE AUTOMATICALLY
        ================================ */
     if (turnMaxModeOffAfterChange) {
         maxMode = false;
         maxBtn.classList.remove("max-active");
 
-        // atualizar o backup para o novo valor real
+        // update backup to the new real value
         s._backupValue = s.value;
     }
     updateTotals();
@@ -868,8 +870,13 @@ function hideTooltip() {
 /* ---------------- LOAD ---------------- */
 function loadFromText(loadTextRaw) {
   extendedCareer = false;
+  shortLived = false;
   const careerBtn = document.getElementById("career-plus-btn");
   if (careerBtn) careerBtn.classList.remove("active");
+  const shortBtn = document.getElementById("shortlived-btn");
+  if (shortBtn) shortBtn.classList.remove("active");
+  const antiBtn = document.getElementById("antisocial-btn");
+  if (antiBtn) antiBtn.classList.remove("active");
 
   // FULL RESET - same as RUBBER (clears UI state and temp values)
   heartState = 0;
@@ -890,12 +897,12 @@ function loadFromText(loadTextRaw) {
   // RESET POPUPS
   gearLocked = false;
   if (lockBtn) lockBtn.textContent = "\uD83D\uDD13";
-  if (gearPopup) gearPopup.classList.add("hidden");
+  if (gearPopup && !isGearStatic()) gearPopup.classList.add("hidden");
 
   gameLocked = false;
   const gameLockBtn = document.getElementById("game-lock-btn");
   if (gameLockBtn) gameLockBtn.textContent = "\uD83D\uDD13";
-  if (gamePopup) gamePopup.classList.add("hidden");
+  if (gamePopup && !isGameStatic()) gamePopup.classList.add("hidden");
 
   // RESET GAMES
   const gameInput = document.getElementById("game-input");
@@ -933,6 +940,7 @@ function loadFromText(loadTextRaw) {
   if (gameImgBtn)   gameImgBtn.classList.remove("active");
   if (loyalStatusEl) loyalStatusEl.textContent = "NO";
 
+  updateHeartRequirementLabels();
   ensureLoyalCareerBindings();
   updateGamesButtonState();
 
@@ -976,7 +984,7 @@ function loadFromText(loadTextRaw) {
     skills = data.skills;
   }
 
-  // detectar skills com max = null
+  // detect skills with max = null
   const incomplete = skills.filter(s => s.max === null);
   if (incomplete.length > 0 && !missingPopupOpen) {
     openMissingSkillPopup(incomplete);
@@ -1023,13 +1031,13 @@ if (maxBtn) {
 
     skills.forEach(s => {
       if (maxMode) {
-        // guardar valor original
+        // store original value
         s._backupValue = s.value;
 
         // value passa a ser igual ao max
         s.value = s.max;
       } else {
-        // restaurar o valor original
+        // restore original value
         if (s._backupValue !== undefined) {
           s.value = s._backupValue;
         }
@@ -1084,47 +1092,113 @@ function renderCategory(id, items) {
   cont.classList.add("gear-row");
 
   const cat = id.replace("gear-", "");
+  const catLabelMap = {
+    mousepad: "Mousepad",
+    mouse: "Mouse",
+    keyboard: "Keyboard",
+    headset: "Headset"
+  };
+
+  const labelWrap = document.createElement("div");
+  labelWrap.className = "gear-label";
 
   const img = document.createElement("img");
   img.src = GEAR_ICONS[cat];
   img.className = "gear-row-icon";
+  img.title = catLabelMap[cat] || cat;
+  labelWrap.appendChild(img);
 
-  const grid = document.createElement("div");
-  grid.className = "gear-grid";
+  const selectWrap = document.createElement("div");
+  selectWrap.className = "gear-select";
 
-  items.forEach(it => {
+  const selected = document.createElement("button");
+  selected.type = "button";
+  selected.className = "gear-item gear-item--selected";
+
+  const setSelectedHtml = () => {
+    if (!equipped[cat]) {
+      selected.innerHTML = `
+        <div class="gear-name">None</div>
+        <div class="gear-boosts"></div>
+      `;
+      selected.title = `${catLabelMap[cat] || cat}: None`;
+      selected.classList.remove("equipped");
+      return;
+    }
+
+    const boostEntries = Object.entries(equipped[cat].boosts);
+    const boostsHtml = boostEntries
+      .map(([skill, val]) => `
+        <span class="gear-boost">
+          +${val}
+          <img
+            class="gear-boost-icon"
+            src="${GEAR_ICON_BY_SKILL[skill]}"
+            alt="${skill}"
+          />
+        </span>
+      `)
+      .join(" ");
+    const boostTitle = boostEntries
+      .map(([skill, val]) => `+${val} ${skill}`)
+      .join(", ");
+
+    selected.innerHTML = `
+      <div class="gear-name">${equipped[cat].name}</div>
+      <div class="gear-boosts">
+        ${boostsHtml}
+      </div>
+    `;
+    selected.title = `${catLabelMap[cat] || cat}: ${boostTitle}`;
+    selected.classList.add("equipped");
+  };
+
+  setSelectedHtml();
+
+  const options = document.createElement("div");
+  options.className = "gear-options gear-grid";
+
+  const addOption = (label, item) => {
     const b = document.createElement("div");
-    b.className = "gear-item";
+    b.className = "gear-item gear-item--option";
 
-    if (equipped[cat] && equipped[cat].name === it.name) {
+    if (item && equipped[cat] && equipped[cat].name === item.name) {
       b.classList.add("equipped");
     }
 
-const boostsHtml = Object.entries(it.boosts)
-  .map(([skill, val]) => `
-    <span class="gear-boost">
-      +${val}
-      <img
-        class="gear-boost-icon"
-        src="${GEAR_ICON_BY_SKILL[skill]}"
-        alt="${skill}"
-      />
-    </span>
-  `)
-  .join(" ");
+    let boostsHtml = "";
+    if (item && item.boosts) {
+      const boostEntries = Object.entries(item.boosts);
+      boostsHtml = boostEntries
+        .map(([skill, val]) => `
+          <span class="gear-boost">
+            +${val}
+            <img
+              class="gear-boost-icon"
+              src="${GEAR_ICON_BY_SKILL[skill]}"
+              alt="${skill}"
+            />
+          </span>
+        `)
+        .join(" ");
+      const boostTitle = boostEntries
+        .map(([skill, val]) => `+${val} ${skill}`)
+        .join(", ");
+      b.title = `${catLabelMap[cat] || cat}: ${boostTitle}`;
+    } else {
+      b.title = `${catLabelMap[cat] || cat}: None`;
+    }
 
-b.innerHTML = `
-  <div class="gear-name">${it.name}</div>
-  <div class="gear-boosts">
-    ${boostsHtml}
-  </div>
-`;
-
+    b.innerHTML = `
+      <div class="gear-name">${label}</div>
+      <div class="gear-boosts">
+        ${boostsHtml}
+      </div>
+    `;
 
     b.addEventListener("click", () => {
-      equipped[cat] =
-        equipped[cat] && equipped[cat].name === it.name ? null : it;
-
+      equipped[cat] = item || null;
+      options.classList.remove("is-open");
       recomputeEquipmentBoosts();
       updateGearButtonState();
       renderAllEquipmentUI();
@@ -1132,19 +1206,33 @@ b.innerHTML = `
       renderMiniGear();
     });
 
-    grid.appendChild(b);
+    options.appendChild(b);
+  };
+
+  addOption("None", null);
+  items.forEach((it) => addOption(it.name, it));
+
+  selected.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = options.classList.contains("is-open");
+    document.querySelectorAll(".gear-options.is-open").forEach((el) => {
+      if (el !== options) el.classList.remove("is-open");
+    });
+    options.classList.toggle("is-open", !isOpen);
   });
 
-// highlight icon when any item is equipped
-if (equipped[cat]) {
-    img.classList.add("icon-equipped");
-} else {
-    img.classList.remove("icon-equipped");
-}
- 
+  selectWrap.appendChild(selected);
+  selectWrap.appendChild(options);
 
-cont.appendChild(img);
-cont.appendChild(grid);
+  // highlight icon when any item is equipped
+  if (equipped[cat]) {
+    img.classList.add("icon-equipped");
+  } else {
+    img.classList.remove("icon-equipped");
+  }
+
+  cont.appendChild(labelWrap);
+  cont.appendChild(selectWrap);
 }
 
 
@@ -1154,6 +1242,14 @@ function renderAllEquipmentUI() {
   renderCategory("gear-mouse", EQUIPMENT.mouse);
   renderCategory("gear-keyboard", EQUIPMENT.keyboard);
   renderCategory("gear-headset", EQUIPMENT.headset);
+}
+
+// Close open gear option lists when clicking elsewhere
+if (!document.body.dataset.cplGearOptionsBound) {
+  document.body.dataset.cplGearOptionsBound = "1";
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".gear-options.is-open").forEach((el) => el.classList.remove("is-open"));
+  });
 }
 
 function recomputeEquipmentBoosts() {
@@ -1183,8 +1279,9 @@ function updateGamesButtonState() {
   const gamesPlayed = gamesPlayedEl ? parseInt(gamesPlayedEl.textContent, 10) || 0 : 0;
   const loyalEl = document.getElementById("loyal-status");
   const loyal = loyalEl && loyalEl.textContent === "YES";
+  const antisocial = document.getElementById("antisocial-btn")?.classList.contains("active");
 
-  if (gamesPlayed > 0 || loyal) {
+  if (gamesPlayed > 0 || loyal || antisocial || extendedCareer || shortLived) {
     gamesBtn.classList.add("games-active");
   } else {
     gamesBtn.classList.remove("games-active");
@@ -1193,16 +1290,22 @@ function updateGamesButtonState() {
 
 function ensureLoyalCareerBindings() {
   const careerBtn = document.getElementById("career-plus-btn");
+  const shortBtn = document.getElementById("shortlived-btn");
   if (careerBtn && !careerBtn.dataset.cplBound) {
     careerBtn.dataset.cplBound = "1";
     careerBtn.addEventListener("click", () => {
       // toggle ON / OFF
       extendedCareer = !extendedCareer;
 
-      // estado visual
+      if (extendedCareer) {
+        shortLived = false;
+        if (shortBtn) shortBtn.classList.remove("active");
+      }
+
+      // visual state
       careerBtn.classList.toggle("active", extendedCareer);
 
-      // recalcular tudo o que depende da idade
+      // recompute everything that depends on age
       updateRetireDisplayIfNeeded();
 
       const gamesPlayed =
@@ -1210,11 +1313,37 @@ function ensureLoyalCareerBindings() {
 
       updateHeartsBasedOnGames(gamesPlayed);
       computeMaxCareerHeart();
+      updateGamesButtonState();
     });
   }
 
   const gameImgBtn = document.getElementById("game-img-btn");
   const loyalStatusEl = document.getElementById("loyal-status");
+  const antiBtn = document.getElementById("antisocial-btn");
+
+  if (shortBtn && !shortBtn.dataset.cplBound) {
+    shortBtn.dataset.cplBound = "1";
+    shortBtn.addEventListener("click", () => {
+      shortLived = !shortLived;
+
+      if (shortLived) {
+        extendedCareer = false;
+        if (careerBtn) careerBtn.classList.remove("active");
+        shortBtn.classList.add("active");
+      } else {
+        shortBtn.classList.remove("active");
+      }
+
+      updateRetireDisplayIfNeeded();
+
+      const gamesPlayed =
+        parseInt(document.getElementById("games-played")?.textContent, 10) || 0;
+
+      updateHeartsBasedOnGames(gamesPlayed);
+      computeMaxCareerHeart();
+      updateGamesButtonState();
+    });
+  }
 
   if (!gameImgBtn) return;
   if (!gameImgBtn.dataset.cplBound) {
@@ -1227,6 +1356,7 @@ function ensureLoyalCareerBindings() {
       const loyalStatusEl = document.getElementById("loyal-status");
       const gamesPlayedEl = document.getElementById("games-played");
 
+      if (isOn && antiBtn) antiBtn.classList.remove("active");
       if (loyalStatusEl) loyalStatusEl.textContent = isOn ? "YES" : "NO";
 
       let games = parseInt(gamesPlayedEl.textContent, 10) || 0;
@@ -1236,12 +1366,12 @@ function ensureLoyalCareerBindings() {
         const reduced = Math.floor(games * 0.75);
         gamesPlayedEl.textContent = reduced;
 
-        updateHeartRequirementLabels(true);
+        updateHeartRequirementLabels();
         updateHeartsBasedOnGames(reduced);
       } else if (originalGamesBeforeLoyal !== null) {
         gamesPlayedEl.textContent = originalGamesBeforeLoyal;
 
-        updateHeartRequirementLabels(false);
+        updateHeartRequirementLabels();
         updateHeartsBasedOnGames(originalGamesBeforeLoyal);
       }
 
@@ -1249,9 +1379,35 @@ function ensureLoyalCareerBindings() {
       updateGamesButtonState();
     });
   }
+
+  if (antiBtn && !antiBtn.dataset.cplBound) {
+    antiBtn.dataset.cplBound = "1";
+    antiBtn.addEventListener("click", () => {
+      const isOn = antiBtn.classList.toggle("active");
+      const loyalStatusEl = document.getElementById("loyal-status");
+      const gamesPlayedEl = document.getElementById("games-played");
+
+      if (isOn) {
+        if (gameImgBtn) gameImgBtn.classList.remove("active");
+        if (loyalStatusEl) loyalStatusEl.textContent = "NO";
+        if (originalGamesBeforeLoyal !== null && gamesPlayedEl) {
+          gamesPlayedEl.textContent = originalGamesBeforeLoyal;
+          originalGamesBeforeLoyal = null;
+        }
+      }
+
+      const games =
+        parseInt(document.getElementById("games-played")?.textContent, 10) || 0;
+
+      updateHeartRequirementLabels();
+      updateHeartsBasedOnGames(games);
+      computeMaxCareerHeart();
+      updateGamesButtonState();
+    });
+  }
 }
 function openMissingSkillPopup(list) {
-  if (missingPopupOpen) return; // Ã¢â€ºâ€ impede abrir de novo
+  if (missingPopupOpen) return; // prevents reopening
     missingPopupOpen = true;      // \\uD83D\\uDD12 marca como aberto
     const popup = document.getElementById("missing-skill-popup");
     const container = document.getElementById("missing-skill-fields");
@@ -1288,7 +1444,7 @@ function openMissingSkillPopup(list) {
             input.value = input.value.replace(/\D/g, '');
             const value = input.value;
 
-            // mÃƒÂ¡ximo 3 dÃƒÂ­gitos
+            // note
             if (value.length > 3) {
                 input.value = '';
                 return;
@@ -1297,7 +1453,7 @@ function openMissingSkillPopup(list) {
             // standby 10
             if (value === '10') return;
 
-            // 3 dÃƒÂ­gitos
+            // note
             if (value.length === 3) {
                 if (value === '100') {
                     inputs[index + 1]?.focus();
@@ -1307,7 +1463,7 @@ function openMissingSkillPopup(list) {
                 return;
             }
 
-            // 2 dÃƒÂ­gitos
+            // note
             if (value.length === 2) {
                 const num = Number(value);
 
@@ -1341,7 +1497,7 @@ function openMissingSkillPopup(list) {
             } else {
                 field.style.border = "";
                 s.max = val;
-                s.max = Number(val); // forÃƒÂ§a nÃƒÂºmero, nunca null
+                s.max = Number(val); // forÃ§a nÃºmero, nunca null
             }
         });
 
@@ -1349,7 +1505,7 @@ function openMissingSkillPopup(list) {
 
         popup.classList.add("hidden");
         document.getElementById("modal-overlay").classList.add("hidden");
-missingPopupOpen = false; // \\uD83D\\uDD13 permite novo popup num prÃƒÂ³ximo LOAD
+missingPopupOpen = false; // allows a new popup on the next LOAD
         loadedSkillsBackup = JSON.parse(JSON.stringify(skills));
         loadedName = document.querySelector(".player-name").textContent;
         loadedAge  = document.querySelector(".player-age").textContent;
@@ -1372,10 +1528,12 @@ const gearPopup = document.getElementById("gear-popup");
 const gearBtn = document.querySelector(".gear-btn");
 const gearApplyBtn = document.getElementById("gear-apply-btn");
 const lockBtn = document.getElementById("gear-lock-btn");
+const isGearStatic = () => gearPopup && gearPopup.classList.contains("gear-popup--static");
 
 /* --- GEAR BUTTON TOGGLE (respeita lock) --- */
 if (gearBtn) {
   gearBtn.addEventListener("click", () => {
+    if (isGearStatic()) return;
     if (!gearLocked) {
       if (gearPopup.classList.contains("hidden")) gearPopup.classList.remove("hidden");
       else gearPopup.classList.add("hidden");
@@ -1388,7 +1546,7 @@ if (gearBtn) {
 if (gearApplyBtn) {
   gearApplyBtn.addEventListener("click", () => {
     if (!gearPopup) return;
-    gearPopup.classList.add("hidden");
+    if (!isGearStatic()) gearPopup.classList.add("hidden");
     recomputeEquipmentBoosts();
     updateGearButtonState();
     renderSkills();
@@ -1401,12 +1559,14 @@ const gamePopup = document.getElementById("game-popup");
 const gamesBtn = document.querySelector(".games-btn");
 const gameLockBtn = document.getElementById("game-lock-btn");
 const gameDrag = document.getElementById("game-drag");
+const isGameStatic = () => gamePopup && gamePopup.classList.contains("game-popup--static");
 
 let gameLocked = false;
 if (gameLockBtn) gameLockBtn.textContent = "\uD83D\uDD13";
 
 if (gamesBtn) {
   gamesBtn.addEventListener("click", () => {
+    if (isGameStatic()) return;
     if (!gameLocked) {
       if (gamePopup.classList.contains("hidden")) gamePopup.classList.remove("hidden");
       else gamePopup.classList.add("hidden");
@@ -1424,7 +1584,7 @@ if (gameLockBtn) {
 }
 
 document.addEventListener("mousedown", (e) => {
-  if (!gamePopup || gamePopup.classList.contains("hidden")) return;
+  if (!gamePopup || gamePopup.classList.contains("hidden") || isGameStatic()) return;
   if (gameLocked) return;
   const inner = gamePopup.querySelector(".game-popup-inner");
   const isBtn = e.target.closest(".games-btn");
@@ -1482,7 +1642,7 @@ if (lockBtn) {
 }
 
 document.addEventListener("mousedown", (e) => {
-  if (!gearPopup || gearPopup.classList.contains("hidden")) return;
+  if (!gearPopup || gearPopup.classList.contains("hidden") || isGearStatic()) return;
   if (gearLocked) return;
   const inner = gearPopup.querySelector(".gear-popup-inner");
   if (!inner) return;
@@ -1505,8 +1665,13 @@ if (rubber) {
     moraleState = 0;
     maxMode = false;
 extendedCareer = false;
+shortLived = false;
 const careerBtn = document.getElementById("career-plus-btn");
 if (careerBtn) careerBtn.classList.remove("active");
+const shortBtn = document.getElementById("shortlived-btn");
+if (shortBtn) shortBtn.classList.remove("active");
+const antiBtn = document.getElementById("antisocial-btn");
+if (antiBtn) antiBtn.classList.remove("active");
     if (heartBtn)  heartBtn.className = "action-btn heart-grey-btn";
     if (moraleBtn) moraleBtn.className = "action-btn morale-btn";
     if (maxBtn)    maxBtn.classList.remove("max-active");
@@ -1521,12 +1686,12 @@ if (careerBtn) careerBtn.classList.remove("active");
     // RESET POPUPS
     gearLocked = false;
     if (lockBtn) lockBtn.textContent = "\uD83D\uDD13";
-    if (gearPopup) gearPopup.classList.add("hidden");
+    if (gearPopup && !isGearStatic()) gearPopup.classList.add("hidden");
 
     gameLocked = false;
     const gameLockBtn = document.getElementById("game-lock-btn");
     if (gameLockBtn) gameLockBtn.textContent = "\uD83D\uDD13";
-    if (gamePopup) gamePopup.classList.add("hidden");
+    if (gamePopup && !isGameStatic()) gamePopup.classList.add("hidden");
 
     // RESET GAMES
     const gameInput = document.getElementById("game-input");
@@ -1559,8 +1724,9 @@ if (plat)  { plat.textContent  = "S23"; plat.style.color  = ""; }
 
     if (gameImgBtn)   gameImgBtn.classList.remove("active");
     if (loyalStatusEl) loyalStatusEl.textContent = "NO";
+    updateHeartRequirementLabels();
 
-  // RESTAURAR ESTADO BASE DO ÃƒÅ¡LTIMO LOAD
+  // note
 skills = JSON.parse(JSON.stringify(loadedSkillsBackup));
 
 const nameEl = document.querySelector(".player-name");
@@ -1577,17 +1743,21 @@ if (ageEl)  ageEl.textContent  = loadedAge;
     updateRetireDisplayIfNeeded();
   });
 }
-function updateHeartRequirementLabels(loyal) {
+function updateHeartRequirementLabels() {
   const rows = document.querySelectorAll(".heart-row");
 
- const base = [50, 100, 200, 400, 800];
-const loyalVals = [37, 75, 150, 300, 600];
+  const base = [50, 100, 200, 400, 800];
+  let mult = 1;
+  const loyal = document.getElementById("loyal-status")?.textContent === "YES";
+  const antisocial = document.getElementById("antisocial-btn")?.classList.contains("active");
+  if (loyal) mult = 0.75;
+  if (antisocial) mult = 1.25;
 
   rows.forEach((row, i) => {
     const span = row.querySelector("span:nth-child(2)");
     if (!span) return;
 
-    const value = loyal ? loyalVals[i] : base[i];
+    const value = Math.floor(base[i] * mult);
     span.textContent = `${value} games \u2192 `;
   });
 }
@@ -1601,6 +1771,7 @@ function updateHeartsBasedOnGames(games) {
   if (!tinyEl || !smallEl || !bigEl || !goldEl || !platEl) return;
 
   const loyal = document.getElementById("loyal-status").textContent === "YES";
+  const antisocial = document.getElementById("antisocial-btn")?.classList.contains("active");
 
   let tinyReq  = 50;
   let smallReq = 100;
@@ -1608,13 +1779,15 @@ function updateHeartsBasedOnGames(games) {
   let goldReq  = 400;
   let platReq  = 800;
 
-  if (loyal) {
-    tinyReq  = Math.floor(50 * 0.75);
-    smallReq = Math.floor(100 * 0.75);
-    bigReq   = Math.floor(200 * 0.75);
-    goldReq  = Math.floor(400 * 0.75);
-    platReq  = Math.floor(800 * 0.75);
-  }
+  let mult = 1;
+  if (loyal) mult = 0.75;
+  if (antisocial) mult = 1.25;
+
+  tinyReq  = Math.floor(50 * mult);
+  smallReq = Math.floor(100 * mult);
+  bigReq   = Math.floor(200 * mult);
+  goldReq  = Math.floor(400 * mult);
+  platReq  = Math.floor(800 * mult);
 
   const ageText = document.querySelector(".player-age")?.textContent || "";
   const { age, birthdayDay } = parseAgeString(ageText);
@@ -1637,7 +1810,7 @@ function targetMoment(req) {
 function label(req) {
   const moment = targetMoment(req);
 
-  // impossÃƒÂ­vel antes de reformar
+  // impossible before retirement
   if (moment.season > retireSeason) return "\u274C";
 
   if (games < req) {
@@ -1719,6 +1892,7 @@ function computeMaxCareerHeart() {
   const gd = calculateGameDate();
   const currentSeason = gd.season;
   const loyal = document.getElementById("loyal-status").textContent === "YES";
+  const antisocial = document.getElementById("antisocial-btn")?.classList.contains("active");
 
 let tinyReq  = 50;
 let smallReq = 100;
@@ -1726,13 +1900,15 @@ let bigReq   = 200;
 let goldReq  = 400;
 let platReq  = 800;
 
-if (loyal) {
-    tinyReq  = Math.floor(tinyReq * 0.75);
-    smallReq = Math.floor(smallReq * 0.75);
-    bigReq = Math.floor(bigReq * 0.75);
-    goldReq = Math.floor(goldReq * 0.75);
-    platReq = Math.floor(platReq * 0.75);
-  }
+let mult = 1;
+if (loyal) mult = 0.75;
+if (antisocial) mult = 1.25;
+
+tinyReq  = Math.floor(tinyReq * mult);
+smallReq = Math.floor(smallReq * mult);
+bigReq = Math.floor(bigReq * mult);
+goldReq = Math.floor(goldReq * mult);
+platReq = Math.floor(platReq * mult);
 
 function seasonGainFor(req) {
   return whenGamesReached(
@@ -1785,7 +1961,7 @@ let seasonsLeft = maxAge - age;
   const maxLine = document.querySelector(".max-heart-final");
   if (!maxLine) return;
 
-  // Se NÃƒÆ’O consegue nenhum \\u2192 mostrar "\\u2014"
+  // note
   if (!icon) {
     maxLine.innerHTML = `MAX HEART POSSIBLE: \u2014`;
     return;
@@ -1801,7 +1977,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateGearButtonState();
   renderSkills();
   renderMiniGear();
-  updateHeartRequirementLabels(false); 
+  updateHeartRequirementLabels(); 
   updateHeartsBasedOnGames(0);
   computeMaxCareerHeart();
   updateGamesButtonState();
@@ -1835,7 +2011,7 @@ const totalBox = document.querySelector(".total-skill-box");
     }
 
     try {
-      // Clona o card para evitar afetar o DOM
+      // Clone the card to avoid touching the DOM
       const clone = card.cloneNode(true);
       clone.style.margin = "0";
       clone.style.boxShadow = "none";
@@ -1865,6 +2041,34 @@ const totalBox = document.querySelector(".total-skill-box");
     }
     
   });
+});
+
+/* ----- MINI TOOLTIP FOR MODIFIERS ----- */
+const miniTooltip = document.getElementById("mini-tooltip");
+
+function bindMiniTooltip(el, text) {
+  if (!el || !miniTooltip) return;
+
+  el.addEventListener("mouseenter", () => {
+    miniTooltip.textContent = text;
+    miniTooltip.classList.remove("hidden");
+  });
+
+  el.addEventListener("mousemove", (e) => {
+    miniTooltip.style.left = `${e.clientX + 16}px`;
+    miniTooltip.style.top = `${e.clientY + 1}px`;
+  });
+
+  el.addEventListener("mouseleave", () => {
+    miniTooltip.classList.add("hidden");
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  bindMiniTooltip(document.getElementById("game-img-btn"), "Loyal");
+  bindMiniTooltip(document.getElementById("career-plus-btn"), "Long Lived");
+  bindMiniTooltip(document.getElementById("antisocial-btn"), "Anti Social");
+  bindMiniTooltip(document.getElementById("shortlived-btn"), "Short Lived");
 });
 
 window.addEventListener("message", (event) => {

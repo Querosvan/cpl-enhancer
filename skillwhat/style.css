@@ -1,4 +1,4 @@
-/* BLOQUEIO TOTAL GLOBAL */
+/* GLOBAL LOCK */
 * {
     user-select: none;
     -webkit-user-select: none;
@@ -9,16 +9,17 @@
     font-family: "Poppins", sans-serif;
 }
 
-/* Fundo da página */
+/* note */
 html, body {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    background: #2a2a2a;
 }
 
 body {
     margin: 0;
-    background: #000;
+    background: #2a2a2a;
 }
 
 .card {
@@ -29,9 +30,14 @@ body {
     width: 932px;
     height: 459px;
 
-    background-image: url("card-bg.png");
-    background-size: 932px 459px;
-    background-repeat: no-repeat;
+    background: linear-gradient(
+        to bottom,
+        #2a2a2a 0px,
+        #2a2a2a 154px,
+        #252525 155px,
+        #1f1f1f 156px,
+        #1f1f1f 100%
+    );
 
     border-radius: 22px;
 
@@ -49,12 +55,15 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    margin-top: 80px;  /* ⇦ AJUSTA TUDO PARA BAIXO */
+    margin-top: 20px;  /* note */
+    background: transparent;
+    border-radius: 0;
+    padding: 10px 16px 14px;
 }
 
 .card-top h2 {
     color: #fff;
-    font-size: 18px;    /* antes 22px */
+    font-size: 18px;    /* before 22px */
     margin: 0;
     font-family: "Poppins", sans-serif;
 }
@@ -62,61 +71,79 @@ body {
 .card-top {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* 👉 empurra TOTAL SKILL para a direita */
+    justify-content: space-between; /* push TOTAL SKILL to the right */
+}
+
+.card-top-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modifiers-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.total-skill-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .total-skill-box {
     background: #2a2a2b;
-    padding: 6px 12px;  /* antes 8px 14px */
+    padding: 6px 12px;  /* before 8px 14px */
     border-radius: 6px;
     display: flex;
     gap: 4px;
     align-items: center;
-    transform: scale(0.9);   /* caixa 10% menor */
-    margin-right: 245px; /* ajusta este valor */
-    margin-top: -20px;   /* ajusta o valor para a posição ideal */
+    transform: scale(0.9);   /* box 10% smaller */
+    margin-right: 245px; /* adjust this value */
+    margin-top: -20px;   /* note */
 
 }
 .total-skill-box .label {
-    font-size: 12px;    /* 🔥 ajusta aqui */
-    color: #818572;     /* continua o cinzento certo */
+    font-size: 12px;    /* adjust here */
+    color: #818572;     /* keep the right gray */
     font-weight: 700;
 }
 
 .total-skill-box .value {
-    color: #ffffff;   /* número principal (738) em branco */
+    color: #ffffff;   /* note */
     font-size: 17px; 
     font-weight: 700;
 }
 
 .total-skill-box .max {
-    color: #5f6d5d;   /* /738 em cinzento */
+    color: #5f6d5d;   /* /738 in gray */
     font-weight: 600;
      font-size: 14px;
 }
 
 
-/* Lista de skills reduzida */
+/* Reduced skills list */
 .skills-list {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 4px; /* menos espaço */  }
+  gap: 4px; /* note */  }
 
 .skill-row {
     display: flex;
     align-items: center;
-    position: relative; /* necessário */
+    position: relative; /* note */
     height: 22px;
 }
 
 .skill-name {
-    width: 150px;              /* largura fixa baseada em “Determination” */
-    text-align: right;         /* alinha texto à direita */
+    width: 150px;              /* note */
+    text-align: right;         /* note */
     font-size: 15px;
     color: #fff;
-    padding-right: 10px;       /* dá espaço bonito antes da barra */
-    transform: none !important;/* remove alinhamentos errados */
+    padding-right: 10px;       /* note */
+    transform: none !important;/* remove incorrect alignment */
 }
 
 
@@ -135,7 +162,7 @@ body {
     position: absolute;
     height: 100%;
     background: #3f4341;
-    border-radius: 999px 0 0 999px;  /* ← arredondado à esquerda */
+    border-radius: 999px 0 0 999px;  /* note */
     z-index: 1;
 }
 
@@ -145,7 +172,7 @@ body {
     bottom: 0;
     left: 0;
     background: #ff7a00;
-    border-radius: 999px 0 0 999px;  /* ← LADO ESQUERDO SEMPRE ARREDONDADO */
+    border-radius: 999px 0 0 999px;  /* note */
     overflow: hidden;
     z-index: 2;
 }
@@ -161,10 +188,10 @@ body {
 
 
 
-/* FULL (100 ou mais) — AMARELO */
+/* note */
 .skill-fill.full {
     background-color: #f7f8c9 !important;
-    border-radius: 10px !important;   /* arredonda os dois lados */
+    border-radius: 10px !important;   /* round both sides */
     width: 100% !important; 
         /* 🌟 GLOW EXTERIOR SUAVE */
     box-shadow:
@@ -184,8 +211,8 @@ body {
     margin-left: 88px;
     gap: 1px;
     color: #9c9c9c;
-    display: flex;           /* 👈 obrigatório */
-    width: 80px;             /* 👈 obrigatório */
+    display: flex;           /* note */
+    width: 80px;             /* note */
     justify-content: center; 
     text-align: center;
     margin-top: -2px;
@@ -208,23 +235,23 @@ body {
 }
 
 .skill-row:last-child {
-    margin-bottom: 36px; /* DISTÂNCIA EXATA AO FUNDO */
+    margin-bottom: 36px; /* note */
 }
 .primary-title {
-    width: 150px;        /* mesma largura da skill-name */
-    text-align: right;   /* alinha exatamente com “Aim” */
+    width: 150px;        /* same width as skill-name */
+    text-align: right;   /* note */
     color: #fff;
     font-size: 18px;
     font-weight: 600;
     font-family: "Poppins", sans-serif;
-    margin-top: -20px;   /* ajusta o valor para a posição ideal */
+    margin-top: -20px;   /* note */
 
 }
 .left-panel {
     position: absolute;
     left: 695px;
     top: 219px;
-    width: 260px;      /* ajusta */
+    width: 260px;      /* adjust */
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -236,7 +263,7 @@ body {
     left: 174px;
     top: -33px;
     width: 40px;
-    height: 220px;     /* ajusta mais tarde */
+    height: 220px;     /* adjust later */
     padding: 10px;       
     border: none;
     resize: none;
@@ -246,20 +273,20 @@ body {
     border-radius: 21px 0px 0px 21px;
 }
 
-/* Scroll bonito para a input-box */
+/* Nice scrollbar for the input box */
 .input-box::-webkit-scrollbar {
     width: 7px;
-    height: 10px;               /* largura da barra */
+    height: 10px;               /* bar height */
 }
 
 .input-box::-webkit-scrollbar-track {
-    background: #c3c3c3;      /* cor da calha */
+    background: #c3c3c3;      /* track color */
     border-radius: 10px;
 }
 
 .input-box::-webkit-scrollbar-thumb {
-    background: #f56e0e;      /* cor da barra */
-    border-radius: 0px;      /* EXTREMAMENTE importante para ficar bonito */
+    background: #f56e0e;      /* bar color */
+    border-radius: 0px;      /* EXTREMELY important for a clean look */
 }
 
 
@@ -268,12 +295,12 @@ body {
 .missing-row {
   margin-bottom: 10px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* push TOTAL SKILL to the right */
 }
 
 
 .input-box::-webkit-scrollbar-thumb:hover {
-    background: #f56e0e;      /* cor ao passar o rato */
+    background: #f56e0e;      /* hover color */
 }
 
 .load-btn {
@@ -291,7 +318,7 @@ body {
     transition: 0.2s ease; 
 }
 .load-btn:hover {
-    background: #edeec0ff; /* a cor que pediste */
+    background: #edeec0ff; /* requested color */
     box-shadow: 0 0 12px rgba(238, 223, 192, 0.8); /* brilho suave */
 }
 
@@ -304,7 +331,7 @@ body {
 .player-age {
     font-size: 16px;
     font-weight: 500;
-    color: #bcbcbc;  /* cinzento suave */
+    color: #bcbcbc;  /* soft gray */
 }
 
 .player-dot {
@@ -320,16 +347,57 @@ body {
     margin-left: 35px;
 }
 
-/* Botões ao lado do nome */
+/* note */
 .action-buttons {
     display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-left: 20px;   /* note */
+}
+
+.action-row {
+    display: flex;
+    align-items: center;
     gap: 6px;
-    margin-left: 20px;   /* espaço entre idade e botões */
+}
+
+/* Top row layout (3 columns) */
+.skillwhat-top-row {
+    display: grid;
+    grid-template-columns: 260px max-content max-content;
+    column-gap: 10px;
+    align-items: start;
+    padding: 6px 12px 10px 8px;
+    background: transparent;
+    border-radius: 0;
+}
+
+.skillwhat-top-col--left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.skillwhat-top-col--middle {
+    min-width: 0;
+    display: flex;
+    justify-content: flex-start;
+    margin-right: 0;
+}
+
+.skillwhat-top-col--right {
+    min-width: 0;
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 2px;
+    padding-right: 0;
+    margin-left: 10px;
 }
 .fixed-buttons {
     position: absolute;
-    top: 70px;       /* ajusta este valor se quiseres subir/descer */
-    right: 90px;     /* alinhado com o relógio */
+    top: 70px;       /* adjust this value to move up/down */
+    right: 90px;     /* note */
     display: flex;
     gap: 6px;
 }
@@ -345,9 +413,7 @@ body {
     transition: 0.15s ease-in-out;
 }
 
-/* =========================================================
-   TOOLTIP — VERSÃO COMPACTA E ALINHADA
-========================================================= */
+/* note */
 
 .skill-tooltip {
   position: fixed;
@@ -357,8 +423,8 @@ body {
   border-radius: 5px;
   border: 2px solid #8e8e8e;
   z-index: 9999;
-  min-width: 140px;       /* largura mínima */
-  max-width: 220px;       /* opcional — evita crescer demais */
+  min-width: 140px;       /* note */
+  max-width: 220px;       /* note */
   pointer-events: none;
   box-shadow: 0px 4px 12px rgba(0,0,0,0.35);
   font-size: 12px;
@@ -371,7 +437,7 @@ body {
 .skill-tooltip.visible { opacity: 1; }
 .skill-tooltip.hidden { opacity: 0; }
 
-/* Títulos das duas colunas */
+/* note */
 .tooltip-title-row {
   display: grid;
   grid-template-columns: 1fr 80px;
@@ -384,14 +450,14 @@ body {
   font-size: 13px;
 }
 
-/* Conteúdo em 2 colunas alinhadas */
+/* note */
 .tooltip-columns {
   display: grid;
   grid-template-columns: 1fr 80px;
   column-gap: 6px;
 }
 
-/* Esquerda / Direita */
+/* note */
 .tooltip-left,
 .tooltip-right {
   display: flex;
@@ -401,7 +467,7 @@ body {
   font-size: 12px;
 }
 
-/* Cada linha */
+/* Each row */
 .tooltip-left div,
 .tooltip-right div {
   white-space: nowrap;
@@ -422,8 +488,8 @@ body {
 }
 .game-info-box {
     position: absolute;
-    top: 13px;       /* ajusta conforme precisares */
-    right: 90px;     /* posição fixa */
+    top: 13px;       /* adjust as needed */
+    right: 90px;     /* note */
     background: #1f1f1f;
     padding: 4px 12px;
     border-radius: 10px;
@@ -455,34 +521,34 @@ body {
     background-repeat: no-repeat;
 }
 
-/* Estado 1 → +0.5% */
+/* note */
 .heart-active-1 {
     background-image: url('0-5.png');
     filter: brightness(1.2);
 }
 
-/* Estado 2 → +1% */
+/* note */
 .heart-active-2 {
     background-image: url('+1%25.png');
     filter: brightness(1.2);
 }
-/* Estado 3 → +3% */
+/* note */
 .heart-active-3 {
     background-image: url('+3%25.png');
     filter: brightness(1.2);
 }
-/* Estado 3 → +5% */
+/* note */
 .heart-active-4 {
     background-image: url('5.png');
     filter: brightness(1.2);
 }
 
-/* Estado 4 → +8% */
+/* note */
 .heart-active-5 {
     background-image: url('8.png');
     filter: brightness(1.2);
 }
-/* MORALE — 0% */
+/* note */
 .morale-btn {
     background-image: url('0.png');
     background-size: 70%;
@@ -490,19 +556,19 @@ body {
     background-repeat: no-repeat;
 }
 
-/* MORALE — +1% */
+/* note */
 .morale-active-1 {
     background-image: url('1.png');
 filter: brightness(1.2);
 }
 
-/* MORALE — +2% */
+/* note */
 .morale-active-2 {
     background-image: url('2.png');
     filter: brightness(1.2);
 }
 
-/* MORALE — +3% */
+/* note */
 .morale-active-3 {
     background-image: url('3.png');
     filter: brightness(1.2);
@@ -532,11 +598,11 @@ filter: brightness(1.2);
     background-position: center;
     background-repeat: no-repeat;
     transition: 0.15s ease;
-    filter: brightness(1);      /* estado base */
+    filter: brightness(1);      /* default state */
 }
 
 .gear-btn.gear-active {
-    filter: brightness(1.35);   /* estado ativo */
+    filter: brightness(1.35);   /* active state */
 }
 
 .gear-title {
@@ -560,7 +626,7 @@ filter: brightness(1.2);
 
 .gear-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* push TOTAL SKILL to the right */
     margin-top: 20px;
 }
 
@@ -593,7 +659,7 @@ filter: brightness(1.2);
     left: 150px;
     z-index: 9999;
 
-    padding: 8px;          /* 🔥 margem REAL à volta */
+    padding: 8px;          /* note */
 }
 
 .gear-popup.hidden {
@@ -605,9 +671,9 @@ filter: brightness(1.2);
     display: flex;
     flex-direction: column;
     align-items: center;
-position: relative;   /* 🔥 obrigatório */
-    width: fit-content;    /* 🔥 CHAVE */
-    max-width: 90vw;       /* segurança */
+position: relative;   /* note */
+    width: fit-content;    /* note */
+    max-width: 90vw;       /* note */
 
     background: #1c1c1e;
     border-radius: 12px;
@@ -635,13 +701,13 @@ position: relative;   /* 🔥 obrigatório */
 
     font-size: 10px;
     font-weight: 700;
-    font-family: "Source Sans Pro", sans-serif; /* 🔥 muda aqui o tipo de letra */
+    font-family: "Source Sans Pro", sans-serif; /* change font here */
 
-    margin: 0 auto;     /* centra horizontalmente */
-    margin-top: -10px;  /* ajusta a posição para ficares satisfeito */
+    margin: 0 auto;     /* center horizontally */
+    margin-top: -10px;  /* note */
 }
 
-/* ===== SEÇÕES ===== */
+/* note */
 .gear-cat {
     margin-top: 90px;
     margin-bottom: 10px;
@@ -663,7 +729,7 @@ position: relative;   /* 🔥 obrigatório */
 
 /* ===== QUADRADOS ===== */
 .gear-item {
-    width: 70px;          /* 🔥 escolhe o valor da 1ª linha */
+    width: 70px;          /* note */
     min-width: 70px;
     max-width: 70px;
 
@@ -702,7 +768,7 @@ position: relative;   /* 🔥 obrigatório */
     font-size: 10px;
 }
 
-/* ===== BOTÃO OK ===== */
+/* note */
 .gear-actions {
     margin-top: 0px;
     display: flex;
@@ -726,11 +792,11 @@ position: relative;   /* 🔥 obrigatório */
     display: none !important;
 }
 .gear-name {
-    font-size: 9px;      /* 🔽 antes 13px */
+    font-size: 9px;      /* 🔽 before 13px */
     font-weight: 700;
     text-align: center;
-    line-height: 11px;    /* 🔽 mais compacto */
-    margin-bottom: 3px;      /* 🔥 GAP entre nome e boosts */
+    line-height: 11px;    /* 🔽 more compact */
+    margin-bottom: 3px;      /* 🔥 gap between name and boosts */
 }
 
 #gear-lock-btn {
@@ -739,14 +805,14 @@ position: relative;   /* 🔥 obrigatório */
     right: 6px;
     width: auto;
     height: auto;
-    background: none;     /* remove círculo */
-    border: none;         /* remove contorno */
-    border-radius: 0;     /* remove forma arredondada */
+    background: none;     /* note */
+    border: none;         /* remove border */
+    border-radius: 0;     /* remove rounded shape */
     padding: 0;
     margin: 0;
     font-size: 15px;
     cursor: pointer;
-    color: #ffd54a;       /* amarelo bonito do cadeado */
+    color: #ffd54a;       /* nice yellow for the lock */
 }
 .right-rounded {
     border-radius: 0 999px 999px 0 !important;
@@ -764,14 +830,158 @@ position: relative;   /* 🔥 obrigatório */
     position: fixed;
     top: 150px;
     left: 150px;
-    width: 300px;
-    height: 300px;
+    width: 520px;
+    height: 230px;
     z-index: 9999;
     padding: 10px;
-    gap: 2px; /* reduz drasticamente o espaçamento vertical */
+    gap: 2px; /* note */
     font-size: 11px;
     color: #ffffff;
 } 
+
+/* Static games panel in top bar */
+#game-popup.game-popup--static {
+    position: static;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    padding: 0;
+    z-index: auto;
+    font-size: 12px;
+}
+
+#game-popup.game-popup--static .game-popup-inner {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+/* Static gear panel in top bar */
+#gear-popup.gear-popup--static {
+    position: static;
+    padding: 0;
+    z-index: auto;
+}
+
+#gear-popup.gear-popup--static .gear-popup-inner {
+    position: static;
+    width: fit-content;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 18px;
+    align-content: start;
+}
+
+#gear-popup.gear-popup--static #gear-drag,
+#gear-popup.gear-popup--static #gear-lock-btn {
+    display: none;
+}
+
+#gear-popup.gear-popup--static .gear-row {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    column-gap: 8px;
+    align-items: center;
+}
+
+#gear-popup.gear-popup--static .gear-row-icon {
+    width: 14px;
+    height: 14px;
+}
+
+#gear-popup.gear-popup--static .gear-grid {
+    gap: 8px 4px;
+}
+
+#gear-popup.gear-popup--static .gear-item {
+    width: 84px;
+    min-width: 84px;
+    max-width: 84px;
+    height: 40px;
+    min-height: 40px;
+    padding: 6px 8px;
+    font-size: 10px;
+    box-sizing: border-box;
+}
+
+#gear-popup.gear-popup--static .gear-select {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+#gear-popup.gear-popup--static .gear-item--selected {
+    cursor: pointer;
+}
+
+#gear-popup.gear-popup--static .gear-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    z-index: 60;
+    padding: 6px;
+    background: #1c1c1e;
+    border: 1px solid #2b2b2b;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+    display: none;
+}
+
+#gear-popup.gear-popup--static .gear-options.gear-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 6px;
+}
+
+#gear-popup.gear-popup--static .gear-options.is-open {
+    display: grid;
+}
+
+#gear-popup.gear-popup--static .gear-item--option {
+    cursor: pointer;
+}
+
+#gear-popup.gear-popup--static .gear-label {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+#gear-popup.gear-popup--static .gear-name {
+    font-size: 9px;
+    line-height: 10px;
+    margin-bottom: 2px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#gear-popup.gear-popup--static .gear-boost {
+    font-size: 10px;
+}
+
+#gear-popup.gear-popup--static .gear-boost-icon {
+    width: 10px;
+    height: 10px;
+}
+
+#gear-popup.gear-popup--static .gear-boosts {
+    min-height: 10px;
+}
 
 #game-drag {
     width: 280px;
@@ -796,22 +1006,22 @@ position: relative;   /* 🔥 obrigatório */
     right: 6px;
     width: auto;
     height: auto;
-    background: none;     /* remove círculo */
-    border: none;         /* remove contorno */
-    border-radius: 0;     /* remove forma arredondada */
+    background: none;     /* note */
+    border: none;         /* remove border */
+    border-radius: 0;     /* remove rounded shape */
     padding: 0;
     margin: 0;
     font-size: 15px;
     cursor: pointer;
-    color: #ffd54a;       /* amarelo bonito do cadeado */
+    color: #ffd54a;       /* nice yellow for the lock */
 }
 .game-popup-inner {
-    user-select: none;     /* 🔥 impede copiar */
+    user-select: none;     /* prevent selection */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;position: absolute;
-    width: 300px;
-    height: 200px;
+    width: 520px;
+    height: 190px;
     background: #1c1c1e;
     border-radius: 12px;
     border: 1px solid #2b2b2b;
@@ -821,8 +1031,8 @@ position: relative;   /* 🔥 obrigatório */
     box-shadow: 0 6px 30px rgba(0,0,0,0.6);
     overflow-y: hidden;
     gap: 10px 10px;         /* 35px = row-gap, 10px = column-gap */
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
     }
     
 .game-img-btn {
@@ -840,12 +1050,12 @@ position: relative;   /* 🔥 obrigatório */
 
     cursor: pointer;
     transition: 0.2s ease;
-    filter: brightness(0.5); /* estado normal */
+    filter: brightness(0.5); /* normal state */
     z-index: 5;
     pointer-events: auto;
 }
 
-/* Estado ativo */
+/* Active state */
 .game-img-btn.active {
     filter: brightness(1);
 }
@@ -854,13 +1064,13 @@ position: relative;   /* 🔥 obrigatório */
   width: 30px;
   height: 30px;
 
-  background-image: url('rect1.png');
+  background-image: url('longlived.png');
   background-size: 70%;
   background-position: center;
   background-repeat: no-repeat;
 
   position: absolute;
-  left: 230px;   /* 👈 ao lado do LOYAL (ajusta fino se quiseres) */
+  left: 230px;   /* beside LOYAL (fine-tune if needed) */
   top: 173px;
 
   border: none;
@@ -877,11 +1087,86 @@ position: relative;   /* 🔥 obrigatório */
   filter: brightness(1); /* ON */
 }
 
+/* Keep inline buttons in the header flow */
+.skillwhat-top-row .game-img-btn,
+.skillwhat-top-row .career-plus-btn,
+.skillwhat-top-row .antisocial-btn,
+.skillwhat-top-row .shortlived-btn {
+  position: static;
+  left: auto;
+  top: auto;
+}
+
+.card-top .game-img-btn,
+.card-top .career-plus-btn,
+.card-top .antisocial-btn,
+.card-top .shortlived-btn {
+  position: static;
+  left: auto;
+  top: auto;
+}
+
+.antisocial-btn {
+  width: 30px;
+  height: 30px;
+  background-image: url('antisocial.png');
+  background-size: 70%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  filter: brightness(0.5); /* OFF */
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.antisocial-btn.active {
+  filter: brightness(1); /* ON */
+}
+
+.shortlived-btn {
+  width: 30px;
+  height: 30px;
+  background-image: url('shortlived.png');
+  background-size: 70%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  filter: brightness(0.5); /* OFF */
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.shortlived-btn.active {
+  filter: brightness(1); /* ON */
+}
+
+.mini-tooltip {
+  position: fixed;
+  background: #000;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.mini-tooltip.hidden {
+  display: none;
+}
+
 .game-content {
     display: flex;
-    align-items: center;  /* centra a imagem, texto, input e botão ENTRE SI */
+    align-items: center;  /* note */
     gap: 12px;
-    margin-top: 8px;      /* ajusta a altura para descer um pouco */
+    margin-top: 0;
 }
 
 
@@ -892,11 +1177,11 @@ position: relative;   /* 🔥 obrigatório */
     font-weight: 600;
 }
 
-/* Input 0–1000 */
+/* note */
 .game-input {
-    overflow: hidden;          /* 🔥 NUNCA SCROLL */
-    white-space: nowrap;       /* 🔥 impede quebra */
-    text-overflow: clip;       /* 🔥 corta sem reticências */
+    overflow: hidden;          /* note */
+    white-space: nowrap;       /* 🔥 prevent wrapping */
+    text-overflow: clip;       /* note */
     width: 30px;
     height: 22px;
     background: #2a2a2a;
@@ -914,7 +1199,7 @@ position: relative;   /* 🔥 obrigatório */
     margin: 0;
 }
 
-/* Botão OK (laranja, pequeno) */
+/* note */
 .game-ok {
     height: 22px;
     padding: 0 10px;
@@ -940,9 +1225,9 @@ position: relative;   /* 🔥 obrigatório */
     color: #fff;
     font-size: 11px;
     display: grid;
-    grid-template-columns: 1fr 1fr;  /* 🔥 duas colunas */
-    column-gap: 20px;                /* espaço entre colunas */
-    row-gap: 4px;                    /* espaço entre linhas */
+    grid-template-columns: 1fr 1fr;  /* 🔥 two columns */
+    column-gap: 20px;                /* note */
+    row-gap: 4px;                    /* note */
     align-items: start;
 }
 
@@ -962,7 +1247,7 @@ position: relative;   /* 🔥 obrigatório */
 }
 
 .max-heart {
-    grid-column: 1 / 3;     /* 🔥 faz ocupar as duas colunas */
+    grid-column: 1 / 3;     /* 🔥 faz ocupar as two columns */
     margin-top: 8px;
     font-weight: 700;
     font-size: 12px;
@@ -970,7 +1255,7 @@ position: relative;   /* 🔥 obrigatório */
 }
 
 
-/* Ícones coloridos */
+/* note */
 .heart-small { color: #ff4f4f; }
 .heart-big { color: #ff4f4f; }
 .heart-gold { color: #ffcc00; }
@@ -994,7 +1279,7 @@ position: relative;   /* 🔥 obrigatório */
 
 .gear-row {
   display: flex;
-  align-items: center;   /* CENTRA verticalmente a imagem */
+  align-items: center;   /* note */
   justify-content: center; 
   gap: 15px;
   margin-bottom: 0px;
@@ -1029,7 +1314,7 @@ position: relative;   /* 🔥 obrigatório */
     font-weight: 700;
     cursor: pointer;
     margin-bottom: 6px;
-    gap: 10px;   /* 🔥 ESPAÇAMENTO ENTRE CADA BARRA */
+    gap: 10px;   /* note */
 }
 
 .global-edit-row {
@@ -1055,14 +1340,14 @@ position: relative;   /* 🔥 obrigatório */
     background: #ff7f2f;
 }
 
-/* Container das linhas de + / - */
+/* Container for +/- rows */
 #edit-buttons-container {
     display: flex;
     flex-direction: column;
-    gap: 4px;   /* igual ao gap das skill rows */
+    gap: 4px;   /* same gap as skill rows */
 }
 
-/* COLUNA GLOBAL */
+/* note */
 .skill-edit-column {
     position: absolute;
     right: 115px;
@@ -1075,7 +1360,7 @@ position: relative;   /* 🔥 obrigatório */
 
 }
 
-/* Label do BOOST CAP sem afetar o alinhamento das linhas */
+/* BOOST CAP label without affecting row alignment */
 .skill-edit-column::before {
     content: "BOOST CAP";
     position: absolute;
@@ -1089,11 +1374,11 @@ position: relative;   /* 🔥 obrigatório */
     pointer-events: none;
 }
 
-/* Espaçamento IGUAL ao das skill rows */
+/* note */
 .edit-row {
     display: flex;
-    gap: 6px;              /* espaço entre - e + */
-    height: 22px;          /* igual à altura aproximada da skill row */
+    gap: 6px;              /* note */
+    height: 22px;          /* note */
     margin-bottom: 0;
     align-items: center;
 }
@@ -1104,19 +1389,19 @@ position: relative;   /* 🔥 obrigatório */
     position: absolute;
     right: 83px;
     top: -34px;
-    height: 35px;                 /* controla apenas a altura */
-    aspect-ratio: 1 / 1;        /* proporção do botão S/L real */
+    height: 35px;                 /* controls only the height */
+    aspect-ratio: 1 / 1;        /* note */
     background-size: contain;     
     background-position: center;
     background-repeat: no-repeat;
 
-    border: none;                 /* remove borda */
-    padding: 0;                   /* remove espaço interno */
+    border: none;                 /* remove border */
+    padding: 0;                   /* note */
     margin: 0;
 
-    background-color: transparent; /* tira fundo branco */
+    background-color: transparent; /* remove white background */
     color: transparent;            /* esconde texto S */
-    font-size: 0;                  /* garante que texto não aparece */
+    font-size: 0;                  /* note */
     cursor: pointer;
 }
 
@@ -1131,11 +1416,11 @@ position: relative;   /* 🔥 obrigatório */
 
 
 
-/* título */
+/* note */
 #missing-skill-popup h2 {
     color: white !important;
     margin-bottom: 15px;
-      font-size: 1px; /* ajusta como quiseres */
+      font-size: 1px; /* adjust as you like */
 }
 
 #missing-skill-popup input::placeholder {
@@ -1155,7 +1440,7 @@ position: relative;   /* 🔥 obrigatório */
 
 /* input dos limites */
 .missing-row input {
-    width: 30px;       /* MAIS PEQUENO */
+    width: 30px;       /* SMALLER */
     font-size: 13px;
     border-radius: 6px;
     border: 1px solid #888;
@@ -1165,7 +1450,7 @@ position: relative;   /* 🔥 obrigatório */
 
 
 
-/* Botão "i" */
+/* note */
 .info-btn {
     position: absolute;
     left: 207px;
@@ -1189,7 +1474,7 @@ position: relative;   /* 🔥 obrigatório */
   top: -30px;
   left: -600px;
 
-  width: 1000px;   /* 👈 reduz aqui */
+  width: 1000px;   /* 👈 reduce here */
 
   padding: 0;
   background: transparent;
@@ -1206,7 +1491,7 @@ position: relative;   /* 🔥 obrigatório */
   height: 100vh;
   background: rgba(0,0,0,0.5);
   z-index: 9998;
-  pointer-events: none; /* 🔥 CRÍTICO */
+  pointer-events: none; /* note */
 }
 
 .hidden {
@@ -1221,7 +1506,7 @@ position: relative;   /* 🔥 obrigatório */
   background: rgba(255,255,255,0.03);
   border-radius: 8px;
   position: absolute;
-  top: 470px; /* abaixo da card (459px) */
+  top: 470px; /* below the card (459px) */
   left: 20px;
   z-index: 1;
 }
@@ -1250,7 +1535,7 @@ position: relative;   /* 🔥 obrigatório */
     display: inline-block;
     z-index: 9999;
 }
-/* OK igual ao LOAD BUTTON */
+/* OK same as LOAD BUTTON */
 #missing-skill-confirm {
     position: absolute;
     left: 0px;
@@ -1286,9 +1571,9 @@ position: relative;   /* 🔥 obrigatório */
 #missing-skill-popup .missing-content {
   width: 200px;
   height: 150px;
-  overflow-x: hidden;   /* 🔥 remove scroll lateral */
-  overflow-y: auto;     /* mantém scroll vertical */
-  padding-right: 6px; /* 🔥 espaço para a scrollbar */
+  overflow-x: hidden;   /* note */
+  overflow-y: auto;     /* note */
+  padding-right: 6px; /* note */
   
 
   background: #1f1f1f;
@@ -1300,7 +1585,7 @@ position: relative;   /* 🔥 obrigatório */
 
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* 🔥 chave */
+  justify-content: space-between; /* push TOTAL SKILL to the right */
   align-items: center;
 
   box-sizing: border-box;
@@ -1309,7 +1594,7 @@ position: relative;   /* 🔥 obrigatório */
 
 
 
-/* TÍTULO */
+/* note */
 #missing-skill-popup h3 {
   margin: 0;
   font-size: 11px;
@@ -1330,18 +1615,18 @@ position: relative;   /* 🔥 obrigatório */
 
 
 #missing-skill-confirm:hover {
-  background: #edeec0ff; /* a cor que pediste */
+  background: #edeec0ff; /* requested color */
     box-shadow: 0 0 3px rgba(238, 223, 192, 0.8); /* brilho suave */
 }
 #missing-skill-fields {
-  flex: 1;                 /* ocupa o espaço entre título e botão */
-  overflow-y: auto;        /* scroll interno */
+  flex: 1;                 /* note */
+  overflow-y: auto;        /* note */
   width: 100%;
   margin: 6px 0;
   padding-right: 4px;
 }
 
-/* scroll bonito */
+/* nice scrollbar */
 #missing-skill-fields::-webkit-scrollbar {
   width: 5px;
 }
@@ -1352,7 +1637,7 @@ position: relative;   /* 🔥 obrigatório */
 #missing-skill-popup .missing-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* push TOTAL SKILL to the right */
   margin-bottom: 4px;
   gap: 6px;
   width: 100%;
@@ -1422,18 +1707,17 @@ player-header,
  z-index: 20;
 }
 
-/* ===== GEAR MINIMAP (4x4) — FIXED & STABLE ===== */
+/* note */
 .gear-minimap {
-  scale: 70%;
-  position: absolute;
-  top: 164px;
-  right: 435px;
-  z-index: 200;
+  position: static;
   pointer-events: none;
-  z-index: 200;
+  width: 36px;
+  height: 36px;
+  margin-top: -20px;
+  flex: 0 0 auto;
 }
 
-/* CÉLULA */
+/* note */
 .gear-mm-cell {
   width: 9px;
   height: 9px;
@@ -1450,12 +1734,12 @@ player-header,
   height: 5px;
   background: #ff7a00;
 }
-/* container da barra extra */
+/* extra bar container */
 .skill-boost-wrap {
   width: 70px;
   height: 5px;
   margin-left: 7px;
-  margin-top: 0px;   /* 👈 ESPAÇAMENTO VERTICAL ENTRE BARRAS */
+  margin-top: 0px;   /* note */
   position: relative;
   background: rgba(255,255,255,0.08);
   border-radius: 999px;
@@ -1464,8 +1748,8 @@ player-header,
 .skill-boost-wrap::before {
   content: "";
   position: absolute;
-  inset: -6px;        /* 🔥 aumenta a hitbox invisível */
-  pointer-events: none; /* 🔥 CRÍTICO */
+  inset: -6px;        /* note */
+  pointer-events: none; /* note */
 }
 
 /* preenchimento */
@@ -1475,7 +1759,7 @@ player-header,
 pointer-events: auto;
   position: relative;
   z-index: 2;
-  background: #4caf50; /* verde elegante */
+  background: #4caf50; /* elegant green */
   border-radius: 999px;
 }
 
@@ -1485,7 +1769,7 @@ pointer-events: auto;
   font-weight: 700;
   color: #ede3aa;
   opacity: 0.85;
-  margin-bottom: 6px;   /* espaço até à primeira barra */
+  margin-bottom: 6px;   /* note */
   pointer-events: none;
   }
   .boost-tooltip {
@@ -1515,7 +1799,7 @@ pointer-events: auto;
 
 .boost-label {
   position: absolute;
-  bottom: -17px;   /* ajusta fino aqui */
+  bottom: -17px;   /* fine-tune here */
   font-size: 11px;
   font-weight: 700;
   color: #01a501;
@@ -1527,32 +1811,32 @@ pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;          /* espaço entre +2[icon] e +1[icon] */
+  gap: 4px;          /* note */
   margin-top: 4px;
 }
 
 .gear-boost {
   display: inline-flex;
-  align-items: center;   /* 🔥 alinha verticalmente */
+  align-items: center;   /* 🔥 align vertically */
   gap: 2px;
   font-size: 10px;
   font-weight: 700;
   color: #1b1b1b;
-  line-height: 1;        /* 🔥 remove offset estranho */
+  line-height: 1;        /* 🔥 remove odd offset */
   white-space: nowrap;
 }
 
 .gear-boost-icon {
-  width: 11px;            /* 🔥 MAIS PEQUENO */
+  width: 11px;            /* 🔥 SMALLER */
   height: 11px;
   object-fit: contain;
-  transform: translateY(0px); /* 🔥 micro-ajuste óptico */
+  transform: translateY(0px); /* note */
 }
 
 .clear-load-btn {
   position: absolute;
 
-  /* ajusta conforme o sítio que queres */
+  /* note */
   left: 171px;
   top: -39px;
 
@@ -1576,6 +1860,69 @@ pointer-events: auto;
 
 .clear-load-btn:hover {
   filter: brightness(1.3);
+}
+
+
+
+
+/* Games popup horizontal layout */
+.game-stats-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 8px;
+    row-gap: 2px;
+    align-items: start;
+    font-size: 10px;
+}
+
+.game-stats-grid .left-side {
+    grid-column: 1;
+    grid-row: 1 / span 6;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.game-stats-grid .heart-row {
+    grid-column: 2;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.game-stats-grid .heart-row span {
+    white-space: nowrap;
+}
+
+#game-popup.game-popup--static .left-side,
+#game-popup.game-popup--static .heart-row {
+    line-height: 1.1;
+}
+
+#game-popup.game-popup--static .game-stats-grid {
+    column-gap: 6px;
+}
+
+#game-popup.game-popup--static .game-label {
+    font-size: 10px;
+}
+
+#game-popup.game-popup--static .game-input {
+    height: 18px;
+    font-size: 10px;
+}
+
+#game-popup.game-popup--static .game-ok {
+    height: 18px;
+    font-size: 10px;
+    padding: 0 6px;
+}
+
+.game-popup-inner .max-heart-final {
+    width: 100%;
+    text-align: left;
+    margin-top: 2px;
 }
 
 
