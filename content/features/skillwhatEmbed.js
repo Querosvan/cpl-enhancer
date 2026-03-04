@@ -50,12 +50,12 @@
       safeRuntimeUrl("skillwhat/favicon.ico") ||
       FALLBACK_ICON;
     if (!iconSrc) return null;
-    const icon = document.createElement("span");
+    const icon = document.createElement("img");
     icon.className = "cpl-skillwhat-launcher__icon";
-    icon.style.backgroundImage = `url("${iconSrc}")`;
-    icon.style.backgroundSize = "cover";
-    icon.style.backgroundPosition = "center";
-    icon.style.backgroundRepeat = "no-repeat";
+    icon.alt = "SkillWhat";
+    icon.decoding = "async";
+    icon.loading = "lazy";
+    icon.src = iconSrc;
     return icon;
   }
 
@@ -412,9 +412,17 @@
 
     const icon = createLauncherIcon();
     if (icon) {
+      icon.addEventListener("error", () => {
+        if (icon.src !== FALLBACK_ICON) {
+          icon.src = FALLBACK_ICON;
+          return;
+        }
+        icon.remove();
+        if (!launcher.textContent.trim()) launcher.textContent = "SW";
+      });
       launcher.appendChild(icon);
     } else {
-      launcher.textContent = "SkillWhat";
+      launcher.textContent = "SW";
     }
 
     launcher.addEventListener("click", async (event) => {
@@ -459,9 +467,17 @@
 
     const icon = createLauncherIcon();
     if (icon) {
+      icon.addEventListener("error", () => {
+        if (icon.src !== FALLBACK_ICON) {
+          icon.src = FALLBACK_ICON;
+          return;
+        }
+        icon.remove();
+        if (!launcher.textContent.trim()) launcher.textContent = "SW";
+      });
       launcher.appendChild(icon);
     } else {
-      launcher.textContent = "SkillWhat";
+      launcher.textContent = "SW";
     }
 
     launcher.addEventListener("click", async (event) => {

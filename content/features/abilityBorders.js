@@ -298,14 +298,14 @@
     const tag = (el.tagName || "").toLowerCase();
     if (tag === "img" || tag === "svg") {
       const iconBox = el.closest?.("div[style*='background-image']");
-      target = iconBox || ensureWrap(el);
+      target = ensureWrap(iconBox || el);
     } else if (isLabeledElement(el)) {
       target = el;
     } else {
       const icon = el.querySelector?.("img, svg");
       if (icon) {
         const iconBox = icon.closest?.("div[style*='background-image']");
-        target = iconBox || ensureWrap(icon);
+        target = ensureWrap(iconBox || icon);
       } else {
         target = el;
       }
