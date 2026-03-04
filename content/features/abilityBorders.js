@@ -291,21 +291,35 @@
     return wrapper;
   }
 
+  function findIconBox(start) {
+    let node = start;
+    for (let i = 0; node && i < 8; i += 1) {
+      if (node instanceof HTMLElement) {
+        const bg = window.getComputedStyle(node).backgroundImage || "";
+        if (bg.includes("icon-box") || bg.includes("ability-box-")) {
+          return node;
+        }
+      }
+      node = node.parentElement;
+    }
+    return null;
+  }
+
   function applyBorder(el, type) {
     if (!el || !type) return;
 
     let target = null;
     const tag = (el.tagName || "").toLowerCase();
     if (tag === "img" || tag === "svg") {
-      const iconBox = el.closest?.("div[style*='background-image']");
-      target = ensureWrap(iconBox || el);
+      const iconBox = findIconBox(el);
+      target = iconBox || ensureWrap(el);
     } else if (isLabeledElement(el)) {
       target = el;
     } else {
       const icon = el.querySelector?.("img, svg");
       if (icon) {
-        const iconBox = icon.closest?.("div[style*='background-image']");
-        target = ensureWrap(iconBox || icon);
+        const iconBox = findIconBox(icon);
+        target = iconBox || ensureWrap(icon);
       } else {
         target = el;
       }
@@ -318,10 +332,15 @@
     target.classList.remove(
       "cpl-ability-border--positive",
       "cpl-ability-border--negative",
-      "cpl-ability-border--mixed"
+      "cpl-ability-border--mixed",
+      "cpl-ability-border--box"
     );
 
-    target.classList.add("cpl-ability-border", `cpl-ability-border--${type}`);
+    if (findIconBox(target)) {
+      target.classList.add("cpl-ability-border", "cpl-ability-border--box", `cpl-ability-border--${type}`);
+    } else {
+      target.classList.add("cpl-ability-border", `cpl-ability-border--${type}`);
+    }
     target.dataset.cplAbilityBorder = type;
   }
 

@@ -55,7 +55,12 @@
 
   "web_accessible_resources": [
     {
-      "resources": ["skillwhat/*"],
+      "resources": [
+        "skillwhat/*",
+        "content/ability-box-positive.png",
+        "content/ability-box-negative.png",
+        "content/ability-box-mixed.png"
+      ],
       "matches": [
         "https://cplmanager.com/*",
         "https://www.cplmanager.com/*"

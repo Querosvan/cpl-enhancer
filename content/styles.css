@@ -196,6 +196,26 @@
   box-shadow: 0 0 0 2px var(--cpl-ability-border-color) !important;
 }
 
+.cpl-ability-border--box {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.cpl-ability-border--box.cpl-ability-border--positive {
+  background-image: url("ability-box-positive.png") !important;
+}
+
+.cpl-ability-border--box.cpl-ability-border--negative {
+  background-image: url("ability-box-negative.png") !important;
+}
+
+.cpl-ability-border--box.cpl-ability-border--mixed {
+  background-image: url("ability-box-mixed.png") !important;
+}
+
 .cpl-ability-border-wrap {
   display: inline-flex;
   align-items: center;
