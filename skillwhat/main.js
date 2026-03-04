@@ -890,7 +890,7 @@ function loadFromText(loadTextRaw) {
   // RESET POPUPS
   gearLocked = false;
   if (lockBtn) lockBtn.textContent = "\uD83D\uDD13";
-  if (gearPopup) gearPopup.classList.add("hidden");
+  if (gearPopup && !isGearStatic()) gearPopup.classList.add("hidden");
 
   gameLocked = false;
   const gameLockBtn = document.getElementById("game-lock-btn");
@@ -1372,10 +1372,12 @@ const gearPopup = document.getElementById("gear-popup");
 const gearBtn = document.querySelector(".gear-btn");
 const gearApplyBtn = document.getElementById("gear-apply-btn");
 const lockBtn = document.getElementById("gear-lock-btn");
+const isGearStatic = () => gearPopup && gearPopup.classList.contains("gear-popup--static");
 
 /* --- GEAR BUTTON TOGGLE (respeita lock) --- */
 if (gearBtn) {
   gearBtn.addEventListener("click", () => {
+    if (isGearStatic()) return;
     if (!gearLocked) {
       if (gearPopup.classList.contains("hidden")) gearPopup.classList.remove("hidden");
       else gearPopup.classList.add("hidden");
@@ -1388,7 +1390,7 @@ if (gearBtn) {
 if (gearApplyBtn) {
   gearApplyBtn.addEventListener("click", () => {
     if (!gearPopup) return;
-    gearPopup.classList.add("hidden");
+    if (!isGearStatic()) gearPopup.classList.add("hidden");
     recomputeEquipmentBoosts();
     updateGearButtonState();
     renderSkills();
@@ -1484,7 +1486,7 @@ if (lockBtn) {
 }
 
 document.addEventListener("mousedown", (e) => {
-  if (!gearPopup || gearPopup.classList.contains("hidden")) return;
+  if (!gearPopup || gearPopup.classList.contains("hidden") || isGearStatic()) return;
   if (gearLocked) return;
   const inner = gearPopup.querySelector(".gear-popup-inner");
   if (!inner) return;
@@ -1523,7 +1525,7 @@ if (careerBtn) careerBtn.classList.remove("active");
     // RESET POPUPS
     gearLocked = false;
     if (lockBtn) lockBtn.textContent = "\uD83D\uDD13";
-    if (gearPopup) gearPopup.classList.add("hidden");
+    if (gearPopup && !isGearStatic()) gearPopup.classList.add("hidden");
 
     gameLocked = false;
     const gameLockBtn = document.getElementById("game-lock-btn");

@@ -344,6 +344,8 @@ body {
 .skillwhat-top-col--middle {
     flex: 1;
     min-width: 20px;
+    display: flex;
+    justify-content: center;
 }
 
 .skillwhat-top-col--right {
@@ -817,6 +819,28 @@ position: relative;   /* 🔥 obrigatório */
     border: none;
     box-shadow: none;
     border-radius: 0;
+}
+
+/* Static gear panel in top bar */
+#gear-popup.gear-popup--static {
+    position: static;
+    padding: 0;
+    z-index: auto;
+}
+
+#gear-popup.gear-popup--static .gear-popup-inner {
+    position: static;
+    width: fit-content;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#gear-popup.gear-popup--static #gear-drag,
+#gear-popup.gear-popup--static #gear-lock-btn {
+    display: none;
 }
 
 #game-drag {

@@ -55,13 +55,27 @@
                 <div id="morale-boost-label" class="boost-label">+0%</div>
             </div>
                 <button class="action-btn max-btn"></button>
-                <button class="action-btn gear-btn"></button>
                 <button id="game-img-btn" class="game-img-btn"></button>
                 <button id="career-plus-btn" class="career-plus-btn"></button>
             </div>
         </div>
 
-        <div class="skillwhat-top-col skillwhat-top-col--middle"></div>
+        <div class="skillwhat-top-col skillwhat-top-col--middle">
+            <!-- ================= GEAR (STATIC) ================= -->
+            <div id="gear-popup" class="gear-popup gear-popup--static">
+                <div class="gear-popup-inner">
+
+                    <button id="gear-drag">MOVE</button>
+                    <button id="gear-lock-btn">&#x1F513;</button>
+
+                    <div class="gear-row"><div id="gear-mousepad" class="gear-grid"></div></div>
+                    <div class="gear-row"><div id="gear-mouse" class="gear-grid"></div></div>
+                    <div class="gear-row"><div id="gear-keyboard" class="gear-grid"></div></div>
+                    <div class="gear-row"><div id="gear-headset" class="gear-grid"></div></div>
+
+                </div>
+            </div>
+        </div>
 
         <div class="skillwhat-top-col skillwhat-top-col--right">
             <!-- ================= GAMES (STATIC) ================= -->
@@ -168,21 +182,6 @@
             <div>Morale: <span id="tooltip-morale"></span></div>
             <div>Gear: <span id="tooltip-gear"></span></div>
         </div>
-    </div>
-</div>
-
-<!-- ================= GEAR POPUP ================= -->
-<div id="gear-popup" class="gear-popup hidden">
-    <div class="gear-popup-inner">
-
-        <button id="gear-drag">MOVE</button>
-        <button id="gear-lock-btn">&#x1F513;</button>
-
-        <div class="gear-row"><div id="gear-mousepad" class="gear-grid"></div></div>
-        <div class="gear-row"><div id="gear-mouse" class="gear-grid"></div></div>
-        <div class="gear-row"><div id="gear-keyboard" class="gear-grid"></div></div>
-        <div class="gear-row"><div id="gear-headset" class="gear-grid"></div></div>
-
     </div>
 </div>
 
