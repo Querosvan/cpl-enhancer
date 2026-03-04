@@ -326,6 +326,31 @@ body {
     gap: 6px;
     margin-left: 20px;   /* espaço entre idade e botões */
 }
+
+/* Top row layout (3 columns) */
+.skillwhat-top-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.skillwhat-top-col--left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 320px;
+}
+
+.skillwhat-top-col--middle {
+    flex: 1;
+    min-width: 20px;
+}
+
+.skillwhat-top-col--right {
+    flex: 0 0 520px;
+    display: flex;
+    justify-content: flex-end;
+}
 .fixed-buttons {
     position: absolute;
     top: 70px;       /* ajusta este valor se quiseres subir/descer */
@@ -772,6 +797,21 @@ position: relative;   /* 🔥 obrigatório */
     font-size: 11px;
     color: #ffffff;
 } 
+
+/* Static games panel in top bar */
+#game-popup.game-popup--static {
+    position: static;
+    width: 520px;
+    height: auto;
+    padding: 0;
+    z-index: auto;
+}
+
+#game-popup.game-popup--static .game-popup-inner {
+    position: static;
+    width: 100%;
+    height: auto;
+}
 
 #game-drag {
     width: 280px;
