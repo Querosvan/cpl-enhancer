@@ -19,7 +19,7 @@ html, body {
 
 body {
     margin: 0;
-    background: #1f1f1f;
+    background: #2a2a2a;
 }
 
 .card {
@@ -33,9 +33,9 @@ body {
     background: linear-gradient(
         to bottom,
         #2a2a2a 0px,
-        #2a2a2a 190px,
-        #252525 191px,
-        #1f1f1f 192px,
+        #2a2a2a 180px,
+        #252525 181px,
+        #1f1f1f 182px,
         #1f1f1f 100%
     );
 
@@ -353,7 +353,7 @@ body {
 .skillwhat-top-row {
     display: grid;
     grid-template-columns: 260px max-content max-content;
-    column-gap: 6px;
+    column-gap: 10px;
     align-items: start;
     padding: 6px 12px 10px 8px;
     background: transparent;
