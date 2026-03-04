@@ -27,12 +27,6 @@
 
 <!-- ================= CARD ================= -->
 <div class="card">
-<svg id="gear-minimap"
-     class="gear-minimap"
-     width="50"
-     height="50"
-     viewBox="0 0 70 70">
-</svg>
     <div class="skillwhat-top-row">
         <div class="skillwhat-top-col skillwhat-top-col--left">
             <!-- PLAYER HEADER -->
@@ -141,11 +135,18 @@
     <div class="card-inner">
         <div class="card-top">
             <div class="primary-title">Primary skills</div>
-
-            <div class="total-skill-box">
-                <span class="label">TOTAL SKILL</span>
-                <span id="total-skill-current" class="value">0</span>
-                <span id="total-skill-max" class="max">/0</span>
+            <div class="total-skill-wrap">
+                <svg id="gear-minimap"
+                     class="gear-minimap"
+                     width="50"
+                     height="50"
+                     viewBox="0 0 70 70">
+                </svg>
+                <div class="total-skill-box">
+                    <span class="label">TOTAL SKILL</span>
+                    <span id="total-skill-current" class="value">0</span>
+                    <span id="total-skill-max" class="max">/0</span>
+                </div>
             </div>
         </div>
 

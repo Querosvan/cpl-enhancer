@@ -62,7 +62,13 @@ body {
 .card-top {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* 👉 push TOTAL SKILL to the right */
+    justify-content: space-between; /* push TOTAL SKILL to the right */
+}
+
+.total-skill-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .total-skill-box {
@@ -211,7 +217,7 @@ body {
     margin-bottom: 36px; /* note */
 }
 .primary-title {
-    width: 150px;        /* mesma largura da skill-name */
+    width: 150px;        /* same width as skill-name */
     text-align: right;   /* note */
     color: #fff;
     font-size: 18px;
@@ -249,7 +255,7 @@ body {
 /* Nice scrollbar for the input box */
 .input-box::-webkit-scrollbar {
     width: 7px;
-    height: 10px;               /* largura da barra */
+    height: 10px;               /* bar height */
 }
 
 .input-box::-webkit-scrollbar-track {
@@ -268,7 +274,7 @@ body {
 .missing-row {
   margin-bottom: 10px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* push TOTAL SKILL to the right */
 }
 
 
@@ -597,7 +603,7 @@ filter: brightness(1.2);
 
 .gear-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* push TOTAL SKILL to the right */
     margin-top: 20px;
 }
 
@@ -1496,7 +1502,7 @@ position: relative;   /* note */
 
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* 🔥 key */
+  justify-content: space-between; /* push TOTAL SKILL to the right */
   align-items: center;
 
   box-sizing: border-box;
@@ -1548,7 +1554,7 @@ position: relative;   /* note */
 #missing-skill-popup .missing-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* push TOTAL SKILL to the right */
   margin-bottom: 4px;
   gap: 6px;
   width: 100%;
@@ -1620,13 +1626,12 @@ player-header,
 
 /* note */
 .gear-minimap {
-  scale: 70%;
-  position: absolute;
-  top: 164px;
-  right: 435px;
-  z-index: 200;
+  position: static;
   pointer-events: none;
-  z-index: 200;
+  width: 36px;
+  height: 36px;
+  margin-top: -20px;
+  flex: 0 0 auto;
 }
 
 /* note */
@@ -1646,7 +1651,7 @@ player-header,
   height: 5px;
   background: #ff7a00;
 }
-/* container da barra extra */
+/* extra bar container */
 .skill-boost-wrap {
   width: 70px;
   height: 5px;
@@ -1836,5 +1841,6 @@ pointer-events: auto;
     text-align: left;
     margin-top: 2px;
 }
+
 
 

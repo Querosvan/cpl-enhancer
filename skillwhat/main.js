@@ -457,7 +457,7 @@ function renderSkills() {
 
     // LIMIT REACHED (value == max, but not 100)
 if (s.value === s.max && s.max < 100 && finalVal < 100) {
-    name.style.color = "#ffffffff"; // verde premium
+    name.style.color = "#ffffffff"; // premium green
     
 }
     // ===============================
