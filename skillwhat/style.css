@@ -33,9 +33,9 @@ body {
     background: linear-gradient(
         to bottom,
         #2a2a2a 0px,
-        #2a2a2a 180px,
-        #252525 181px,
-        #1f1f1f 182px,
+        #2a2a2a 172px,
+        #252525 173px,
+        #1f1f1f 174px,
         #1f1f1f 100%
     );
 
@@ -380,7 +380,7 @@ body {
     justify-content: flex-start;
     padding-top: 2px;
     padding-right: 0;
-    margin-left: 0;
+    margin-left: 10px;
 }
 .fixed-buttons {
     position: absolute;
@@ -1052,7 +1052,7 @@ position: relative;   /* note */
   width: 30px;
   height: 30px;
 
-  background-image: url('rect1.png');
+  background-image: url('longlived.png');
   background-size: 70%;
   background-position: center;
   background-repeat: no-repeat;
@@ -1077,10 +1077,68 @@ position: relative;   /* note */
 
 /* Keep inline buttons in the header flow */
 .skillwhat-top-row .game-img-btn,
-.skillwhat-top-row .career-plus-btn {
+.skillwhat-top-row .career-plus-btn,
+.skillwhat-top-row .antisocial-btn,
+.skillwhat-top-row .shortlived-btn {
   position: static;
   left: auto;
   top: auto;
+}
+
+.antisocial-btn {
+  width: 30px;
+  height: 30px;
+  background-image: url('antisocial.png');
+  background-size: 70%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  filter: brightness(0.5); /* OFF */
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.antisocial-btn.active {
+  filter: brightness(1); /* ON */
+}
+
+.shortlived-btn {
+  width: 30px;
+  height: 30px;
+  background-image: url('shortlived.png');
+  background-size: 70%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  filter: brightness(0.5); /* OFF */
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.shortlived-btn.active {
+  filter: brightness(1); /* ON */
+}
+
+.mini-tooltip {
+  position: fixed;
+  background: #000;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.mini-tooltip.hidden {
+  display: none;
 }
 
 .game-content {
