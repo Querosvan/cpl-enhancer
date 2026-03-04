@@ -1097,13 +1097,8 @@ function renderCategory(id, items) {
   const img = document.createElement("img");
   img.src = GEAR_ICONS[cat];
   img.className = "gear-row-icon";
-
-  const label = document.createElement("span");
-  label.className = "gear-cat-label";
-  label.textContent = catLabelMap[cat] || cat;
-
+  img.title = catLabelMap[cat] || cat;
   labelWrap.appendChild(img);
-  labelWrap.appendChild(label);
 
   const selectWrap = document.createElement("div");
   selectWrap.className = "gear-select";
