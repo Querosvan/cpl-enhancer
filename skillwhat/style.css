@@ -773,6 +773,67 @@ position: relative;   /* 🔥 obrigatório */
     color: #ffffff;
 } 
 
+/* Docked games panel (right side) */
+.game-popup--docked {
+    position: absolute;
+    top: 22px;
+    right: 18px;
+    left: auto;
+    width: 220px;
+    height: 330px;
+    padding: 0;
+    display: block;
+    z-index: 5;
+}
+
+.game-popup--docked .game-popup-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 12px 14px;
+    gap: 8px;
+    align-items: stretch;
+    justify-content: flex-start;
+}
+
+.game-popup--docked #game-drag,
+.game-popup--docked #game-lock-btn {
+    display: none;
+}
+
+.game-popup--docked .game-content {
+    margin-top: 0;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.game-popup--docked .game-stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.game-popup--docked .left-side {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 10px;
+}
+
+.game-popup--docked .heart-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 6px;
+    align-items: center;
+    font-size: 10px;
+}
+
+.game-popup--docked .max-heart-final {
+    margin-top: auto;
+    font-size: 10px;
+    text-align: left;
+}
+
 #game-drag {
     width: 280px;
     height: 18px;

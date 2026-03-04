@@ -55,7 +55,6 @@
     </div>
         <button class="action-btn max-btn"></button>
         <button class="action-btn gear-btn"></button>
-        <button class="action-btn games-btn"></button>
         <button id="game-img-btn" class="game-img-btn"></button>
         <button id="career-plus-btn" class="career-plus-btn"></button>
 
@@ -85,54 +84,9 @@
         </div>
 
     </div>
-    
-</div>
 
-<img
-  src="exportB.png"
-  class="export-icon"
-  id="export-card-btn"
-/>
-<!-- ================= SKILL TOOLTIP ================= -->
-<div id="skill-tooltip" class="skill-tooltip hidden">
-    <div class="tooltip-title-row">
-        <span id="tooltip-skill-name">Skill</span>
-        <span>Modifiers</span>
-    </div>
-
-    <div class="tooltip-columns">
-        <div class="tooltip-left">
-            <div>Base: <span id="tooltip-base"></span></div>
-            <div>Boost: <span id="tooltip-boost"></span></div>
-            <div>Limit: <span id="tooltip-limit"></span></div>
-            <div>Total: <span id="tooltip-total"></span></div>
-        </div>
-
-        <div class="tooltip-right">
-            <div>Heart: <span id="tooltip-heart"></span></div>
-            <div>Morale: <span id="tooltip-morale"></span></div>
-            <div>Gear: <span id="tooltip-gear"></span></div>
-        </div>
-    </div>
-</div>
-
-<!-- ================= GEAR POPUP ================= -->
-<div id="gear-popup" class="gear-popup hidden">
-    <div class="gear-popup-inner">
-
-        <button id="gear-drag">MOVE</button>
-        <button id="gear-lock-btn">&#x1F513;</button>
-
-        <div class="gear-row"><div id="gear-mousepad" class="gear-grid"></div></div>
-        <div class="gear-row"><div id="gear-mouse" class="gear-grid"></div></div>
-        <div class="gear-row"><div id="gear-keyboard" class="gear-grid"></div></div>
-        <div class="gear-row"><div id="gear-headset" class="gear-grid"></div></div>
-
-    </div>
-</div>
-
-<!-- ================= GAME POPUP ================= -->
-<div id="game-popup" class="game-popup hidden">
+    <!-- ================= GAME POPUP ================= -->
+    <div id="game-popup" class="game-popup game-popup--docked">
         <div class="game-popup-inner">
 
             <button id="game-drag" class="gear-move-btn">MOVE</button>
@@ -191,8 +145,51 @@
 
         </div>
     </div>
+    
+</div>
 
+<img
+  src="exportB.png"
+  class="export-icon"
+  id="export-card-btn"
+/>
+<!-- ================= SKILL TOOLTIP ================= -->
+<div id="skill-tooltip" class="skill-tooltip hidden">
+    <div class="tooltip-title-row">
+        <span id="tooltip-skill-name">Skill</span>
+        <span>Modifiers</span>
+    </div>
 
+    <div class="tooltip-columns">
+        <div class="tooltip-left">
+            <div>Base: <span id="tooltip-base"></span></div>
+            <div>Boost: <span id="tooltip-boost"></span></div>
+            <div>Limit: <span id="tooltip-limit"></span></div>
+            <div>Total: <span id="tooltip-total"></span></div>
+        </div>
+
+        <div class="tooltip-right">
+            <div>Heart: <span id="tooltip-heart"></span></div>
+            <div>Morale: <span id="tooltip-morale"></span></div>
+            <div>Gear: <span id="tooltip-gear"></span></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= GEAR POPUP ================= -->
+<div id="gear-popup" class="gear-popup hidden">
+    <div class="gear-popup-inner">
+
+        <button id="gear-drag">MOVE</button>
+        <button id="gear-lock-btn">&#x1F513;</button>
+
+        <div class="gear-row"><div id="gear-mousepad" class="gear-grid"></div></div>
+        <div class="gear-row"><div id="gear-mouse" class="gear-grid"></div></div>
+        <div class="gear-row"><div id="gear-keyboard" class="gear-grid"></div></div>
+        <div class="gear-row"><div id="gear-headset" class="gear-grid"></div></div>
+
+    </div>
+</div>
 
 <script src="html-to-image.min.js"></script>
 <div id="boost-tooltip" class="boost-tooltip"></div>

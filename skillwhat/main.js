@@ -895,7 +895,13 @@ function loadFromText(loadTextRaw) {
   gameLocked = false;
   const gameLockBtn = document.getElementById("game-lock-btn");
   if (gameLockBtn) gameLockBtn.textContent = "\uD83D\uDD13";
-  if (gamePopup) gamePopup.classList.add("hidden");
+  if (gamePopup) {
+    if (gamePopup.classList.contains("game-popup--docked")) {
+      gamePopup.classList.remove("hidden");
+    } else {
+      gamePopup.classList.add("hidden");
+    }
+  }
 
   // RESET GAMES
   const gameInput = document.getElementById("game-input");
@@ -1401,12 +1407,14 @@ const gamePopup = document.getElementById("game-popup");
 const gamesBtn = document.querySelector(".games-btn");
 const gameLockBtn = document.getElementById("game-lock-btn");
 const gameDrag = document.getElementById("game-drag");
+const isGameDocked = () => gamePopup && gamePopup.classList.contains("game-popup--docked");
 
 let gameLocked = false;
 if (gameLockBtn) gameLockBtn.textContent = "\uD83D\uDD13";
 
 if (gamesBtn) {
   gamesBtn.addEventListener("click", () => {
+    if (isGameDocked()) return;
     if (!gameLocked) {
       if (gamePopup.classList.contains("hidden")) gamePopup.classList.remove("hidden");
       else gamePopup.classList.add("hidden");
@@ -1424,7 +1432,7 @@ if (gameLockBtn) {
 }
 
 document.addEventListener("mousedown", (e) => {
-  if (!gamePopup || gamePopup.classList.contains("hidden")) return;
+  if (!gamePopup || gamePopup.classList.contains("hidden") || isGameDocked()) return;
   if (gameLocked) return;
   const inner = gamePopup.querySelector(".game-popup-inner");
   const isBtn = e.target.closest(".games-btn");
@@ -1526,7 +1534,11 @@ if (careerBtn) careerBtn.classList.remove("active");
     gameLocked = false;
     const gameLockBtn = document.getElementById("game-lock-btn");
     if (gameLockBtn) gameLockBtn.textContent = "\uD83D\uDD13";
-    if (gamePopup) gamePopup.classList.add("hidden");
+    if (gamePopup && !gamePopup.classList.contains("game-popup--docked")) {
+      gamePopup.classList.add("hidden");
+    } else if (gamePopup) {
+      gamePopup.classList.remove("hidden");
+    }
 
     // RESET GAMES
     const gameInput = document.getElementById("game-input");
