@@ -780,7 +780,7 @@ position: relative;   /* 🔥 obrigatório */
     right: 18px;
     left: auto;
     width: 220px;
-    height: 330px;
+    height: auto;
     padding: 0;
     display: block;
     z-index: 5;
@@ -789,11 +789,15 @@ position: relative;   /* 🔥 obrigatório */
 .game-popup--docked .game-popup-inner {
     position: relative;
     width: 100%;
-    height: 100%;
-    padding: 12px 14px;
+    height: auto;
+    padding: 0;
     gap: 8px;
     align-items: stretch;
     justify-content: flex-start;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .game-popup--docked #game-drag,
