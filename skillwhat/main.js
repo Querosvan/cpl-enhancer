@@ -1089,42 +1089,84 @@ function renderCategory(id, items) {
   img.src = GEAR_ICONS[cat];
   img.className = "gear-row-icon";
 
-  const grid = document.createElement("div");
-  grid.className = "gear-grid";
+  const selectWrap = document.createElement("div");
+  selectWrap.className = "gear-select";
 
-  items.forEach(it => {
+  const selected = document.createElement("button");
+  selected.type = "button";
+  selected.className = "gear-item gear-item--selected";
+
+  const setSelectedHtml = () => {
+    if (!equipped[cat]) {
+      selected.innerHTML = `
+        <div class="gear-name">None</div>
+        <div class="gear-boosts"></div>
+      `;
+      selected.classList.remove("equipped");
+      return;
+    }
+
+    const boostsHtml = Object.entries(equipped[cat].boosts)
+      .map(([skill, val]) => `
+        <span class="gear-boost">
+          +${val}
+          <img
+            class="gear-boost-icon"
+            src="${GEAR_ICON_BY_SKILL[skill]}"
+            alt="${skill}"
+          />
+        </span>
+      `)
+      .join(" ");
+
+    selected.innerHTML = `
+      <div class="gear-name">${equipped[cat].name}</div>
+      <div class="gear-boosts">
+        ${boostsHtml}
+      </div>
+    `;
+    selected.classList.add("equipped");
+  };
+
+  setSelectedHtml();
+
+  const options = document.createElement("div");
+  options.className = "gear-options gear-grid hidden";
+
+  const addOption = (label, item) => {
     const b = document.createElement("div");
-    b.className = "gear-item";
+    b.className = "gear-item gear-item--option";
 
-    if (equipped[cat] && equipped[cat].name === it.name) {
+    if (item && equipped[cat] && equipped[cat].name === item.name) {
       b.classList.add("equipped");
     }
 
-const boostsHtml = Object.entries(it.boosts)
-  .map(([skill, val]) => `
-    <span class="gear-boost">
-      +${val}
-      <img
-        class="gear-boost-icon"
-        src="${GEAR_ICON_BY_SKILL[skill]}"
-        alt="${skill}"
-      />
-    </span>
-  `)
-  .join(" ");
+    let boostsHtml = "";
+    if (item && item.boosts) {
+      boostsHtml = Object.entries(item.boosts)
+        .map(([skill, val]) => `
+          <span class="gear-boost">
+            +${val}
+            <img
+              class="gear-boost-icon"
+              src="${GEAR_ICON_BY_SKILL[skill]}"
+              alt="${skill}"
+            />
+          </span>
+        `)
+        .join(" ");
+    }
 
-b.innerHTML = `
-  <div class="gear-name">${it.name}</div>
-  <div class="gear-boosts">
-    ${boostsHtml}
-  </div>
-`;
-
+    b.innerHTML = `
+      <div class="gear-name">${label}</div>
+      <div class="gear-boosts">
+        ${boostsHtml}
+      </div>
+    `;
 
     b.addEventListener("click", () => {
-      equipped[cat] =
-        equipped[cat] && equipped[cat].name === it.name ? null : it;
-
+      equipped[cat] = item || null;
+      options.classList.add("hidden");
       recomputeEquipmentBoosts();
       updateGearButtonState();
       renderAllEquipmentUI();
@@ -1132,19 +1174,29 @@ b.innerHTML = `
       renderMiniGear();
     });
 
-    grid.appendChild(b);
+    options.appendChild(b);
+  };
+
+  addOption("None", null);
+  items.forEach((it) => addOption(it.name, it));
+
+  selected.addEventListener("click", (e) => {
+    e.stopPropagation();
+    options.classList.toggle("hidden");
   });
 
-// highlight icon when any item is equipped
-if (equipped[cat]) {
-    img.classList.add("icon-equipped");
-} else {
-    img.classList.remove("icon-equipped");
-}
- 
+  selectWrap.appendChild(selected);
+  selectWrap.appendChild(options);
 
-cont.appendChild(img);
-cont.appendChild(grid);
+  // highlight icon when any item is equipped
+  if (equipped[cat]) {
+    img.classList.add("icon-equipped");
+  } else {
+    img.classList.remove("icon-equipped");
+  }
+
+  cont.appendChild(img);
+  cont.appendChild(selectWrap);
 }
 
 
@@ -1154,6 +1206,14 @@ function renderAllEquipmentUI() {
   renderCategory("gear-mouse", EQUIPMENT.mouse);
   renderCategory("gear-keyboard", EQUIPMENT.keyboard);
   renderCategory("gear-headset", EQUIPMENT.headset);
+}
+
+// Close open gear option lists when clicking elsewhere
+if (!document.body.dataset.cplGearOptionsBound) {
+  document.body.dataset.cplGearOptionsBound = "1";
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".gear-options").forEach((el) => el.classList.add("hidden"));
+  });
 }
 
 function recomputeEquipmentBoosts() {
