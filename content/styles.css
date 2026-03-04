@@ -204,16 +204,10 @@
   background-size: cover;
 }
 
-.cpl-ability-border--box.cpl-ability-border--positive {
-  background-image: url("ability-box-positive.png") !important;
-}
-
-.cpl-ability-border--box.cpl-ability-border--negative {
-  background-image: url("ability-box-negative.png") !important;
-}
-
+.cpl-ability-border--box.cpl-ability-border--positive,
+.cpl-ability-border--box.cpl-ability-border--negative,
 .cpl-ability-border--box.cpl-ability-border--mixed {
-  background-image: url("ability-box-mixed.png") !important;
+  background-image: none !important;
 }
 
 .cpl-ability-border-wrap {
