@@ -305,6 +305,29 @@
     return null;
   }
 
+  function safeRuntimeUrl(path) {
+    try {
+      if (typeof chrome !== "undefined" && chrome.runtime && typeof chrome.runtime.getURL === "function") {
+        return chrome.runtime.getURL(path);
+      }
+      if (typeof browser !== "undefined" && browser.runtime && typeof browser.runtime.getURL === "function") {
+        return browser.runtime.getURL(path);
+      }
+    } catch (err) {
+      return "";
+    }
+    return "";
+  }
+
+  function applyIconBoxBackground(target, type) {
+    const url = safeRuntimeUrl(`content/ability-box-${type}.png`);
+    if (!url) return;
+    target.style.setProperty("background-image", `url("${url}")`, "important");
+    target.style.setProperty("background-size", "cover", "important");
+    target.style.setProperty("background-repeat", "no-repeat", "important");
+    target.style.setProperty("background-position", "center", "important");
+  }
+
   function applyBorder(el, type) {
     if (!el || !type) return;
 
@@ -327,7 +350,12 @@
 
     if (!target) return;
 
-    if (target.dataset.cplAbilityBorder === type) return;
+    const isIconBox = !!findIconBox(target);
+    if (target.dataset.cplAbilityBorder === type) {
+      if (!isIconBox) return;
+      const currentBg = target.style.getPropertyValue("background-image") || "";
+      if (currentBg.includes(`ability-box-${type}.png`)) return;
+    }
 
     target.classList.remove(
       "cpl-ability-border--positive",
@@ -336,8 +364,9 @@
       "cpl-ability-border--box"
     );
 
-    if (findIconBox(target)) {
+    if (isIconBox) {
       target.classList.add("cpl-ability-border", "cpl-ability-border--box", `cpl-ability-border--${type}`);
+      applyIconBoxBackground(target, type);
     } else {
       target.classList.add("cpl-ability-border", `cpl-ability-border--${type}`);
     }
