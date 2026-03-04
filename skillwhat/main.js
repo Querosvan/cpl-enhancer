@@ -1,7 +1,7 @@
-﻿// ===== FORCE VERSION RENDER (ISOLATED) =====
+// ===== FORCE VERSION RENDER (ISOLATED) =====
 
 // ===== END FORCE VERSION =====
-// Icons para MAX HEART POSSIBLE
+// Icons for MAX HEART POSSIBLE
 const ICON_TINY_HTML = '<span class="heart-small3">&#x2764;&#xFE0F;</span>';
 const ICON_SMALL_HTML = '<span class="heart-small2">&#x2764;&#xFE0F;</span>';
 const ICON_BIG_HTML   = '&#x2764;&#xFE0F;';
@@ -56,7 +56,7 @@ let skills = [
 const initialSkillsBackup = JSON.parse(JSON.stringify(skills));
 
 
-// backup do ÃƒÂºltimo LOAD
+// note
 let loadedSkillsBackup = JSON.parse(JSON.stringify(skills));
 let loadedName = "Spidevil";
 let loadedAge = "15yo (day 1)";
@@ -129,7 +129,7 @@ const GAMES_PER_DAY = {
   32: 7
 };
 
-let extendedCareer = false; // OFF por defeito
+let extendedCareer = false; // OFF by default
 function getMaxCareerAge() {
   return extendedCareer ? 42 : 40;
 }
@@ -308,7 +308,7 @@ function alignEditColumn() {
     const lines = txt
         .split("\n")
         .map(l => l.trim())
-        .filter(l => l.length > 0); // remove vazios
+        .filter(l => l.length > 0); // remove empty lines
 
     const skillNames = [
         "Aim", "Handling", "Quickness", "Determination",
@@ -321,7 +321,7 @@ function alignEditColumn() {
         const line = lines[i];
 
         // -----------------------------------
-        // 1) FORMATO INLINE: "Skill 42/?"
+        // 1) INLINE FORMAT: "Skill 42/?"
         // -----------------------------------
         const inlineMatch = line.match(/^(\w+)\s+(\d+)\s*\/\s*(\d+|\?)$/i);
         if (inlineMatch && skillNames.includes(inlineMatch[1])) {
@@ -335,10 +335,10 @@ function alignEditColumn() {
         }
 
         // -----------------------------------
-        // 2) FORMATO 3 LINHAS:
+        // 2) 3-LINE FORMAT:
         // Skill
         // 42
-        // /93   ou   / ?   ou   ?
+        // /93   or   / ?   or   ?
         // -----------------------------------
         if (skillNames.includes(line)) {
             const name = line;
@@ -348,7 +348,7 @@ function alignEditColumn() {
 
             const value = parseInt(valLine, 10) || 0;
 
-            // extrai apenas nÃƒÂºmero ou ?
+            // extract only number or ?
             let rawMax = maxLine.replace("/", "").trim();
             let max = null;
 
@@ -442,7 +442,7 @@ function renderSkills() {
     const finalVal = v.final;
 
     // ------------------------------
-    // WIDTHS (apenas 2 segmentos)
+    // WIDTHS (only 2 segments)
     // ------------------------------
     const baseW = Math.min(baseVal, 100);
     const boostW = Math.max(0, Math.min(finalVal, 100) - baseW);
@@ -455,13 +455,13 @@ function renderSkills() {
     name.textContent = s.name;
     name.style.color = finalVal >= 100 ? "#f7f8c9" : "#ffffff";
 
-    // LIMIT REACHED (value == max, mas nÃƒÂ£o 100)
+    // LIMIT REACHED (value == max, but not 100)
 if (s.value === s.max && s.max < 100 && finalVal < 100) {
     name.style.color = "#ffffffff"; // verde premium
     
 }
     // ===============================
-// LIMIT REACHED (value === max, mas < 100)
+// LIMIT REACHED (value === max, but < 100)
 // ===============================
 if (s.value === s.max && s.max < 100) {
     name.classList.add("limit-reached");
@@ -476,7 +476,7 @@ if (s.value === s.max && s.max < 100) {
     limit.className = "skill-limit";
     limit.style.width = s.max + "%";
 
-    // Se o limite ÃƒÂ© 100 \\u2192 arredondado dos dois lados
+    // If the limit is 100 -> rounded on both sides
     if (s.max === 100) {
         limit.style.borderRadius = "999px";
     } else {
@@ -486,7 +486,7 @@ if (s.value === s.max && s.max < 100) {
 bar.appendChild(limit); 
 
     // ----------------------------------
-    // BASE (sempre laranja)
+    // BASE (always orange)
     // ----------------------------------
     const baseF = document.createElement("div");
     baseF.className = "skill-fill";
@@ -498,11 +498,11 @@ bar.appendChild(limit);
     bar.appendChild(baseF);
 
     // ----------------------------------
-    // BOOST TOTAL (HM + morale + gear)
+    // TOTAL BOOST (HM + morale + gear)
     // ----------------------------------
 let boostF = null;
 
-// BOOST (HM + morale + gear) como ÃƒÂºnico segmento de boost
+// BOOST (HM + morale + gear) as a single boost segment
 if (boostW > 0) {
   boostF = document.createElement("div");
   boostF.className = "skill-fill-boost";
@@ -512,7 +512,7 @@ if (boostW > 0) {
   
   
 
-  // Se final >= 100 \\u2192 dourado + brilho + canto redondo
+  // If final >= 100 -> gold + glow + rounded corner
   if (finalVal >= 100) {
     boostF.style.backgroundColor = "#f7e395";
     boostF.style.borderRadius = "0 999px 999px 0";
@@ -525,7 +525,7 @@ if (boostW > 0) {
   bar.appendChild(boostF);
 }
 
-// SE NÃƒÆ’O EXISTIR BOOST \\u2192 base atinge 100 sozinha
+// If there is no boost -> base reaches 100 on its own
 if (finalVal >= 100 && boostW === 0) {
   baseF.style.backgroundColor = "#edeec0";
   baseF.style.borderRadius = "999px";
@@ -555,7 +555,7 @@ if (finalVal >= 100) {
 
 
     // ----------------------------------
-    // VALORES
+    // VALUES
     // ----------------------------------
     const val = document.createElement("div");
     val.className = "skill-value";
@@ -564,7 +564,7 @@ if (finalVal >= 100) {
     cur.className = "skill-current";
     cur.textContent = maxMode ? s.max : Math.round(v.base);
     if (finalVal >= 100) cur.style.color = "#ee6b0e";
-    // LIMIT REACHED (value == max, mas nÃƒÂ£o 100)
+    // LIMIT REACHED (value == max, but not 100)
     if (s.value === s.max && s.max < 100 && finalVal < 100) {
         cur.style.color = "#ffffffff";
     }
@@ -606,17 +606,17 @@ if (globalButtonsContainer) {
 
         const v = computeSkillValues(s);
 
-        // LINHA DA COLUNA DIREITA
+        // RIGHT COLUMN ROW
         const row = document.createElement("div");
         row.className = "edit-row";
 
-        // BOTÃƒÆ’O -
+        // note
         const minus = document.createElement("img");
         minus.src = "https://i.postimg.cc/qBCQ18DZ/button.png";
         minus.className = "edit-btn-img";
         minus.addEventListener("click", () => applySkillChange(index, -1));
 
-        // BOTÃƒÆ’O +
+        // note
         const plus = document.createElement("img");
         plus.src = "https://i.postimg.cc/SQzVgW1v/button.png";
         plus.className = "edit-btn-img";
@@ -673,7 +673,7 @@ row.appendChild(boostContainer);
    GLOBAL EDIT COLUMN LOGIC
 ========================== */
 
-let globalMode = "S"; // S = editar value, L = editar max
+let globalMode = "S"; // S = edit value, L = edit max
 const globalModeBtn = document.getElementById("mode-btn");
 const globalButtonsContainer = document.getElementById("edit-buttons-container");
 
@@ -704,87 +704,87 @@ function applySkillChange(idx, delta) {
     let turnMaxModeOffAfterChange = false;
 
     /* ================================
-       SE MAX MODE ESTIVER ATIVO
+       IF MAX MODE IS ACTIVE
        ================================ */
 if (maxMode) {
-    // guardar valor real original apenas 1 vez
+    // store the original real value only once
     if (s._backupValue === undefined) s._backupValue = s.value;
 
-    // valor a editar passa a ser o MAX (valor visÃƒÂ­vel em MAX MODE)
+    // value to edit becomes MAX (value shown in MAX MODE)
     s.value = s.max;
 
     turnMaxModeOffAfterChange = true;
 }
 
     /* ================================
-       REGRAS S
+       S RULES
        ================================ */
     if (globalMode === "S") {
 
         if (delta === 1 && s.value === s.max && s.value < 100) {
-            // S+ quando value == max \\u2192 sobem ambos
+            // S+ when value == max -> increase both
             s.value++;
             s.max++;
         }
 
         else if (delta === -1 && s.value === s.max) {
-            // S- quando value == max \\u2192 desce sÃƒÂ³ o value
+            // S- when value == max -> decrease only value
             if (s.value > 0) s.value--;
         }
 
         else if (delta === 1 && s.value < s.max && s.value < 100) {
-            // S+ normal
+            // normal S+
             s.value++;
         }
 
         else if (delta === -1 && s.value > 0) {
-            // S- normal
+            // normal S-
             s.value--;
         }
     }
 
     /* ================================
-       REGRAS L
+       L RULES
        ================================ */
     else {
 
         if (delta === 1 && s.max === s.value && s.max < 100) {
-            // L+ quando max == value \\u2192 sÃƒÂ³ sobe max
+            // L+ when max == value -> increase only max
             s.max++;
         }
 
         else if (delta === -1 && s.max === s.value && s.max > 0) {
-            // L- quando max == value \\u2192 descem ambos
+            // L- when max == value -> decrease both
             s.max--;
             s.value--;
         }
 
         else if (delta === 1 && s.max < 100) {
-            // L+ normal
+            // normal L+
             s.max++;
         }
 
         else if (delta === -1 && s.max > s.value) {
-            // L- normal
+            // normal L-
             s.max--;
         }
     }
 
     /* ================================
-       LIMITE FINAL (0-100)
+       FINAL LIMIT (0-100)
        ================================ */
     s.value = Math.max(0, Math.min(100, s.value));
     s.max   = Math.max(0, Math.min(100, s.max));
 
     /* ================================
-       SE FIZ CLICK EM +/- NO MAX MODE
-       \\u2192 DESLIGAR MAX MODE AUTOMATICAMENTE
+       IF +/- CLICKED IN MAX MODE
+       -> TURN OFF MAX MODE AUTOMATICALLY
        ================================ */
     if (turnMaxModeOffAfterChange) {
         maxMode = false;
         maxBtn.classList.remove("max-active");
 
-        // atualizar o backup para o novo valor real
+        // update backup to the new real value
         s._backupValue = s.value;
     }
     updateTotals();
@@ -976,7 +976,7 @@ function loadFromText(loadTextRaw) {
     skills = data.skills;
   }
 
-  // detectar skills com max = null
+  // detect skills with max = null
   const incomplete = skills.filter(s => s.max === null);
   if (incomplete.length > 0 && !missingPopupOpen) {
     openMissingSkillPopup(incomplete);
@@ -1023,13 +1023,13 @@ if (maxBtn) {
 
     skills.forEach(s => {
       if (maxMode) {
-        // guardar valor original
+        // store original value
         s._backupValue = s.value;
 
         // value passa a ser igual ao max
         s.value = s.max;
       } else {
-        // restaurar o valor original
+        // restore original value
         if (s._backupValue !== undefined) {
           s.value = s._backupValue;
         }
@@ -1251,7 +1251,7 @@ function ensureLoyalCareerBindings() {
   }
 }
 function openMissingSkillPopup(list) {
-  if (missingPopupOpen) return; // Ã¢â€ºâ€ impede abrir de novo
+  if (missingPopupOpen) return; // prevents reopening
     missingPopupOpen = true;      // \\uD83D\\uDD12 marca como aberto
     const popup = document.getElementById("missing-skill-popup");
     const container = document.getElementById("missing-skill-fields");
@@ -1288,7 +1288,7 @@ function openMissingSkillPopup(list) {
             input.value = input.value.replace(/\D/g, '');
             const value = input.value;
 
-            // mÃƒÂ¡ximo 3 dÃƒÂ­gitos
+            // note
             if (value.length > 3) {
                 input.value = '';
                 return;
@@ -1297,7 +1297,7 @@ function openMissingSkillPopup(list) {
             // standby 10
             if (value === '10') return;
 
-            // 3 dÃƒÂ­gitos
+            // note
             if (value.length === 3) {
                 if (value === '100') {
                     inputs[index + 1]?.focus();
@@ -1307,7 +1307,7 @@ function openMissingSkillPopup(list) {
                 return;
             }
 
-            // 2 dÃƒÂ­gitos
+            // note
             if (value.length === 2) {
                 const num = Number(value);
 
@@ -1341,7 +1341,7 @@ function openMissingSkillPopup(list) {
             } else {
                 field.style.border = "";
                 s.max = val;
-                s.max = Number(val); // forÃƒÂ§a nÃƒÂºmero, nunca null
+                s.max = Number(val); // forÃ§a nÃºmero, nunca null
             }
         });
 
@@ -1349,7 +1349,7 @@ function openMissingSkillPopup(list) {
 
         popup.classList.add("hidden");
         document.getElementById("modal-overlay").classList.add("hidden");
-missingPopupOpen = false; // \\uD83D\\uDD13 permite novo popup num prÃƒÂ³ximo LOAD
+missingPopupOpen = false; // allows a new popup on the next LOAD
         loadedSkillsBackup = JSON.parse(JSON.stringify(skills));
         loadedName = document.querySelector(".player-name").textContent;
         loadedAge  = document.querySelector(".player-age").textContent;
@@ -1564,7 +1564,7 @@ if (plat)  { plat.textContent  = "S23"; plat.style.color  = ""; }
     if (gameImgBtn)   gameImgBtn.classList.remove("active");
     if (loyalStatusEl) loyalStatusEl.textContent = "NO";
 
-  // RESTAURAR ESTADO BASE DO ÃƒÅ¡LTIMO LOAD
+  // note
 skills = JSON.parse(JSON.stringify(loadedSkillsBackup));
 
 const nameEl = document.querySelector(".player-name");
@@ -1641,7 +1641,7 @@ function targetMoment(req) {
 function label(req) {
   const moment = targetMoment(req);
 
-  // impossÃƒÂ­vel antes de reformar
+  // impossible before retirement
   if (moment.season > retireSeason) return "\u274C";
 
   if (games < req) {
@@ -1789,7 +1789,7 @@ let seasonsLeft = maxAge - age;
   const maxLine = document.querySelector(".max-heart-final");
   if (!maxLine) return;
 
-  // Se NÃƒÆ’O consegue nenhum \\u2192 mostrar "\\u2014"
+  // note
   if (!icon) {
     maxLine.innerHTML = `MAX HEART POSSIBLE: \u2014`;
     return;
