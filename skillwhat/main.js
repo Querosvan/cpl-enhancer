@@ -1084,10 +1084,26 @@ function renderCategory(id, items) {
   cont.classList.add("gear-row");
 
   const cat = id.replace("gear-", "");
+  const catLabelMap = {
+    mousepad: "Mousepad",
+    mouse: "Mouse",
+    keyboard: "Keyboard",
+    headset: "Headset"
+  };
+
+  const labelWrap = document.createElement("div");
+  labelWrap.className = "gear-label";
 
   const img = document.createElement("img");
   img.src = GEAR_ICONS[cat];
   img.className = "gear-row-icon";
+
+  const label = document.createElement("span");
+  label.className = "gear-cat-label";
+  label.textContent = catLabelMap[cat] || cat;
+
+  labelWrap.appendChild(img);
+  labelWrap.appendChild(label);
 
   const selectWrap = document.createElement("div");
   selectWrap.className = "gear-select";
@@ -1195,7 +1211,7 @@ function renderCategory(id, items) {
     img.classList.remove("icon-equipped");
   }
 
-  cont.appendChild(img);
+  cont.appendChild(labelWrap);
   cont.appendChild(selectWrap);
 }
 
