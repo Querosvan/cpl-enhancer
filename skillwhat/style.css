@@ -79,7 +79,7 @@ body {
 }
 .total-skill-box .label {
     font-size: 12px;    /* 🔥 adjust aqui */
-    color: #818572;     /* continua o cinzento certo */
+    color: #818572;     /* keep the right gray */
     font-weight: 700;
 }
 
@@ -90,7 +90,7 @@ body {
 }
 
 .total-skill-box .max {
-    color: #5f6d5d;   /* /738 em cinzento */
+    color: #5f6d5d;   /* /738 in gray */
     font-weight: 600;
      font-size: 14px;
 }
@@ -304,7 +304,7 @@ body {
 .player-age {
     font-size: 16px;
     font-weight: 500;
-    color: #bcbcbc;  /* cinzento suave */
+    color: #bcbcbc;  /* soft gray */
 }
 
 .player-dot {
@@ -323,8 +323,15 @@ body {
 /* note */
 .action-buttons {
     display: flex;
+    flex-direction: column;
     gap: 6px;
     margin-left: 20px;   /* note */
+}
+
+.action-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* Top row layout (3 columns) */
@@ -1022,7 +1029,7 @@ position: relative;   /* note */
   background-repeat: no-repeat;
 
   position: absolute;
-  left: 230px;   /* 👈 ao lado do LOYAL (adjust fino se quiseres) */
+  left: 230px;   /* beside LOYAL (fine-tune if needed) */
   top: 173px;
 
   border: none;
@@ -1685,7 +1692,7 @@ pointer-events: auto;
 
 .boost-label {
   position: absolute;
-  bottom: -17px;   /* adjust fino aqui */
+  bottom: -17px;   /* fine-tune here */
   font-size: 11px;
   font-weight: 700;
   color: #01a501;
