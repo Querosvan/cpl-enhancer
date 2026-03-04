@@ -1,4 +1,4 @@
-/* BLOQUEIO TOTAL GLOBAL */
+/* GLOBAL LOCK */
 * {
     user-select: none;
     -webkit-user-select: none;
@@ -72,13 +72,13 @@ body {
     display: flex;
     gap: 4px;
     align-items: center;
-    transform: scale(0.9);   /* caixa 10% menor */
+    transform: scale(0.9);   /* box 10% smaller */
     margin-right: 245px; /* adjust this value */
     margin-top: -20px;   /* note */
 
 }
 .total-skill-box .label {
-    font-size: 12px;    /* 🔥 adjust aqui */
+    font-size: 12px;    /* adjust here */
     color: #818572;     /* keep the right gray */
     font-weight: 700;
 }
@@ -96,7 +96,7 @@ body {
 }
 
 
-/* Lista de skills reduzida */
+/* Reduced skills list */
 .skills-list {
   margin-top: 20px;
   display: flex;
@@ -164,7 +164,7 @@ body {
 /* note */
 .skill-fill.full {
     background-color: #f7f8c9 !important;
-    border-radius: 10px !important;   /* arredonda os dois lados */
+    border-radius: 10px !important;   /* round both sides */
     width: 100% !important; 
         /* 🌟 GLOW EXTERIOR SUAVE */
     box-shadow:
@@ -253,12 +253,12 @@ body {
 }
 
 .input-box::-webkit-scrollbar-track {
-    background: #c3c3c3;      /* cor da calha */
+    background: #c3c3c3;      /* track color */
     border-radius: 10px;
 }
 
 .input-box::-webkit-scrollbar-thumb {
-    background: #f56e0e;      /* cor da barra */
+    background: #f56e0e;      /* bar color */
     border-radius: 0px;      /* EXTREMELY important for a clean look */
 }
 
@@ -273,7 +273,7 @@ body {
 
 
 .input-box::-webkit-scrollbar-thumb:hover {
-    background: #f56e0e;      /* cor ao passar o rato */
+    background: #f56e0e;      /* hover color */
 }
 
 .load-btn {
@@ -291,7 +291,7 @@ body {
     transition: 0.2s ease; 
 }
 .load-btn:hover {
-    background: #edeec0ff; /* a cor que pediste */
+    background: #edeec0ff; /* requested color */
     box-shadow: 0 0 12px rgba(238, 223, 192, 0.8); /* brilho suave */
 }
 
@@ -324,7 +324,7 @@ body {
 .action-buttons {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 18px;
     margin-left: 20px;   /* note */
 }
 
@@ -340,6 +340,9 @@ body {
     grid-template-columns: 280px 1fr 320px;
     column-gap: 14px;
     align-items: start;
+    padding: 6px 16px 10px 12px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
 }
 
 .skillwhat-top-col--left {
@@ -360,6 +363,7 @@ body {
     display: flex;
     justify-content: flex-end;
     padding-top: 2px;
+    padding-right: 4px;
 }
 .fixed-buttons {
     position: absolute;
@@ -434,7 +438,7 @@ body {
   font-size: 12px;
 }
 
-/* Cada linha */
+/* Each row */
 .tooltip-left div,
 .tooltip-right div {
   white-space: nowrap;
@@ -668,7 +672,7 @@ position: relative;   /* note */
 
     font-size: 10px;
     font-weight: 700;
-    font-family: "Source Sans Pro", sans-serif; /* 🔥 muda aqui o tipo de letra */
+    font-family: "Source Sans Pro", sans-serif; /* change font here */
 
     margin: 0 auto;     /* center horizontally */
     margin-top: -10px;  /* note */
@@ -809,7 +813,8 @@ position: relative;   /* note */
 /* Static games panel in top bar */
 #game-popup.game-popup--static {
     position: static;
-    width: 320px;
+    width: 100%;
+    max-width: 320px;
     height: auto;
     padding: 0;
     z-index: auto;
@@ -843,7 +848,8 @@ position: relative;   /* note */
     box-shadow: none;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px 16px;
+    gap: 12px 18px;
+    align-content: start;
 }
 
 #gear-popup.gear-popup--static #gear-drag,
@@ -853,9 +859,9 @@ position: relative;   /* note */
 
 #gear-popup.gear-popup--static .gear-row {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 74px minmax(0, 1fr);
     column-gap: 8px;
-    align-items: start;
+    align-items: center;
 }
 
 #gear-popup.gear-popup--static .gear-row-icon {
@@ -868,11 +874,14 @@ position: relative;   /* note */
 }
 
 #gear-popup.gear-popup--static .gear-item {
-    width: 58px;
-    min-width: 58px;
-    max-width: 58px;
-    padding: 5px 8px;
+    width: 64px;
+    min-width: 64px;
+    max-width: 64px;
+    height: 36px;
+    min-height: 36px;
+    padding: 5px 6px;
     font-size: 9px;
+    box-sizing: border-box;
 }
 
 #gear-popup.gear-popup--static .gear-select {
@@ -881,6 +890,7 @@ position: relative;   /* note */
     flex-direction: column;
     gap: 6px;
     align-items: flex-start;
+    width: 100%;
 }
 
 #gear-popup.gear-popup--static .gear-item--selected {
@@ -921,6 +931,7 @@ position: relative;   /* note */
     font-size: 10px;
     font-weight: 600;
     color: #f5f4dd;
+    white-space: nowrap;
 }
 
 #gear-popup.gear-popup--static .gear-cat-label {
@@ -931,6 +942,10 @@ position: relative;   /* note */
     font-size: 8px;
     line-height: 9px;
     margin-bottom: 2px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #gear-popup.gear-popup--static .gear-boost {
@@ -940,6 +955,10 @@ position: relative;   /* note */
 #gear-popup.gear-popup--static .gear-boost-icon {
     width: 9px;
     height: 9px;
+}
+
+#gear-popup.gear-popup--static .gear-boosts {
+    min-height: 10px;
 }
 
 #game-drag {
@@ -1232,11 +1251,11 @@ position: relative;   /* note */
     background: #ff7f2f;
 }
 
-/* Container das linhas de + / - */
+/* Container for +/- rows */
 #edit-buttons-container {
     display: flex;
     flex-direction: column;
-    gap: 4px;   /* igual ao gap das skill rows */
+    gap: 4px;   /* same gap as skill rows */
 }
 
 /* note */
@@ -1252,7 +1271,7 @@ position: relative;   /* note */
 
 }
 
-/* Label do BOOST CAP sem afetar o alignmento das linhas */
+/* BOOST CAP label without affecting row alignment */
 .skill-edit-column::before {
     content: "BOOST CAP";
     position: absolute;
@@ -1291,7 +1310,7 @@ position: relative;   /* note */
     padding: 0;                   /* note */
     margin: 0;
 
-    background-color: transparent; /* tira fundo branco */
+    background-color: transparent; /* remove white background */
     color: transparent;            /* esconde texto S */
     font-size: 0;                  /* note */
     cursor: pointer;
@@ -1427,7 +1446,7 @@ position: relative;   /* note */
     display: inline-block;
     z-index: 9999;
 }
-/* OK igual ao LOAD BUTTON */
+/* OK same as LOAD BUTTON */
 #missing-skill-confirm {
     position: absolute;
     left: 0px;
@@ -1507,7 +1526,7 @@ position: relative;   /* note */
 
 
 #missing-skill-confirm:hover {
-  background: #edeec0ff; /* a cor que pediste */
+  background: #edeec0ff; /* requested color */
     box-shadow: 0 0 3px rgba(238, 223, 192, 0.8); /* brilho suave */
 }
 #missing-skill-fields {
@@ -1652,7 +1671,7 @@ player-header,
 pointer-events: auto;
   position: relative;
   z-index: 2;
-  background: #4caf50; /* verde elegante */
+  background: #4caf50; /* elegant green */
   border-radius: 999px;
 }
 
