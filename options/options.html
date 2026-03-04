@@ -25,6 +25,9 @@
           <button class="nav__item" data-section="tryouts">
             Tryouts
           </button>
+          <button class="nav__item" data-section="roles">
+            Roles
+          </button>
         </nav>
 
         <div class="sidebar__footer">
@@ -114,6 +117,39 @@
           <div class="actions">
             <button class="btn" id="resetDefaultsTryouts">Reset to defaults</button>
             <button class="btn btn--primary" id="saveBtnTryouts">Save</button>
+          </div>
+        </section>
+
+        <!-- ROLES -->
+        <section class="panel is-hidden" id="section-roles">
+          <h1>Roles</h1>
+          <p class="sub">
+            Define roles and the minimum skills you want for each one.
+          </p>
+
+          <div class="card">
+            <div class="row">
+              <div>
+                <div class="label">Show on roster only</div>
+                <div class="hint">Limit the role selector to the roster page.</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="rolesRosterOnly" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="roles-list" id="rolesList"></div>
+
+          <div class="actions">
+            <button class="btn" id="addRoleBtn">Add role</button>
+            <button class="btn" id="resetDefaultsRoles">Reset to defaults</button>
+            <button class="btn btn--primary" id="saveBtnRoles">Save</button>
+          </div>
+
+          <div class="small muted">
+            Tip: rename roles freely — IDs stay stable once created.
           </div>
         </section>
       </main>

@@ -7,6 +7,8 @@
   const LAUNCHER_ATTR = "data-cpl-skillwhat-launcher";
   const LAUNCHER_CLASS = "cpl-skillwhat-launcher";
   const LAUNCHER_INLINE_CLASS = "cpl-skillwhat-launcher--inline";
+  const FALLBACK_ICON =
+    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgdmlld0JveD0iMCAwIDE4IDE4Ij48cmVjdCB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSI0IiBmaWxsPSIjMTExIi8+PHRleHQgeD0iOSIgeT0iMTIiIGZvbnQtc2l6ZT0iOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIj5TVzwvdGV4dD48L3N2Zz4=";
   const SKILLS = [
     "aim",
     "handling",
@@ -30,7 +32,7 @@
   }
 
   function createLauncherIcon() {
-    const iconSrc = safeRuntimeUrl("skillwhat/favicon.ico");
+    const iconSrc = safeRuntimeUrl("skillwhat/favicon.ico") || FALLBACK_ICON;
     if (!iconSrc) return null;
     const icon = document.createElement("span");
     icon.className = "cpl-skillwhat-launcher__icon";
