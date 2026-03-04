@@ -8,7 +8,7 @@
   const LAUNCHER_CLASS = "cpl-skillwhat-launcher";
   const LAUNCHER_INLINE_CLASS = "cpl-skillwhat-launcher--inline";
   const FALLBACK_ICON =
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgdmlld0JveD0iMCAwIDE4IDE4Ij48cmVjdCB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSI0IiBmaWxsPSIjMTExIi8+PHRleHQgeD0iOSIgeT0iMTIiIGZvbnQtc2l6ZT0iOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIj5TVzwvdGV4dD48L3N2Zz4=";
+    "data:image/png;base64,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";
   const SKILLS = [
     "aim",
     "handling",
@@ -35,6 +35,9 @@
       if (typeof chrome !== "undefined" && chrome.runtime && typeof chrome.runtime.getURL === "function") {
         return chrome.runtime.getURL(path);
       }
+      if (typeof browser !== "undefined" && browser.runtime && typeof browser.runtime.getURL === "function") {
+        return browser.runtime.getURL(path);
+      }
     } catch (err) {
       return null;
     }
@@ -42,7 +45,10 @@
   }
 
   function createLauncherIcon() {
-    const iconSrc = safeRuntimeUrl("skillwhat/favicon.ico") || FALLBACK_ICON;
+    const iconSrc =
+      safeRuntimeUrl("skillwhat/Sbutton.png") ||
+      safeRuntimeUrl("skillwhat/favicon.ico") ||
+      FALLBACK_ICON;
     if (!iconSrc) return null;
     const icon = document.createElement("span");
     icon.className = "cpl-skillwhat-launcher__icon";
