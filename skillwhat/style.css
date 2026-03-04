@@ -834,6 +834,9 @@ position: relative;   /* note */
     background: transparent;
     border: none;
     box-shadow: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 16px;
 }
 
 #gear-popup.gear-popup--static #gear-drag,
@@ -843,10 +846,12 @@ position: relative;   /* note */
 
 #gear-popup.gear-popup--static .gear-row {
     gap: 8px;
+    align-items: center;
 }
 
 #gear-popup.gear-popup--static .gear-row-icon {
     width: 12px;
+    flex: 0 0 auto;
 }
 
 #gear-popup.gear-popup--static .gear-grid {
@@ -863,6 +868,7 @@ position: relative;   /* note */
 
 #gear-popup.gear-popup--static .gear-select {
     position: relative;
+    flex: 1 1 auto;
 }
 
 #gear-popup.gear-popup--static .gear-item--selected {
