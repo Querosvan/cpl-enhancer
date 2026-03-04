@@ -74,6 +74,18 @@ body {
     justify-content: space-between; /* push TOTAL SKILL to the right */
 }
 
+.card-top-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modifiers-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .total-skill-wrap {
     display: flex;
     align-items: center;
@@ -1080,6 +1092,15 @@ position: relative;   /* note */
 .skillwhat-top-row .career-plus-btn,
 .skillwhat-top-row .antisocial-btn,
 .skillwhat-top-row .shortlived-btn {
+  position: static;
+  left: auto;
+  top: auto;
+}
+
+.card-top .game-img-btn,
+.card-top .career-plus-btn,
+.card-top .antisocial-btn,
+.card-top .shortlived-btn {
   position: static;
   left: auto;
   top: auto;
