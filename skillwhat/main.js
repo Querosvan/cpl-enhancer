@@ -1113,11 +1113,13 @@ function renderCategory(id, items) {
         <div class="gear-name">None</div>
         <div class="gear-boosts"></div>
       `;
+      selected.title = `${catLabelMap[cat] || cat}: None`;
       selected.classList.remove("equipped");
       return;
     }
 
-    const boostsHtml = Object.entries(equipped[cat].boosts)
+    const boostEntries = Object.entries(equipped[cat].boosts);
+    const boostsHtml = boostEntries
       .map(([skill, val]) => `
         <span class="gear-boost">
           +${val}
@@ -1129,6 +1131,9 @@ function renderCategory(id, items) {
         </span>
       `)
       .join(" ");
+    const boostTitle = boostEntries
+      .map(([skill, val]) => `+${val} ${skill}`)
+      .join(", ");
 
     selected.innerHTML = `
       <div class="gear-name">${equipped[cat].name}</div>
@@ -1136,6 +1141,7 @@ function renderCategory(id, items) {
         ${boostsHtml}
       </div>
     `;
+    selected.title = `${catLabelMap[cat] || cat}: ${boostTitle}`;
     selected.classList.add("equipped");
   };
 

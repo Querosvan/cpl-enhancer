@@ -29,8 +29,13 @@ body {
     width: 932px;
     height: 459px;
 
-    background: none;
-    background-image: none;
+    background: linear-gradient(
+        to bottom,
+        #2a2a2a 0px,
+        #2a2a2a 150px,
+        #1f1f1f 150px,
+        #1f1f1f 100%
+    );
 
     border-radius: 22px;
 
@@ -48,10 +53,10 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    margin-top: 44px;  /* note */
-    background: #1f1f1f;
-    border-radius: 12px;
-    padding: 14px 16px;
+    margin-top: 28px;  /* note */
+    background: transparent;
+    border-radius: 0;
+    padding: 10px 16px 14px;
 }
 
 .card-top h2 {
@@ -345,8 +350,8 @@ body {
 /* Top row layout (3 columns) */
 .skillwhat-top-row {
     display: grid;
-    grid-template-columns: 260px auto 320px;
-    column-gap: 6px;
+    grid-template-columns: 260px auto 300px;
+    column-gap: 2px;
     align-items: start;
     padding: 6px 12px 10px 8px;
     background: #2a2a2a;
@@ -364,6 +369,7 @@ body {
     min-width: 0;
     display: flex;
     justify-content: flex-start;
+    margin-right: 4px;
 }
 
 .skillwhat-top-col--right {
