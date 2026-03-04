@@ -350,6 +350,7 @@ body {
     flex: 0 0 520px;
     display: flex;
     justify-content: flex-end;
+    padding-top: 2px;
 }
 .fixed-buttons {
     position: absolute;
@@ -811,6 +812,11 @@ position: relative;   /* 🔥 obrigatório */
     position: static;
     width: 100%;
     height: auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
 }
 
 #game-drag {
