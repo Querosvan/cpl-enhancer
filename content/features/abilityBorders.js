@@ -277,31 +277,99 @@
     return ABILITY_MAP.get(normalize(abilityName)) || null;
   }
 
+  function ensureWrap(target) {
+    if (!target || !target.parentNode) return target;
+    if (target.classList?.contains("cpl-ability-border-wrap")) return target;
+    if (target.parentElement?.classList?.contains("cpl-ability-border-wrap")) {
+      return target.parentElement;
+    }
+
+    const wrapper = document.createElement("span");
+    wrapper.className = "cpl-ability-border-wrap";
+    target.parentNode.insertBefore(wrapper, target);
+    wrapper.appendChild(target);
+    return wrapper;
+  }
+
+  function findIconBox(start) {
+    let node = start;
+    for (let i = 0; node && i < 8; i += 1) {
+      if (node instanceof HTMLElement) {
+        const bg = window.getComputedStyle(node).backgroundImage || "";
+        if (bg.includes("icon-box") || bg.includes("ability-box-")) {
+          return node;
+        }
+      }
+      node = node.parentElement;
+    }
+    return null;
+  }
+
+  function safeRuntimeUrl(path) {
+    try {
+      if (typeof chrome !== "undefined" && chrome.runtime && typeof chrome.runtime.getURL === "function") {
+        return chrome.runtime.getURL(path);
+      }
+      if (typeof browser !== "undefined" && browser.runtime && typeof browser.runtime.getURL === "function") {
+        return browser.runtime.getURL(path);
+      }
+    } catch (err) {
+      return "";
+    }
+    return "";
+  }
+
+  function applyIconBoxBackground(target, type) {
+    const url = safeRuntimeUrl(`content/ability-box-${type}.png`);
+    if (!url) return;
+    target.style.setProperty("background-image", `url("${url}")`, "important");
+    target.style.setProperty("background-size", "cover", "important");
+    target.style.setProperty("background-repeat", "no-repeat", "important");
+    target.style.setProperty("background-position", "center", "important");
+  }
+
   function applyBorder(el, type) {
     if (!el || !type) return;
 
     let target = null;
     const tag = (el.tagName || "").toLowerCase();
     if (tag === "img" || tag === "svg") {
-      const iconBox = el.closest?.("div[style*='background-image']");
-      target = iconBox || el;
+      const iconBox = findIconBox(el);
+      target = iconBox || ensureWrap(el);
     } else if (isLabeledElement(el)) {
       target = el;
     } else {
-      target = el.querySelector?.("img, svg") || el;
+      const icon = el.querySelector?.("img, svg");
+      if (icon) {
+        const iconBox = findIconBox(icon);
+        target = iconBox || ensureWrap(icon);
+      } else {
+        target = el;
+      }
     }
 
     if (!target) return;
 
-    if (target.dataset.cplAbilityBorder === type) return;
+    const isIconBox = !!findIconBox(target);
+    if (target.dataset.cplAbilityBorder === type) {
+      if (!isIconBox) return;
+      const currentBg = target.style.getPropertyValue("background-image") || "";
+      if (currentBg.includes(`ability-box-${type}.png`)) return;
+    }
 
     target.classList.remove(
       "cpl-ability-border--positive",
       "cpl-ability-border--negative",
-      "cpl-ability-border--mixed"
+      "cpl-ability-border--mixed",
+      "cpl-ability-border--box"
     );
 
-    target.classList.add("cpl-ability-border", `cpl-ability-border--${type}`);
+    if (isIconBox) {
+      target.classList.add("cpl-ability-border", "cpl-ability-border--box", `cpl-ability-border--${type}`);
+      applyIconBoxBackground(target, type);
+    } else {
+      target.classList.add("cpl-ability-border", `cpl-ability-border--${type}`);
+    }
     target.dataset.cplAbilityBorder = type;
   }
 

@@ -190,20 +190,54 @@
    ========================= */
 .cpl-ability-border {
   --cpl-ability-border-color: rgba(255, 255, 255, 0.6);
+  --cpl-ability-fill-color: rgba(255, 255, 255, 0.12);
   border-radius: 6px;
+  background-color: var(--cpl-ability-fill-color);
   box-shadow: 0 0 0 2px var(--cpl-ability-border-color) !important;
+}
+
+.cpl-ability-border--box {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.cpl-ability-border--box.cpl-ability-border--positive,
+.cpl-ability-border--box.cpl-ability-border--negative,
+.cpl-ability-border--box.cpl-ability-border--mixed {
+  background-image: none !important;
+}
+
+.cpl-ability-border-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 8px;
+  line-height: 1;
+}
+
+.cpl-ability-border-wrap > img,
+.cpl-ability-border-wrap > svg {
+  display: block;
+  border-radius: 6px;
 }
 
 .cpl-ability-border--positive {
   --cpl-ability-border-color: rgba(76, 217, 100, 0.9);
+  --cpl-ability-fill-color: rgba(76, 217, 100, 0.18);
 }
 
 .cpl-ability-border--negative {
   --cpl-ability-border-color: rgba(244, 67, 54, 0.9);
+  --cpl-ability-fill-color: rgba(244, 67, 54, 0.18);
 }
 
 .cpl-ability-border--mixed {
   --cpl-ability-border-color: rgba(250, 204, 21, 0.95);
+  --cpl-ability-fill-color: rgba(250, 204, 21, 0.18);
 }
 
 /* =========================
@@ -230,6 +264,8 @@
   width: 18px;
   height: 18px;
   display: block;
+  object-fit: contain;
+  object-position: center;
   image-rendering: auto;
 }
 
