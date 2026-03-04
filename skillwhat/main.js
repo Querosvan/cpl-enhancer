@@ -1160,7 +1160,8 @@ function renderCategory(id, items) {
 
     let boostsHtml = "";
     if (item && item.boosts) {
-      boostsHtml = Object.entries(item.boosts)
+      const boostEntries = Object.entries(item.boosts);
+      boostsHtml = boostEntries
         .map(([skill, val]) => `
           <span class="gear-boost">
             +${val}
@@ -1172,6 +1173,12 @@ function renderCategory(id, items) {
           </span>
         `)
         .join(" ");
+      const boostTitle = boostEntries
+        .map(([skill, val]) => `+${val} ${skill}`)
+        .join(", ");
+      b.title = `${catLabelMap[cat] || cat}: ${boostTitle}`;
+    } else {
+      b.title = `${catLabelMap[cat] || cat}: None`;
     }
 
     b.innerHTML = `

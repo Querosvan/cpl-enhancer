@@ -18,7 +18,7 @@ html, body {
 
 body {
     margin: 0;
-    background: transparent;
+    background: #1f1f1f;
 }
 
 .card {
@@ -32,8 +32,9 @@ body {
     background: linear-gradient(
         to bottom,
         #2a2a2a 0px,
-        #2a2a2a 150px,
-        #1f1f1f 150px,
+        #2a2a2a 160px,
+        #252525 161px,
+        #1f1f1f 162px,
         #1f1f1f 100%
     );
 
@@ -53,7 +54,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    margin-top: 28px;  /* note */
+    margin-top: 20px;  /* note */
     background: transparent;
     border-radius: 0;
     padding: 10px 16px 14px;
@@ -350,12 +351,12 @@ body {
 /* Top row layout (3 columns) */
 .skillwhat-top-row {
     display: grid;
-    grid-template-columns: 260px auto 300px;
-    column-gap: 2px;
+    grid-template-columns: 260px max-content max-content;
+    column-gap: 0px;
     align-items: start;
     padding: 6px 12px 10px 8px;
-    background: #2a2a2a;
-    border-radius: 12px;
+    background: transparent;
+    border-radius: 0;
 }
 
 .skillwhat-top-col--left {
@@ -369,7 +370,7 @@ body {
     min-width: 0;
     display: flex;
     justify-content: flex-start;
-    margin-right: 4px;
+    margin-right: 0;
 }
 
 .skillwhat-top-col--right {
@@ -378,6 +379,7 @@ body {
     justify-content: flex-start;
     padding-top: 2px;
     padding-right: 0;
+    margin-left: -4px;
 }
 .fixed-buttons {
     position: absolute;
@@ -832,6 +834,7 @@ position: relative;   /* note */
     height: auto;
     padding: 0;
     z-index: auto;
+    font-size: 12px;
 }
 
 #game-popup.game-popup--static .game-popup-inner {
@@ -916,7 +919,7 @@ position: relative;   /* note */
     top: 100%;
     left: 0;
     margin-top: 4px;
-    z-index: 30;
+    z-index: 60;
     padding: 6px;
     background: #1c1c1e;
     border: 1px solid #2b2b2b;
